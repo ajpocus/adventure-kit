@@ -1,3 +1,5 @@
+import PIXI from "./pixi.min";
+
 document.addEventListener("DOMContentLoaded", function () {
   var WIDTH = 640;
   var HEIGHT = 480;
@@ -16,4 +18,5 @@ document.addEventListener("DOMContentLoaded", function () {
     renderer.render(stage);
     requestAnimationFrame(animate);
   }
+  console.log("EYYYYYO");
 });

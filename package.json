@@ -13,5 +13,13 @@
     "express": "~4.12.2",
     "morgan": "~1.5.1",
     "serve-favicon": "~2.2.0"
+  },
+  "devDependencies": {
+    "babelify": "^6.1.1",
+    "browserify": "^10.2.0",
+    "gulp": "^3.8.11",
+    "gulp-nodemon": "^2.0.3",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
