@@ -20,7 +20,7 @@ gulp.task('build', function () {
     .pipe(gulp.dest('./public/js/'));
 });
 
-gulp.task('serve', function () {
+gulp.task('serve', ['build'], function () {
   nodemon({
     script: 'bin/www',
     ext: 'ejs js',
