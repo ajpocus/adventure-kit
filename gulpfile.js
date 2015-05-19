@@ -1,30 +1,24 @@
 var gulp = require('gulp');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var browserify = require('browserify');
-var babelify = require('babelify');
+var babel = require('gulp-babel');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
 var nodemon = require('gulp-nodemon');
 
 gulp.task('default', ['build', 'serve']);
 
 gulp.task('build', function () {
-  var b = browserify({
-    entries: './public/js/app.js',
-    debug: true,
-    transform: [babelify]
-  });
-
-  return b.bundle()
-    .pipe(source('bundle.js'))
-    .pipe(buffer())
-    .pipe(gulp.dest('./public/js/'));
+  return gulp.src('public/js/**/*.js')
+    .pipe(babel())
+    .pipe(concat('all.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('public/js'));
 });
 
 gulp.task('serve', ['build'], function () {
   nodemon({
     script: 'bin/www',
     ext: 'ejs js',
-    ignore: ['./public/js/bundle.js'],
+    ignore: ['./public/js/all.js'],
     tasks: ['build']
   });
 });
