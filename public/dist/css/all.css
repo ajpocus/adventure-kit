@@ -1,6 +1,8 @@
 #bg-canvas,
 #draw-canvas {
   position: absolute;
+  right: 12px;
+  top: 12px;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126

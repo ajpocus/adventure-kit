@@ -1,3 +1,5 @@
 #bg-canvas, #draw-canvas {
   position: absolute;
+  right: 12px;
+  top: 12px;
 }
