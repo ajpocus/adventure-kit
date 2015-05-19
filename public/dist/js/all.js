@@ -1,0 +1,1 @@
+"use strict";document.addEventListener("DOMContentLoaded",function(){function t(){for(var t=a/c,e=o/c,n=0;t>n;n++)for(var r=0;e>r;r++){var i=n*c,l=r*c,v=(n+r)%2==0?"#999":"#777";d.fillStyle=v,d.fillRect(i,l,c,c)}}var e=document.getElementById("bg-canvas"),n=document.getElementById("draw-canvas"),d=e.getContext("2d"),a=(n.getContext("2d"),e.width),o=e.height,c=8;t()});
