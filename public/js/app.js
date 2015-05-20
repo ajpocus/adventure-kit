@@ -1,7 +1,5 @@
 'use strict';
 
-import Pixel from './pixel';
-
 document.addEventListener('DOMContentLoaded', function () {
   let bgCanvas = document.getElementById('bg-canvas');
   let drawCanvas = document.getElementById('draw-canvas');
@@ -15,51 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const HEIGHT = bgCanvas.height;
   const BG_TILE_SIZE = 8;
   const PIXEL_SIZE = 32;
-
-  let PixelGrid = [];
-
-  function drawBackground() {
-    const NUM_TILES_HORIZ = WIDTH / BG_TILE_SIZE;
-    const NUM_TILES_VERT = HEIGHT / BG_TILE_SIZE;
-
-    for (let i = 0; i < NUM_TILES_HORIZ; i++) {
-      for (let j = 0; j < NUM_TILES_VERT; j++) {
-        let x = i * BG_TILE_SIZE;
-        let y = j * BG_TILE_SIZE;
-
-        let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
-
-        bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, BG_TILE_SIZE, BG_TILE_SIZE);
-      }
-    }
-  }
-
-  function initializeDrawSurface() {
-    const NUM_PIXELS_HORIZ = WIDTH / PIXEL_SIZE;
-    const NUM_PIXELS_VERT = HEIGHT / PIXEL_SIZE;
-
-    for (let x = 0; x < NUM_PIXELS_HORIZ; x++) {
-      PixelGrid[x] = [];
-
-      for (let y = 0; y < NUM_PIXELS_VERT; y++) {
-        PixelGrid[x].push(new Pixel(x, y));
-      }
-    }
-  }
-
-  function getPixelCoordinates(ev) {
-    let elRect = ev.target.getBoundingClientRect();
-    let absX = ev.clientX;
-    let absY = ev.clientY;
-    let x = absX - elRect.left;
-    let y = absY - elRect.top;
-
-    let pixelX = Math.floor(x / PIXEL_SIZE);
-    let pixelY = Math.floor(y / PIXEL_SIZE);
-
-    return [pixelX, pixelY];
-  }
 
   function highlightPixel (ev) {
     console.log("HIGHLIGHT");

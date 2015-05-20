@@ -11,9 +11,21 @@
 
     <body>
         <div id="root">
-            <canvas id="bg-canvas" width="512" height="512"></canvas>
-            <canvas id="draw-canvas" width="512" height="512"></canvas>
-            <canvas id="overlay-canvas" width="512" height="512"></canvas>
+            <div class="tile-map">
+                <canvas id="tile-bg-canvas" width="512" height="512"></canvas>
+                <canvas id="tile-surface-canvas" width="512" height="512">
+                </canvas>
+                <canvas id="tile-overlay-canvas" width="512" height="512">
+                </canvas>
+            </div>
+
+            <div class="draw">
+                <canvas id="draw-bg-canvas" width="512" height="512"></canvas>
+                <canvas id="draw-surface-canvas" width="512" height="512">
+                </canvas>
+                <canvas id="draw-overlay-canvas" width="512" height="512">
+                </canvas>
+            </div>
         </div>
     </body>
 </html>
