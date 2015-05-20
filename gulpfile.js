@@ -3,7 +3,6 @@ var browserify = require('browserify');
 var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var uglify = require('gulp-uglify');
 var concatCss = require('gulp-concat-css');
 var nodemon = require('gulp-nodemon');
 
@@ -19,7 +18,6 @@ gulp.task('js', function () {
   return b.bundle()
     .pipe(source('all.js'))
     .pipe(buffer())
-    .pipe(uglify())
     .pipe(gulp.dest('public/dist/js'));
 });
 

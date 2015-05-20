@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
         PixelGrid.push(new Pixel(x, y));
       }
     }
+    console.log(PixelGrid);
   }
 
   function highlightPixel (ev) {
@@ -52,18 +53,31 @@ document.addEventListener('DOMContentLoaded', function () {
     let absY = ev.clientY;
     let x = absX - elRect.left;
     let y = absY - elRect.top;
-    console.log(x, y);
 
     let pixelX = Math.floor(x / PIXEL_SIZE);
     let pixelY = Math.floor(y / PIXEL_SIZE);
 
-    const NUM_PIXELS = (WIDTH / PIXEL_SIZE) + (HEIGHT / PIXEL_SIZE);
+    const NUM_PIXELS = PixelGrid.length;
 
     for (let i = 0; i < NUM_PIXELS; i++) {
       let pixel = PixelGrid[i];
-      if (pixel.x === x && pixel.y === y) {
-        overlayCtx.fillStyle = "rgba(255, 255, 255, 0.5)";
-        overlayCtx.fillRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
+      if (pixel.x === pixelX && pixel.y === pixelY) {
+        if (!pixel.highlighted) {
+          let fillX = pixel.x * PIXEL_SIZE;
+          let fillY = pixel.y * PIXEL_SIZE;
+
+          overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)";
+          overlayCtx.fillRect(fillX, fillY, PIXEL_SIZE, PIXEL_SIZE);
+          pixel.highlighted = true;
+        }
+      } else {
+        if (pixel.highlighted) {
+          let clearX = pixel.x * PIXEL_SIZE;
+          let clearY = pixel.y * PIXEL_SIZE;
+
+          overlayCtx.clearRect(clearX, clearY, PIXEL_SIZE, PIXEL_SIZE);
+          pixel.highlighted = false;
+        }
       }
     }
   }
@@ -71,10 +85,10 @@ document.addEventListener('DOMContentLoaded', function () {
   function paintPixel (ev) {
     let x = ev.clientX;
     let y = ev.clientY;
-    console.log(x, y);
   }
 
   drawBackground();
+  initializeDrawSurface();
   drawCanvas.addEventListener('mousemove', highlightPixel, false);
   drawCanvas.addEventListener('click', paintPixel, false);
 });
