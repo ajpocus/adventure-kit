@@ -5,8 +5,11 @@ import Pixel from './pixel';
 document.addEventListener('DOMContentLoaded', function () {
   let bgCanvas = document.getElementById('bg-canvas');
   let drawCanvas = document.getElementById('draw-canvas');
+  let overlayCanvas = document.getElementById('overlay-canvas');
+
   let bgCtx = bgCanvas.getContext('2d');
   let drawCtx = drawCanvas.getContext('2d');
+  let overlayCtx = drawCanvas.getContext('2d');
 
   const WIDTH = bgCanvas.width;
   const HEIGHT = bgCanvas.height;
@@ -59,8 +62,8 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < NUM_PIXELS; i++) {
       let pixel = PixelGrid[i];
       if (pixel.x === x && pixel.y === y) {
-        drawCtx.fillStyle = "rgba(255, 255, 255, 0.5)";
-        drawCtx.fillRect
+        overlayCtx.fillStyle = "rgba(255, 255, 255, 0.5)";
+        overlayCtx.fillRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
       }
     }
   }
