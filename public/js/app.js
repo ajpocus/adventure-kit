@@ -92,8 +92,6 @@ document.addEventListener('DOMContentLoaded', function () {
           let fillY = pixel.y * PIXEL_SIZE;
 
           overlayCtx.clearRect(fillX, fillY, PIXEL_SIZE, PIXEL_SIZE);
-          drawCtx.fillStyle = pixel.color;
-          drawCtx.fillRect(fillX, fillY, PIXEL_SIZE, PIXEL_SIZE);
           pixel.highlighted = false;
         }
       }
@@ -101,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function paintPixel (ev) {
+    console.log("PAINT");
     let [x, y] = getPixelCoordinates(ev);
     let color = "#000000";
     let pixel = PixelGrid[x][y];
@@ -115,5 +114,5 @@ document.addEventListener('DOMContentLoaded', function () {
   drawBackground();
   initializeDrawSurface();
   overlayCanvas.addEventListener('mousemove', highlightPixel, false);
-  drawCanvas.addEventListener('mousedown', paintPixel, false);
+  overlayCanvas.addEventListener('mousedown', paintPixel, false);
 });
