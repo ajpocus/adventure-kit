@@ -3,42 +3,47 @@ var Pixel = require('./pixel');
 var DrawSurface = function (container, params) {
   params || (params = {});
   this.container = container;
-    if (!this.container) {
-      throw new Exception("DrawSurface requires a container parameter.");
-    }
+  if (!this.container) {
+    throw new Exception("DrawSurface requires a container parameter.");
+  }
 
-    this.width = params.width || 512;
-    this.height = params.height || 512;
-    this.tileSize = params.tileSize || 32;
-    this.bgTileSize = params.bgTileSize || 8;
+  this.width = params.width || 512;
+  this.height = params.height || 512;
+  this.tileSize = params.tileSize || 32;
+  this.bgTileSize = params.bgTileSize || 8;
 
-    this.bgCanvas = document.createElement('canvas');
-    this.bgCanvas.setAttribute('width', this.width);
-    this.bgCanvas.setAttribute('height', this.height);
-    this.container.appendChild(this.bgCanvas);
+  this.setupCanvas();
+  this.drawBackground();
+  this.initDrawSurface();
 
-    this.drawCanvas = document.createElement('canvas');
-    this.drawCanvas.setAttribute('width', this.width);
-    this.drawCanvas.setAttribute('height', this.height);
-    this.container.appendChild(this.drawCanvas);
+  this.container.addEventListener('mousemove', this.highlightPixel.bind(this),
+                                  false);
+  this.container.addEventListener('mouseout', this.clearHighlight.bind(this),
+                                  false);
+  this.container.addEventListener('mousedown', this.paintPixel.bind(this),
+                                  false);
+};
 
-    this.overlayCanvas = document.createElement('canvas');
-    this.overlayCanvas.setAttribute('width', this.width);
-    this.overlayCanvas.setAttribute('height', this.height);
-    this.container.appendChild(this.overlayCanvas);
+DrawSurface.prototype.setupCanvas = function () {
+  this.bgCanvas = document.createElement('canvas');
+  this.bgCanvas.setAttribute('width', this.width);
+  this.bgCanvas.setAttribute('height', this.height);
+  this.container.appendChild(this.bgCanvas);
 
-    this.bgCtx = this.bgCanvas.getContext('2d');
-    this.drawCtx = this.drawCanvas.getContext('2d');
-    this.overlayCtx = this.overlayCanvas.getContext('2d');
+  this.drawCanvas = document.createElement('canvas');
+  this.drawCanvas.setAttribute('width', this.width);
+  this.drawCanvas.setAttribute('height', this.height);
+  this.container.appendChild(this.drawCanvas);
 
-    this.drawBackground();
-    this.initDrawSurface();
+  this.overlayCanvas = document.createElement('canvas');
+  this.overlayCanvas.setAttribute('width', this.width);
+  this.overlayCanvas.setAttribute('height', this.height);
+  this.container.appendChild(this.overlayCanvas);
 
-    this.container.addEventListener('mousemove', this.highlightPixel.bind(this),
-                                    false);
-    this.container.addEventListener('mousedown', this.paintPixel.bind(this),
-                                    false);
-}
+  this.bgCtx = this.bgCanvas.getContext('2d');
+  this.drawCtx = this.drawCanvas.getContext('2d');
+  this.overlayCtx = this.overlayCanvas.getContext('2d');
+};
 
 DrawSurface.prototype.drawBackground = function () {
   var numTilesHoriz = this.width / this.bgTileSize;
@@ -90,7 +95,6 @@ DrawSurface.prototype.highlightPixel = function (ev) {
   var y = coords.y;
   var numPixels = this.grid.length;
 
-  // highlight the pixel under the mouse
   var currentPixel = this.grid[x][y];
   if (!currentPixel.highlighted) {
     var fillX = currentPixel.x * this.tileSize;
@@ -101,7 +105,10 @@ DrawSurface.prototype.highlightPixel = function (ev) {
     currentPixel.highlighted = true;
   }
 
-  // clear highlighting on other pixels
+  this.clearHighlight(null, currentPixel);
+};
+
+DrawSurface.prototype.clearHighlight = function (ev, currentPixel) {
   var numPixelsHoriz = this.width / this.tileSize;
   var numPixelsVert = this.height / this.tileSize;
   for (var ix = 0; ix < numPixelsHoriz; ix++) {
