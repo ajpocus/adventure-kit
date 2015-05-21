@@ -5,7 +5,6 @@ class FileHandler {
   }
 
   fileLoaded (ev) {
-    console.log(ev);
     let file = this.el.files[0];
     let reader = new FileReader();
 
