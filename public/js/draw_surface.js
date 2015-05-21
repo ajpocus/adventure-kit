@@ -1,16 +1,14 @@
 import Pixel from './pixel';
 
 class DrawSurface {
-  constructor (params) {
-    this.container = params.container;
+  constructor (container, params={}) {
+    this.container = container;
     if (!this.container) {
-      throw new UserException(
-        "DrawSurface requires a container attribute in the params object."
-      );
+      throw new Exception("DrawSurface requires a container parameter.");
     }
 
-    this.WIDTH = params.width || 640;
-    this.HEIGHT = params.height || 480;
+    this.WIDTH = params.width || 512;
+    this.HEIGHT = params.height || 512;
     this.TILE_SIZE = params.tileSize || 32;
     this.BG_TILE_SIZE = params.bgTileSize || 8;
 
@@ -35,6 +33,11 @@ class DrawSurface {
 
     this.drawBackground();
     this.initDrawSurface();
+
+    this.container.addEventListener('mousemove', this.highlightPixel.bind(this),
+                                    false);
+    this.container.addEventListener('mousedown', this.paintPixel.bind(this),
+                                    false);
   }
 
   drawBackground () {
@@ -43,20 +46,20 @@ class DrawSurface {
 
     for (let i = 0; i < NUM_TILES_HORIZ; i++) {
       for (let j = 0; j < NUM_TILES_VERT; j++) {
-        let x = i * BG_TILE_SIZE;
-        let y = j * BG_TILE_SIZE;
+        let x = i * this.BG_TILE_SIZE;
+        let y = j * this.BG_TILE_SIZE;
 
         let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
 
         this.bgCtx.fillStyle = fill;
-        this.bgCtx.fillRect(x, y, BG_TILE_SIZE, BG_TILE_SIZE);
+        this.bgCtx.fillRect(x, y, this.BG_TILE_SIZE, this.BG_TILE_SIZE);
       }
     }
   }
 
   initDrawSurface () {
-    const NUM_PIXELS_HORIZ = WIDTH / PIXEL_SIZE;
-    const NUM_PIXELS_VERT = HEIGHT / PIXEL_SIZE;
+    const NUM_PIXELS_HORIZ = this.WIDTH / this.TILE_SIZE;
+    const NUM_PIXELS_VERT = this.HEIGHT / this.TILE_SIZE;
     this.grid = [];
 
     for (let x = 0; x < NUM_PIXELS_HORIZ; x++) {
@@ -80,4 +83,54 @@ class DrawSurface {
 
     return [pixelX, pixelY];
   }
+
+  highlightPixel (ev) {
+    let [x, y] = this.getPixelCoordinates(ev);
+    const NUM_PIXELS = this.grid.length;
+
+    // highlight the pixel under the mouse
+    let currentPixel = this.grid[x][y];
+    if (!currentPixel.highlighted) {
+      let fillX = currentPixel.x * this.TILE_SIZE;
+      let fillY = currentPixel.y * this.TILE_SIZE;
+
+      this.overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)";
+      this.overlayCtx.fillRect(fillX, fillY, this.TILE_SIZE, this.TILE_SIZE);
+      currentPixel.highlighted = true;
+    }
+
+    // clear highlighting on other pixels
+    let NUM_PIXELS_HORIZ = this.WIDTH / this.TILE_SIZE;
+    let NUM_PIXELS_VERT = this.HEIGHT / this.TILE_SIZE;
+    for (let ix = 0; ix < NUM_PIXELS_HORIZ; ix++) {
+      for (let iy = 0; iy < NUM_PIXELS_VERT; iy++) {
+        let pixel = this.grid[ix][iy];
+        if (pixel === currentPixel) {
+          continue;
+        }
+
+        if (pixel.highlighted) {
+          let clrX = pixel.x * this.TILE_SIZE;
+          let clrY = pixel.y * this.TILE_SIZE;
+
+          this.overlayCtx.clearRect(clrX, clrY, this.TILE_SIZE, this.TILE_SIZE);
+          pixel.highlighted = false;
+        }
+      }
+    }
+  }
+
+  paintPixel (ev) {
+    let [x, y] = this.getPixelCoordinates(ev);
+    let color = "#000000";
+    let pixel = this.grid[x][y];
+
+    let fillX = x * this.TILE_SIZE;
+    let fillY = y * this.TILE_SIZE;
+    this.drawCtx.fillStyle = color;
+    this.drawCtx.fillRect(fillX, fillY, this.TILE_SIZE, this.TILE_SIZE);
+    pixel.color = color;
+  }
 }
+
+export default DrawSurface;

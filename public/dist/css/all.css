@@ -1,21 +1,9 @@
-#bg-canvas,
-#draw-canvas,
-#overlay-canvas {
+#draw {
+  position: relative;
+}
+
+canvas {
   position: absolute;
-  right: 12px;
-  top: 12px;
-}
-
-#bg-canvas {
-  z-index: 1;
-}
-
-#draw-canvas {
-  z-index: 2;
-}
-
-#overlay-canvas {
-  z-index: 3;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
