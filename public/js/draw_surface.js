@@ -1,30 +1,30 @@
-import Pixel from './pixel';
+var Pixel = require('./pixel');
 
-class DrawSurface {
-  constructor (container, params={}) {
-    this.container = container;
+var DrawSurface = function (container, params) {
+  params || (params = {});
+  this.container = container;
     if (!this.container) {
       throw new Exception("DrawSurface requires a container parameter.");
     }
 
-    this.WIDTH = params.width || 512;
-    this.HEIGHT = params.height || 512;
-    this.TILE_SIZE = params.tileSize || 32;
-    this.BG_TILE_SIZE = params.bgTileSize || 8;
+    this.width = params.width || 512;
+    this.height = params.height || 512;
+    this.tileSize = params.tileSize || 32;
+    this.bgTileSize = params.bgTileSize || 8;
 
     this.bgCanvas = document.createElement('canvas');
-    this.bgCanvas.setAttribute('width', this.WIDTH);
-    this.bgCanvas.setAttribute('height', this.HEIGHT);
+    this.bgCanvas.setAttribute('width', this.width);
+    this.bgCanvas.setAttribute('height', this.height);
     this.container.appendChild(this.bgCanvas);
 
     this.drawCanvas = document.createElement('canvas');
-    this.drawCanvas.setAttribute('width', this.WIDTH);
-    this.drawCanvas.setAttribute('height', this.HEIGHT);
+    this.drawCanvas.setAttribute('width', this.width);
+    this.drawCanvas.setAttribute('height', this.height);
     this.container.appendChild(this.drawCanvas);
 
     this.overlayCanvas = document.createElement('canvas');
-    this.overlayCanvas.setAttribute('width', this.WIDTH);
-    this.overlayCanvas.setAttribute('height', this.HEIGHT);
+    this.overlayCanvas.setAttribute('width', this.width);
+    this.overlayCanvas.setAttribute('height', this.height);
     this.container.appendChild(this.overlayCanvas);
 
     this.bgCtx = this.bgCanvas.getContext('2d');
@@ -38,99 +38,102 @@ class DrawSurface {
                                     false);
     this.container.addEventListener('mousedown', this.paintPixel.bind(this),
                                     false);
-  }
+}
 
-  drawBackground () {
-    const NUM_TILES_HORIZ = this.WIDTH / this.BG_TILE_SIZE;
-    const NUM_TILES_VERT = this.HEIGHT / this.BG_TILE_SIZE;
+DrawSurface.prototype.drawBackground = function () {
+  var numTilesHoriz = this.width / this.bgTileSize;
+  var numTilesVert = this.height / this.bgTileSize;
 
-    for (let i = 0; i < NUM_TILES_HORIZ; i++) {
-      for (let j = 0; j < NUM_TILES_VERT; j++) {
-        let x = i * this.BG_TILE_SIZE;
-        let y = j * this.BG_TILE_SIZE;
+  for (var i = 0; i < numTilesHoriz; i++) {
+    for (var j = 0; j < numTilesVert; j++) {
+      var x = i * this.bgTileSize;
+      var y = j * this.bgTileSize;
 
-        let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
+      var fill = ((i + j) % 2 == 0) ? "#999" : "#777";
 
-        this.bgCtx.fillStyle = fill;
-        this.bgCtx.fillRect(x, y, this.BG_TILE_SIZE, this.BG_TILE_SIZE);
-      }
+      this.bgCtx.fillStyle = fill;
+      this.bgCtx.fillRect(x, y, this.bgTileSize, this.bgTileSize);
     }
   }
+};
 
-  initDrawSurface () {
-    const NUM_PIXELS_HORIZ = this.WIDTH / this.TILE_SIZE;
-    const NUM_PIXELS_VERT = this.HEIGHT / this.TILE_SIZE;
-    this.grid = [];
+DrawSurface.prototype.initDrawSurface = function () {
+  var numPixelsHoriz = this.width / this.tileSize;
+  var numPixelsVert = this.height / this.tileSize;
+  this.grid = [];
 
-    for (let x = 0; x < NUM_PIXELS_HORIZ; x++) {
-      this.grid[x] = [];
+  for (var x = 0; x < numPixelsHoriz; x++) {
+    this.grid[x] = [];
 
-      for (let y = 0; y < NUM_PIXELS_VERT; y++) {
-        this.grid[x].push(new Pixel(x, y));
-      }
+    for (var y = 0; y < numPixelsVert; y++) {
+      this.grid[x].push(new Pixel(x, y));
     }
-  }
-
-  getPixelCoordinates (ev) {
-    let elRect = ev.target.getBoundingClientRect();
-    let absX = ev.clientX;
-    let absY = ev.clientY;
-    let x = absX - elRect.left;
-    let y = absY - elRect.top;
-
-    let pixelX = Math.floor(x / this.TILE_SIZE);
-    let pixelY = Math.floor(y / this.TILE_SIZE);
-
-    return [pixelX, pixelY];
-  }
-
-  highlightPixel (ev) {
-    let [x, y] = this.getPixelCoordinates(ev);
-    const NUM_PIXELS = this.grid.length;
-
-    // highlight the pixel under the mouse
-    let currentPixel = this.grid[x][y];
-    if (!currentPixel.highlighted) {
-      let fillX = currentPixel.x * this.TILE_SIZE;
-      let fillY = currentPixel.y * this.TILE_SIZE;
-
-      this.overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)";
-      this.overlayCtx.fillRect(fillX, fillY, this.TILE_SIZE, this.TILE_SIZE);
-      currentPixel.highlighted = true;
-    }
-
-    // clear highlighting on other pixels
-    let NUM_PIXELS_HORIZ = this.WIDTH / this.TILE_SIZE;
-    let NUM_PIXELS_VERT = this.HEIGHT / this.TILE_SIZE;
-    for (let ix = 0; ix < NUM_PIXELS_HORIZ; ix++) {
-      for (let iy = 0; iy < NUM_PIXELS_VERT; iy++) {
-        let pixel = this.grid[ix][iy];
-        if (pixel === currentPixel) {
-          continue;
-        }
-
-        if (pixel.highlighted) {
-          let clrX = pixel.x * this.TILE_SIZE;
-          let clrY = pixel.y * this.TILE_SIZE;
-
-          this.overlayCtx.clearRect(clrX, clrY, this.TILE_SIZE, this.TILE_SIZE);
-          pixel.highlighted = false;
-        }
-      }
-    }
-  }
-
-  paintPixel (ev) {
-    let [x, y] = this.getPixelCoordinates(ev);
-    let color = "#000000";
-    let pixel = this.grid[x][y];
-
-    let fillX = x * this.TILE_SIZE;
-    let fillY = y * this.TILE_SIZE;
-    this.drawCtx.fillStyle = color;
-    this.drawCtx.fillRect(fillX, fillY, this.TILE_SIZE, this.TILE_SIZE);
-    pixel.color = color;
   }
 }
 
-export default DrawSurface;
+DrawSurface.prototype.getPixelCoordinates = function (ev) {
+  var elRect = ev.target.getBoundingClientRect();
+  var absX = ev.clientX;
+  var absY = ev.clientY;
+  var x = absX - elRect.left;
+  var y = absY - elRect.top;
+
+  var pixelX = Math.floor(x / this.tileSize);
+  var pixelY = Math.floor(y / this.tileSize);
+
+  return { x: pixelX, y: pixelY };
+}
+
+DrawSurface.prototype.highlightPixel = function (ev) {
+  var coords = this.getPixelCoordinates(ev);
+  var x = coords.x;
+  var y = coords.y;
+  var numPixels = this.grid.length;
+
+  // highlight the pixel under the mouse
+  var currentPixel = this.grid[x][y];
+  if (!currentPixel.highlighted) {
+    var fillX = currentPixel.x * this.tileSize;
+    var fillY = currentPixel.y * this.tileSize;
+
+    this.overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)";
+    this.overlayCtx.fillRect(fillX, fillY, this.tileSize, this.tileSize);
+    currentPixel.highlighted = true;
+  }
+
+  // clear highlighting on other pixels
+  var numPixelsHoriz = this.width / this.tileSize;
+  var numPixelsVert = this.height / this.tileSize;
+  for (var ix = 0; ix < numPixelsHoriz; ix++) {
+    for (var iy = 0; iy < numPixelsVert; iy++) {
+      var pixel = this.grid[ix][iy];
+      if (pixel === currentPixel) {
+        continue;
+      }
+
+      if (pixel.highlighted) {
+        var clrX = pixel.x * this.tileSize;
+        var clrY = pixel.y * this.tileSize;
+
+        this.overlayCtx.clearRect(clrX, clrY, this.tileSize, this.tileSize);
+        pixel.highlighted = false;
+      }
+    }
+  }
+};
+
+DrawSurface.prototype.paintPixel = function (ev) {
+  var coords = this.getPixelCoordinates(ev);
+  var x = coords.x;
+  var y = coords.y;
+  var color = "#000000";
+  var pixel = this.grid[x][y];
+
+  var fillX = x * this.tileSize;
+  var fillY = y * this.tileSize;
+  this.drawCtx.fillStyle = color;
+  this.drawCtx.fillRect(fillX, fillY, this.tileSize, this.tileSize);
+  pixel.color = color;
+};
+
+exports = module.exports = DrawSurface;

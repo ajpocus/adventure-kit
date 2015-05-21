@@ -1,8 +1,9 @@
-import DrawSurface from './draw_surface';
+var DrawSurface = require('./draw_surface');
+var FileHandler = require('./file_handler');
 
 document.addEventListener('DOMContentLoaded', function () {
-  let drawContainer = document.getElementById('draw');
-  let drawSurface = new DrawSurface(drawContainer);
+  var drawContainer = document.getElementById('tile-map');
+  var drawSurface = new DrawSurface(drawContainer);
 
-  let tmxFileHandler = new FileHandler(document.getElementById('tmx-file'));
+  var tmxFileHandler = new FileHandler(document.getElementById('tmx-file'));
 });
