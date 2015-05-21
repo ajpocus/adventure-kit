@@ -1,9 +1,10 @@
-import DrawSurface from './draw_surface';
 import FileHandler from './file_handler';
+import RenderSurface from './render_surface';
 
 document.addEventListener('DOMContentLoaded', function () {
-  let drawContainer = document.getElementById('tile-map');
-  let drawSurface = new DrawSurface(drawContainer);
-
+  let renderSurface = new RenderSurface(document.getElementById('render'));
   let tmxFileHandler = new FileHandler(document.getElementById('tmx-file'));
+  tmxFileHandler.onload = function () {
+    console.log(this.reader.result);
+  };
 });
