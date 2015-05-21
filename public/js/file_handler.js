@@ -1,5 +1,7 @@
-var FileHandler = function (el) {
-  this.el = el;
-};
+class FileHandler {
+  constructor (element) {
+    this.element = element;
 
-exports = module.exports = FileHandler;
+
+  }
+}
