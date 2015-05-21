@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var browserify = require('browserify');
+var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var concatCss = require('gulp-concat-css');
@@ -10,7 +11,8 @@ gulp.task('default', ['serve']);
 gulp.task('js', function () {
   var b = browserify({
     entries: 'public/js/app.js',
-    debug: true
+    debug: true,
+    transform: [babelify]
   });
 
   return b.bundle()
