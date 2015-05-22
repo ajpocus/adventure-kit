@@ -1,12 +1,12 @@
-import FileHandler from './file_handler';
-import RenderSurface from './render_surface';
-import TMX from './tmx';
+var FileHandler = require('./file_handler');
+var RenderSurface = require('./render_surface');
+var TMX = require('./tmx');
 
 document.addEventListener('DOMContentLoaded', function () {
-  let renderSurface = new RenderSurface(document.getElementById('render'));
-  let tmxFileHandler = new FileHandler(document.getElementById('tmx-file'));
+  var renderSurface = new RenderSurface(document.getElementById('render'));
+  var tmxFileHandler = new FileHandler(document.getElementById('tmx-file'));
 
   tmxFileHandler.onload = function () {
-    let tmx = new TMX(this.result);
+    var tmx = new TMX(this.result);
   };
 });
