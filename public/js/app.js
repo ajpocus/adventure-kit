@@ -8,5 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   tmxFileHandler.onload = function () {
     var tmx = new TMX(this.result);
+    window.tmx = tmx;
   };
 });
