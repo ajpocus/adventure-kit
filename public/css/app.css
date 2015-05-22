@@ -4,6 +4,9 @@
   right: 12px;
 }
 
+/* Huge thanks to Kasper Sebastian Brandt on StackOverflow for this fix. */
+/* http://stackoverflow.com/questions/14068103/disable-antialising-when-scaling-images */
+
 img.pixel {
   image-rendering: optimizeSpeed;             /* FUCK SMOOTHING */
   image-rendering: -moz-crisp-edges;          /* Firefox */
@@ -12,6 +15,4 @@ img.pixel {
   image-rendering: pixelated;                 /* Chrome */
   image-rendering: optimize-contrast;         /* CSS3 Proposed */
   -ms-interpolation-mode: nearest-neighbor;   /* IE8+ */
-  width: 1024px;
-  height: 256px;
 }
