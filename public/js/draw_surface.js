@@ -8,11 +8,14 @@ var DrawSurface = function (container, params) {
   this.BG_TILE_SIZE = params.bgTileSize || 8;
   this.initBackground();
 
-  this.container.addEventListener('mousemove', this.highlightPixel.bind(this),
+  this.isMouseDown = false;
+  this.container.addEventListener('mousemove', this.mouseMoved.bind(this),
                                   false);
   this.container.addEventListener('mouseout', this.clearHighlight.bind(this),
                                   false);
   this.container.addEventListener('mousedown', this.paintPixel.bind(this),
+                                  false);
+  this.container.addEventListener('mouseup', this.setMouseUp.bind(this),
                                   false);
 };
 
@@ -23,16 +26,19 @@ DrawSurface.prototype.initCanvas = function () {
   this.bgCanvas = document.createElement('canvas');
   this.bgCanvas.setAttribute('width', this.WIDTH);
   this.bgCanvas.setAttribute('height', this.HEIGHT);
+  this.bgCanvas.addClass('draw');
   this.container.appendChild(this.bgCanvas);
 
   this.drawCanvas = document.createElement('canvas');
   this.drawCanvas.setAttribute('width', this.WIDTH);
   this.drawCanvas.setAttribute('height', this.HEIGHT);
+  this.drawCanvas.addClass('draw');
   this.container.appendChild(this.drawCanvas);
 
   this.overlayCanvas = document.createElement('canvas');
   this.overlayCanvas.setAttribute('width', this.WIDTH);
   this.overlayCanvas.setAttribute('height', this.HEIGHT);
+  this.overlayCanvas.addClass('draw');
   this.container.appendChild(this.overlayCanvas);
 
   this.bgCtx = this.bgCanvas.getContext('2d');
@@ -72,7 +78,7 @@ DrawSurface.prototype.initTiles = function () {
 };
 
 
-DrawSurface.prototype.highlightPixel = function (ev) {
+DrawSurface.prototype.mouseMoved = function (ev) {
   var coords = this.getTileCoordinates(ev);
   var x = coords.x;
   var y = coords.y;
@@ -89,6 +95,10 @@ DrawSurface.prototype.highlightPixel = function (ev) {
   }
 
   this.clearHighlight(null, currentPixel);
+
+  if (this.isMouseDown) {
+    this.paintPixel(ev);
+  }
 };
 
 DrawSurface.prototype.clearHighlight = function (ev, currentPixel) {
@@ -113,6 +123,7 @@ DrawSurface.prototype.clearHighlight = function (ev, currentPixel) {
 };
 
 DrawSurface.prototype.paintPixel = function(ev) {
+  this.isMouseDown = true;
   var coords = this.getTileCoordinates(ev);
   var x = coords.x;
   var y = coords.y;
@@ -125,6 +136,10 @@ DrawSurface.prototype.paintPixel = function(ev) {
   this.drawCtx.fillStyle = color;
   this.drawCtx.fillRect(fillX, fillY, this.TILE_SIZE, this.TILE_SIZE);
   pixel.color = color;
+};
+
+DrawSurface.prototype.setMouseUp = function () {
+  this.isMouseDown = false;
 };
 
 exports = module.exports = DrawSurface;

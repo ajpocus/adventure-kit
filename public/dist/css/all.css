@@ -4,6 +4,13 @@
   right: 12px;
 }
 
+canvas.draw {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: crosshair;
+}
+
 /* Huge thanks to Kasper Sebastian Brandt on StackOverflow for this fix. */
 
 /* http://stackoverflow.com/questions/14068103/disable-antialising-when-scaling-images */

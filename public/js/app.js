@@ -1,9 +1,11 @@
+var addCustomMethods = require('./custom_methods');
 var FileHandler = require('./file_handler');
-var RenderSurface = require('./render_surface');
+var DrawSurface = require('./draw_surface');
 var TMX = require('./tmx');
 
 document.addEventListener('DOMContentLoaded', function () {
-  var renderSurface = new RenderSurface(document.getElementById('render'));
+  addCustomMethods();
+  var drawSurface = new DrawSurface(document.getElementById('render'));
   var tmxFileHandler = new FileHandler(document.getElementById('tmx-file'));
 
   tmxFileHandler.onload = function () {
