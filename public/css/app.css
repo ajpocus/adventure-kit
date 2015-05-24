@@ -8,11 +8,22 @@
   width: 100%;
   padding: 8px 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  display: flex;
 }
 
 #header h1.title {
   font-family: 'VT323', monospace;
   font-size: 42px;
+}
+
+#header nav .tabs {
+  display: flex;
+  flex-direction: row;
+}
+
+#header nav .tabs a {
+  text-decoration: none;
+
 }
 
 #footer {
