@@ -396,7 +396,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     width:25px;
     height: 20px;
     border: solid 1px #222;
-    margin-right: 5px;
     float:left;
     z-index: 0;
 }

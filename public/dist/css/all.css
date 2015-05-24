@@ -59,6 +59,7 @@ img.pixel {
   -ms-interpolation-mode: nearest-neighbor;
   /* IE8+ */
 }
+
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
@@ -679,7 +680,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   width: 25px;
   height: 20px;
   border: solid 1px #222;
-  margin-right: 5px;
   float: left;
   z-index: 0;
 }

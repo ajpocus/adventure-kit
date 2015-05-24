@@ -10,13 +10,15 @@ var ColorPicker = function () {
 
   $("#primary-color").spectrum({
     showInput: true,
+    flat: true,
     preferredFormat: 'hex',
-    flat: true
+    replacerClassName: 'color-replacer'
   });
 
   $("#secondary-color").spectrum({
     showInput: true,
-    preferredFormat: 'hex'
+    preferredFormat: 'hex',
+    replacerClassName: 'color-replacer'
   });
 };
 
