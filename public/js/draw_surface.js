@@ -8,6 +8,7 @@ var DrawSurface = function (container, params) {
   params || (params = {});
   this.BG_TILE_SIZE = params.bgTileSize || 8;
   this.initBackground();
+  this.colorPicker = new ColorPicker();
 
   this.isMouseDown = false;
   this.container.addEventListener('mousemove', this.mouseMoved.bind(this),
