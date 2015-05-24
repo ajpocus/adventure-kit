@@ -1,3 +1,32 @@
+@import url('http://fonts.googleapis.com/css?family=VT323|Open+Sans:300italic,400italic,700italic,700,300,400');
+
+#root {
+  font-family: 'Open Sans', sans-serif;
+}
+
+#header {
+  width: 100%;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+#header h1.title {
+  font-family: 'VT323', monospace;
+  font-size: 42px;
+}
+
+#footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  padding: 8px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+#content {
+  position: relative;
+}
+
 #render {
   position: absolute;
   top: 12px;

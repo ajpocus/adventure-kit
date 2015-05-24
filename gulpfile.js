@@ -4,6 +4,7 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var concatCss = require('gulp-concat-css');
 var nodemon = require('gulp-nodemon');
+var karma = require('karma').server;
 
 gulp.task('default', ['serve']);
 

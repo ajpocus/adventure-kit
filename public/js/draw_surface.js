@@ -1,5 +1,6 @@
 var Pixel = require('./pixel');
 var TileSurface = require('./tile_surface');
+var ColorPicker = require('./color_picker');
 
 var DrawSurface = function (container, params) {
   TileSurface.call(this, container, params);
