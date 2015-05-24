@@ -8,18 +8,38 @@ var ColorPicker = function () {
   // Set up spectrum, as defined in a CommonJS environment. It's rather fucked.
   Spectrum($);
 
-  $("#primary-color").spectrum({
+  $("#flat-color").spectrum({
     showInput: true,
     flat: true,
     preferredFormat: 'hex',
-    replacerClassName: 'color-replacer'
+    color: '#000000',
+    move: this.setPrimary
+  });
+
+  $("#primary-color").spectrum({
+    showInput: true,
+    preferredFormat: 'hex',
+    color: '#000000',
+    change: this.setFlat,
+    click: null
   });
 
   $("#secondary-color").spectrum({
     showInput: true,
     preferredFormat: 'hex',
-    replacerClassName: 'color-replacer'
+    color: 'rgba(0, 0, 0, 0)'
   });
+};
+
+ColorPicker.prototype.setPrimary = function (color) {
+  color = color.toHexString();
+  $("#primary-color").spectrum('set', color);
+  this.primaryColor = color;
+};
+
+ColorPicker.prototype.setFlat = function (color) {
+  color = color.toHexString();
+  $("#flat-color").spectrum('set', color);
 };
 
 exports = module.exports = ColorPicker;
