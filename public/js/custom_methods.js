@@ -1,4 +1,4 @@
-exports = module.exports = function () {
+export default function () {
   if (!Element.prototype.addClass) {
     Element.prototype.addClass = function (className) {
       if (this.classList) {

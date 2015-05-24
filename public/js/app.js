@@ -1,8 +1,11 @@
-var addCustomMethods = require('./custom_methods');
-var DrawSurface = require('./draw_surface');
-var TMX = require('./tmx');
+require('babel/polyfill');
+let _ = require('underscore');
+let Backbone = require('backbone');
+
+import addCustomMethods from './custom_methods';
+import DrawSurface from'./draw_surface';
 
 document.addEventListener('DOMContentLoaded', function () {
   addCustomMethods();
-  var drawSurface = new DrawSurface(document.getElementById('render'));
+  let drawSurface = new DrawSurface(document.getElementById('render'));
 });
