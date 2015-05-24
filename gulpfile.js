@@ -2,6 +2,9 @@ var gulp = require('gulp');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var sourcemaps = require('gulp-sourcemaps');
+var uglify = require('gulp-uglify');
+var gutil = require('gulp-util');
 var concatCss = require('gulp-concat-css');
 var nodemon = require('gulp-nodemon');
 var karma = require('karma').server;
@@ -17,13 +20,17 @@ gulp.task('js', function () {
   return b.bundle()
     .pipe(source('all.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('public/dist/js'));
+    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(uglify())
+    .on('error', gutil.log)
+    .pipe(sourcemaps.write('./public/dist/js/'))
+    .pipe(gulp.dest('public/dist/js/'));
 });
 
 gulp.task('css', function () {
   return gulp.src('public/css/**/*.css')
     .pipe(concatCss('all.css'))
-    .pipe(gulp.dest('public/dist/css'));
+    .pipe(gulp.dest('public/dist/css/'));
 });
 
 gulp.task('serve', ['js', 'css'], function () {
