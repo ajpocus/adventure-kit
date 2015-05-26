@@ -1,7 +1,20 @@
 @import url('http://fonts.googleapis.com/css?family=VT323|Open+Sans:300italic,400italic,700italic,700,300,400');
 
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Background made by Anchour on subtlepatterns.com */
+body {
+  background: url('/img/concrete_seamless.png');
+}
+
 #root {
   font-family: 'Open Sans', sans-serif;
+  color: #111;
+  width: 100%;
+  height: 100%;
 }
 
 #header {
@@ -42,7 +55,11 @@
 }
 
 #header nav .tab.active {
-  background: #0cc;
+  background: #00a;
+}
+
+#header nav .tab.active a {
+  color: #eee;
 }
 
 #footer {
