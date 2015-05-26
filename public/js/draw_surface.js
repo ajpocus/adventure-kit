@@ -1,3 +1,5 @@
+let $ = require('jquery');
+
 import Pixel from './pixel';
 import TileSurface from './tile_surface';
 import ColorPicker from './color_picker';
@@ -25,19 +27,19 @@ class DrawSurface extends TileSurface {
     this.bgCanvas = document.createElement('canvas');
     this.bgCanvas.setAttribute('width', this.WIDTH);
     this.bgCanvas.setAttribute('height', this.HEIGHT);
-    this.bgCanvas.addClass('draw');
+    $(this.bgCanvas).addClass('draw');
     this.container.appendChild(this.bgCanvas);
 
     this.drawCanvas = document.createElement('canvas');
     this.drawCanvas.setAttribute('width', this.WIDTH);
     this.drawCanvas.setAttribute('height', this.HEIGHT);
-    this.drawCanvas.addClass('draw');
+    $(this.drawCanvas).addClass('draw');
     this.container.appendChild(this.drawCanvas);
 
     this.overlayCanvas = document.createElement('canvas');
     this.overlayCanvas.setAttribute('width', this.WIDTH);
     this.overlayCanvas.setAttribute('height', this.HEIGHT);
-    this.overlayCanvas.addClass('draw');
+    $(this.overlayCanvas).addClass('draw');
     this.container.appendChild(this.overlayCanvas);
 
     this.bgCtx = this.bgCanvas.getContext('2d');
