@@ -104,11 +104,11 @@ img.pixel {
 }
 #draw {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 #draw #render {
-  position: relative;
+  align-self: flex-end;
 }
 
 #draw canvas.draw {
