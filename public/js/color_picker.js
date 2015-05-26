@@ -12,8 +12,7 @@ let ColorPicker = React.createClass({
 
   render: function () {
     return (
-      <div class="color-picker">
-        <input type="color" id="flat-color" className="color"/>
+      <div className="color-picker">
         <input type="color" id="primary-color" className="color"/>
         <input type="color" id="secondary-color" className="color"/>
       </div>
@@ -24,26 +23,18 @@ let ColorPicker = React.createClass({
     // Set up spectrum -- with Browserify it's rather borked.
     Spectrum($);
 
-    $("#flat-color").spectrum({
-      showInput: true,
-      flat: true,
-      preferredFormat: 'hex',
-      color: '#000000',
-      move: this.setPrimary
-    });
-
     $("#primary-color").spectrum({
       showInput: true,
       preferredFormat: 'hex',
       color: '#000000',
-      change: this.setFlat,
-      click: null
+      replacerClassName: 'primary'
     });
 
     $("#secondary-color").spectrum({
       showInput: true,
       preferredFormat: 'hex',
-      color: 'rgba(0, 0, 0, 0)'
+      color: 'rgba(0, 0, 0, 0)',
+      replacerClassName: 'secondary'
     });
   },
 

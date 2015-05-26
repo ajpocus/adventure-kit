@@ -8,8 +8,9 @@ let Draw = React.createClass({
     return (
       <div id="draw">
         <h1>Draw</h1>
-        <DrawCanvas/>
+
         <ColorPicker/>
+        <DrawCanvas/>
       </div>
     );
   }
