@@ -1,7 +1,5 @@
-let angular = require('angular');
-
-let MusicCtrl = ['$scope', function ($scope) {
+let MusicCtrl = function ($scope) {
   $scope.foo = 'bar';
-}];
+};
 
 export default MusicCtrl;

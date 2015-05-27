@@ -11,26 +11,29 @@ import DrawSurfaceDirective from './directives/draw_surface';
 
 let kitApp = angular.module('kitApp', [uiRouter]);
 
+kitApp.controller('DrawCtrl', DrawCtrl);
+kitApp.controller('MapCtrl', MapCtrl);
+kitApp.controller('MusicCtrl', MusicCtrl);
+
+kitApp.directive('drawSurface', DrawSurfaceDirective);
+
 kitApp.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/draw');
 
   $stateProvider
       .state('draw', {
         url: '/draw',
-        templateUrl: 'templates/draw.html'
+        templateUrl: 'templates/draw.html',
+        controller: DrawCtrl
       })
       .state('map', {
         url: '/map',
-        templateUrl: 'templates/map.html'
+        templateUrl: 'templates/map.html',
+        controller: MapCtrl
       })
       .state('music', {
         url: '/music',
-        templateUrl: 'templates/music.html'
+        templateUrl: 'templates/music.html',
+        controller: MusicCtrl
       });
 });
-
-kitApp.controller('DrawCtrl', DrawCtrl);
-kitApp.controller('MapCtrl', MapCtrl);
-kitApp.controller('MusicCtrl', MusicCtrl);
-
-kitApp.directive('drawSurface', DrawSurfaceDirective);

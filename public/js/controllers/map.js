@@ -1,7 +1,5 @@
-let angular = require('angular');
-
-let MapCtrl = ['$scope', function ($scope) {
+let MapCtrl = function ($scope) {
   $scope.map = 'foo';
-}];
+};
 
 export default MapCtrl;

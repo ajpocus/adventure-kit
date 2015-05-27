@@ -21,9 +21,9 @@ gulp.task('js', function () {
   return b.bundle()
     .pipe(source('all.js'))
     .pipe(buffer())
-    .pipe(sourcemaps.init({ loadMaps: true }))
-    //.pipe(uglify())
-    //.on('error', gutil.log)
+    //.pipe(sourcemaps.init({ loadMaps: true }))
+    //  .pipe(uglify({ mangle: false }))
+    //  .on('error', gutil.log)
     //.pipe(sourcemaps.write('./public/dist/js/'))
     .pipe(gulp.dest('public/dist/js/'));
 });
