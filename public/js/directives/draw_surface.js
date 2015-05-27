@@ -1,4 +1,5 @@
 let $ = require('jquery');
+let PIXI = require('pixi.js');
 
 import TiledSurface from '../tiled_surface';
 
@@ -8,6 +9,9 @@ let DrawSurfaceDirective = function () {
     templateUrl: '../templates/draw_surface.html',
 
     link: function (scope, element, attrs) {
+      let renderer = new PIXI.autoDetectRenderer(512, 512);
+      element.appendChild(renderer.view);
+
       let isMouseDown = false;
       let grid = TiledSurface.initTiles()
       let drawCanvas = $("#draw-canvas");
