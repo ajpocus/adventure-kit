@@ -6,37 +6,38 @@ import TiledSurface from '../tiled_surface';
 let DrawSurfaceDirective = function () {
   return {
     restrict: 'E',
-    templateUrl: '../templates/draw_surface.html',
 
     link: function (scope, element, attrs) {
-      let renderer = new PIXI.autoDetectRenderer(512, 512);
-      element.appendChild(renderer.view);
-
-      let isMouseDown = false;
-      let grid = TiledSurface.initTiles()
-      let drawCanvas = $("#draw-canvas");
-      let bgCtx = $("#bg-canvas")[0].getContext('2d');
-      let drawCtx = $("#draw-canvas")[0].getContext('2d');
-      let overlayCtx = $("#overlay-canvas")[0].getContext('2d');
-
-      console.log(bgCtx);
-      let width = drawCanvas.width;
-      let height = drawCanvas.height;
+      let width = 512;
+      let height = 512;
       let bgTileSize = 8;
       let tileSize = 32;
-
+      let isMouseDown = false;
+      let grid = TiledSurface.initTiles();
       let numTilesH = width / bgTileSize;
       let numTilesV = height / bgTileSize;
+
+      let stage = new PIXI.Container();
+      let renderer = PIXI.autoDetectRenderer(width, height);
+      element.append(renderer.view);
+
+      let bgGfx = new PIXI.Graphics();
+      let drawGfx = new PIXI.Graphics();
+      let overlayGfx = new PIXI.Graphics();
+
+      stage.addChild(bgGfx);
+      stage.addChild(drawGfx);
+      stage.addChild(overlayGfx);
 
       for (let i = 0; i < numTilesH; i++) {
         for (let j = 0; j < numTilesV; j++) {
           let x = i * bgTileSize;
           let y = j * bgTileSize;
 
-          let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
+          let fill = ((i + j) % 2 == 0) ? 0x999999 : 0x777777;
 
-          bgCtx.fillStyle = fill;
-          bgCtx.fillRect(x, y, bgTileSize, bgTileSize);
+          bgGfx.beginFill(fill);
+          bgGfx.drawRect(x, y, bgTileSize, bgTileSize);
         }
       }
 
@@ -49,8 +50,8 @@ let DrawSurfaceDirective = function () {
           let fillX = currentPixel.x * tileSize;
           let fillY = currentPixel.y * tileSize;
 
-          overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)";
-          overlayCtx.fillRect(fillX, fillY, tileSize, tileSize);
+          overlayGfx.beginFill(0xffffff, 0.5);
+          overlayGfx.drawRect(fillX, fillY, tileSize, tileSize);
           currentPixel.highlighted = true;
         }
 
@@ -62,23 +63,12 @@ let DrawSurfaceDirective = function () {
       };
 
       function clearHighlight (ev, currentPixel) {
-        let numPixelsH = width / tileSize;
-        let numPixelsV = height / tileSize;
-        for (let ix = 0; ix < numPixelsH; ix++) {
-          for (let iy = 0; iy < numPixelsV; iy++) {
-            let pixel = grid[ix][iy];
-            if (pixel === currentPixel) {
-              continue;
-            }
-
-            if (pixel.highlighted) {
-              let clrX = pixel.x * tileSize;
-              let clrY = pixel.y * tileSize;
-
-              scope.overlayCtx.clearRect(clrX, clrY, tileSize, tileSize);
-              pixel.highlighted = false;
-            }
-          }
+        overlayGfx.clear();
+        if (currentPixel) {
+          overlayGfx.beginFill(0xffffff, 0.5);
+          let fillX = currentPixel.x * tileSize;
+          let fillY = currentPixel.y * tileSize;
+          overlayGfx.drawRect(fillX, fillY, tileSize, tileSize);
         }
       };
 
@@ -86,13 +76,13 @@ let DrawSurfaceDirective = function () {
         isMouseDown = true;
         let { x, y } = TiledSurface.getTileCoordinates(ev);
 
-        let color = "#000000";
+        let color = 0x000000;
         let pixel = grid[x][y];
 
         let fillX = x * tileSize;
         let fillY = y * tileSize;
-        drawCtx.fillStyle = color;
-        drawCtx.fillRect(fillX, fillY, tileSize, tileSize);
+        drawGfx.beginFill(color);
+        drawGfx.drawRect(fillX, fillY, tileSize, tileSize);
         pixel.color = color;
       };
 
@@ -104,8 +94,13 @@ let DrawSurfaceDirective = function () {
       element.bind('mouseout', clearHighlight);
       element.bind('mousedown', paintPixel);
       element.bind('mouseup', setMouseUp);
+
+      (function render () {
+        requestAnimationFrame(render);
+        renderer.render(stage);
+      })();
     }
-  }
+  };
 };
 
 export default DrawSurfaceDirective;
