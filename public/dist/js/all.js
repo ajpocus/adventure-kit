@@ -43557,30 +43557,28 @@ var $ = require('jquery');
 var angular = require('angular');
 var uiRouter = require('angular-ui-router');
 
-$(function () {
-  var kitApp = angular.module('kitApp', ['ui-router']);
+var kitApp = angular.module('kitApp', [uiRouter]);
 
-  kitApp.config(function ($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/draw');
+kitApp.config(function ($stateProvider, $urlRouterProvider) {
+  $urlRouterProvider.otherwise('/draw');
 
-    $stateProvider.state('draw', {
-      url: '/draw',
-      templateUrl: 'templates/draw.html'
-    }).state('map', {
-      url: '/map',
-      templateUrl: 'templates/map.html'
-    }).state('music', {
-      url: '/music',
-      templateUrl: 'templates/music.html'
-    });
+  $stateProvider.state('draw', {
+    url: '/draw',
+    templateUrl: 'templates/draw.html'
+  }).state('map', {
+    url: '/map',
+    templateUrl: 'templates/map.html'
+  }).state('music', {
+    url: '/music',
+    templateUrl: 'templates/music.html'
   });
-
-  kitApp.controller('DrawCtrl', _controllersDraw2['default']);
-  kitApp.controller('MapCtrl', _controllersMap2['default']);
-  kitApp.controller('MusicCtrl', _controllersMusic2['default']);
-
-  kitApp.directive('drawSurface', _directivesDraw_surface2['default']);
 });
+
+kitApp.controller('DrawCtrl', _controllersDraw2['default']);
+kitApp.controller('MapCtrl', _controllersMap2['default']);
+kitApp.controller('MusicCtrl', _controllersMusic2['default']);
+
+kitApp.directive('drawSurface', _directivesDraw_surface2['default']);
 
 },{"./controllers/draw":96,"./controllers/map":97,"./controllers/music":98,"./directives/draw_surface":99,"angular":3,"angular-ui-router":1,"babel/polyfill":94,"jquery":95}]},{},[100])
 

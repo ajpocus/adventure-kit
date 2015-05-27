@@ -9,13 +9,12 @@ import MapCtrl from './controllers/map';
 import MusicCtrl from './controllers/music';
 import DrawSurfaceDirective from './directives/draw_surface';
 
-$(function () {
-  let kitApp = angular.module('kitApp', ['ui-router']);
+let kitApp = angular.module('kitApp', [uiRouter]);
 
-  kitApp.config(function ($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/draw');
+kitApp.config(function ($stateProvider, $urlRouterProvider) {
+  $urlRouterProvider.otherwise('/draw');
 
-    $stateProvider
+  $stateProvider
       .state('draw', {
         url: '/draw',
         templateUrl: 'templates/draw.html'
@@ -28,11 +27,10 @@ $(function () {
         url: '/music',
         templateUrl: 'templates/music.html'
       });
-  });
-
-  kitApp.controller('DrawCtrl', DrawCtrl);
-  kitApp.controller('MapCtrl', MapCtrl);
-  kitApp.controller('MusicCtrl', MusicCtrl);
-
-  kitApp.directive('drawSurface', DrawSurfaceDirective);
 });
+
+kitApp.controller('DrawCtrl', DrawCtrl);
+kitApp.controller('MapCtrl', MapCtrl);
+kitApp.controller('MusicCtrl', MusicCtrl);
+
+kitApp.directive('drawSurface', DrawSurfaceDirective);
