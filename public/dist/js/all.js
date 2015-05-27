@@ -35584,7 +35584,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"./lib/spectrum":291,"jquery":93,"react":287}],289:[function(require,module,exports){
+},{"./lib/spectrum":292,"jquery":93,"react":287}],289:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -35593,13 +35593,17 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _draw_canvas = require('./draw_canvas');
+var _draw_tools = require('./draw_tools');
 
-var _draw_canvas2 = _interopRequireDefault(_draw_canvas);
+var _draw_tools2 = _interopRequireDefault(_draw_tools);
 
 var _color_picker = require('./color_picker');
 
 var _color_picker2 = _interopRequireDefault(_color_picker);
+
+var _draw_canvas = require('./draw_canvas');
+
+var _draw_canvas2 = _interopRequireDefault(_draw_canvas);
 
 var React = require('react');
 
@@ -35615,6 +35619,7 @@ var Draw = React.createClass({
         null,
         'Draw'
       ),
+      React.createElement(_draw_tools2['default'], null),
       React.createElement(_color_picker2['default'], null),
       React.createElement(_draw_canvas2['default'], null)
     );
@@ -35624,7 +35629,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":288,"./draw_canvas":290,"react":287}],290:[function(require,module,exports){
+},{"./color_picker":288,"./draw_canvas":290,"./draw_tools":291,"react":287}],290:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -35770,7 +35775,51 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"./tiled_canvas_mixin":295,"jquery":93,"react":287}],291:[function(require,module,exports){
+},{"./tiled_canvas_mixin":296,"jquery":93,"react":287}],291:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var React = require("react");
+
+var DrawTools = React.createClass({
+  displayName: "DrawTools",
+
+  render: function render() {
+    return React.createElement(
+      "div",
+      { className: "draw-tools" },
+      React.createElement(
+        "ul",
+        { className: "tool-list" },
+        React.createElement(
+          "li",
+          { className: "tool" },
+          React.createElement(
+            "button",
+            { className: "btn" },
+            React.createElement("img", { className: "icon", src: "/img/icons/glyphicons-31-pencil.png" })
+          )
+        ),
+        React.createElement(
+          "li",
+          { className: "tool" },
+          React.createElement(
+            "button",
+            { className: "btn" },
+            React.createElement("img", { className: "icon", src: "/img/icons/glyphicons-481-bucket.png" })
+          )
+        )
+      )
+    );
+  }
+});
+
+exports["default"] = DrawTools;
+module.exports = exports["default"];
+
+},{"react":287}],292:[function(require,module,exports){
 // Spectrum Colorpicker v1.7.0
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
@@ -37995,7 +38044,7 @@ module.exports = exports['default'];
     });
 });
 
-},{}],292:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38022,7 +38071,7 @@ var Map = React.createClass({
 exports["default"] = Map;
 module.exports = exports["default"];
 
-},{"react":287}],293:[function(require,module,exports){
+},{"react":287}],294:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38049,7 +38098,7 @@ var Music = React.createClass({
 exports["default"] = Music;
 module.exports = exports["default"];
 
-},{"react":287}],294:[function(require,module,exports){
+},{"react":287}],295:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38070,7 +38119,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],295:[function(require,module,exports){
+},{}],296:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -38135,7 +38184,7 @@ var TiledCanvasMixin = {
 exports['default'] = TiledCanvasMixin;
 module.exports = exports['default'];
 
-},{"./pixel":294}],296:[function(require,module,exports){
+},{"./pixel":295}],297:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -38262,5 +38311,5 @@ $(function () {
   });
 });
 
-},{"./draw":289,"./map":292,"./music":293,"babel/polyfill":91,"jquery":93,"react":287,"react-router":118}]},{},[296])
+},{"./draw":289,"./map":293,"./music":294,"babel/polyfill":91,"jquery":93,"react":287,"react-router":118}]},{},[297])
 

@@ -33,3 +33,8 @@
   right: 0;
   z-index: 0;
 }
+
+#draw .draw-tools .tool-list {
+  display: flex;
+  flex-direction: column;
+}

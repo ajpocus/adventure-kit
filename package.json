@@ -12,8 +12,10 @@
     "debug": "^2.1.1",
     "ejs": "^2.3.1",
     "express": "^4.12.2",
+    "flux": "^2.0.3",
     "jquery": "^2.1.4",
     "morgan": "^1.5.1",
+    "object-assign": "^2.0.0",
     "react": "^0.13.3",
     "react-router": "^0.13.3",
     "serve-favicon": "^2.2.0"
