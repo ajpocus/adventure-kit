@@ -1,3 +1,17 @@
 <div id="draw">
     <h1>Draw</h1>
+
+    <div class="color-picker">
+        <input type="color" id="primary-color" class="color"/>
+        <input type="color" id="secondary-color" class="color"/>
+    </div>
+
+    <div id="render"
+         ng-mouse-move="mouseMoved"
+         ng-mouse-out="clearHighlight"
+         ng-mouse-down="paintPixel"
+         ng-mouse-up="setMouseUp">
+
+        <draw-surface></draw-surface>
+    </div>
 </div>

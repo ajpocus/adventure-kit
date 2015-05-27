@@ -1,64 +1,38 @@
 require('babel/polyfill');
 
 let $ = require('jquery');
-let React = require('react');
-let Router = require('react-router');
+let angular = require('angular');
+let uiRouter = require('angular-ui-router');
 
-let DefaultRoute = Router.DefaultRoute;
-let Link = Router.Link;
-let Route = Router.Route;
-let RouteHandler = Router.RouteHandler;
-
-import Draw from './draw';
-import Map from './map';
-import Music from './music';
+import DrawCtrl from './controllers/draw';
+import MapCtrl from './controllers/map';
+import MusicCtrl from './controllers/music';
+import DrawSurfaceDirective from './directives/draw_surface';
 
 $(function () {
-  let App = React.createClass({
-    render: function () {
-      return (
-        <div id="root">
-          <header id="header">
-            <h1 className="title">Adventure Kit</h1>
-            <nav>
-              <ul className="tabs">
-                <li className="tab active"><Link to="draw">Draw</Link></li>
-                <li className="tab"><Link to="map">Map</Link></li>
-                <li className="tab"><Link to="music">Music</Link></li>
-              </ul>
-            </nav>
-          </header>
+  let kitApp = angular.module('kitApp', ['ui-router']);
 
-          <div id="content">
-            <RouteHandler/>
-          </div>
+  kitApp.config(function ($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise('/draw');
 
-          <footer id="footer">
-            <ul className="links">
-              <li>
-                "<a href="http://glyphicons.com/">GLYPHICONS</a>"
-                is licensed under
-                <a href="https://creativecommons.org/licenses/by/3.0/us/">
-                  CC BY 3.0
-                </a>
-              </li>
-            </ul>
-          </footer>
-        </div>
-      );
-    }
+    $stateProvider
+      .state('draw', {
+        url: '/draw',
+        templateUrl: 'templates/draw.html'
+      })
+      .state('map', {
+        url: '/map',
+        templateUrl: 'templates/map.html'
+      })
+      .state('music', {
+        url: '/music',
+        templateUrl: 'templates/music.html'
+      });
   });
 
-  let routes = (
-    <Route name="app" path="/" handler={App}>
-      <Route name="draw" handler={Draw}/>
-      <Route name="map" handler={Map}/>
-      <Route name="music" handler={Music}/>
-      <DefaultRoute handler={Draw}/>
-    </Route>
-  );
+  kitApp.controller('DrawCtrl', DrawCtrl);
+  kitApp.controller('MapCtrl', MapCtrl);
+  kitApp.controller('MusicCtrl', MusicCtrl);
 
-  Router.run(routes, function (Handler) {
-    React.render(<Handler/>, document.body);
-  });
+  kitApp.directive('drawSurface', DrawSurfaceDirective);
 });

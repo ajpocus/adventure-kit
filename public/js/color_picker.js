@@ -12,10 +12,7 @@ let ColorPicker = React.createClass({
 
   render: function () {
     return (
-      <div className="color-picker">
-        <input type="color" id="primary-color" className="color"/>
-        <input type="color" id="secondary-color" className="color"/>
-      </div>
+
     );
   },
 

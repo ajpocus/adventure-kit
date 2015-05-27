@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="app" lang="en">
+<html ng-app="kitApp" lang="en">
     <head>
         <meta charset="utf-8">
         <title>Adventure Kit</title>
@@ -11,5 +11,33 @@
     </head>
 
     <body>
+        <div id="root">
+            <header id="header">
+                <h1 class="title">Adventure Kit</h1>
+                <nav>
+                    <ul class="tabs">
+                        <li class="tab active"><a ui-sref="draw">Draw</Link></li>
+                        <li class="tab"><a ui-sref="map">Map</Link></li>
+                        <li class="tab"><a ui-sref="music">Music</Link></li>
+                    </ul>
+                </nav>
+            </header>
+
+            <div id="content">
+                <div ui-view></div>
+            </div>
+
+            <footer id="footer">
+                <ul className="links">
+                    <li>
+                        "<a href="http://glyphicons.com/">GLYPHICONS</a>"
+                        is licensed under
+                        <a href="https://creativecommons.org/licenses/by/3.0/us/">
+                            CC BY 3.0
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
     </body>
 </html>
