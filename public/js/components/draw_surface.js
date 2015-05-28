@@ -104,16 +104,17 @@ let DrawCanvas = React.createClass({
     }
   },
 
-  paintPixel (ev) {
+  paintPixel: function (ev) {
     this.setState({ isMouseDown: true });
     let { x, y } = this.getTileCoordinates(ev);
-
-    let color = 0x000000;
     let pixel = this.state.grid[x][y];
-
     let fillX = x * this.props.tileSize;
     let fillY = y * this.props.tileSize;
+    let color = this.props.primaryColor;
+    let alpha = this.props.primaryColorAlpha;
+
     this.drawGfx.beginFill(color);
+    this.drawGfx.fillAlpha = alpha;
     this.drawGfx.drawRect(fillX, fillY, this.props.tileSize,
                           this.props.tileSize);
     pixel.color = color;

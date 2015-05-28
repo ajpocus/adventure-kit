@@ -107,12 +107,6 @@ img.pixel {
 
 #draw #render {
   align-self: flex-end;
-}
-
-#draw canvas.draw {
-  position: absolute;
-  top: 0;
-  right: 0;
   cursor: crosshair;
 }
 
@@ -143,11 +137,19 @@ img.pixel {
 
 .draw-tools .tool-list .btn {
   padding: 0;
-  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.draw-tools .tool-list .btn.active {
+.draw-tools .tool-list .btn .img-container {
+  border: 5px solid rgba(0, 0, 0, 0);
+}
+
+.draw-tools .tool-list .btn.active  .img-container {
   border: 5px solid #07a;
+}
+
+.draw-tools .tool-list .btn img {
+  padding: 6px;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126

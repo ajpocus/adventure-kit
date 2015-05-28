@@ -61682,22 +61682,37 @@ var ColorPicker = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
+    var component = this;
+
     // Set up spectrum -- with Browserify it's rather borked.
     Spectrum($);
 
     $('#primary-color').spectrum({
       showInput: true,
+      showPalette: true,
       preferredFormat: 'hex',
       color: '#000000',
-      replacerClassName: 'primary'
+      replacerClassName: 'primary',
+      change: component.handlePrimaryColorChange
     });
 
     $('#secondary-color').spectrum({
       showInput: true,
+      showPalette: true,
       preferredFormat: 'hex',
       color: 'rgba(0, 0, 0, 0)',
-      replacerClassName: 'secondary'
+      replacerClassName: 'secondary',
+      change: component.handleSecondaryColorChange
     });
+  },
+
+  handlePrimaryColorChange: function handlePrimaryColorChange(color) {
+    console.log(color);
+    this.props.onPrimaryColorChange(color);
+  },
+
+  handleSecondaryColorChange: function handleSecondaryColorChange(color) {
+    this.props.onSecondaryColorChange(color);
   }
 });
 
@@ -61730,6 +61745,15 @@ var React = require('react');
 var Draw = React.createClass({
   displayName: 'Draw',
 
+  getInitialState: function getInitialState() {
+    return {
+      primaryColor: 16777215,
+      primaryColorAlpha: 1,
+      secondaryColor: 0,
+      secondaryColorAlpha: 0.2
+    };
+  },
+
   render: function render() {
     return React.createElement(
       'div',
@@ -61740,9 +61764,27 @@ var Draw = React.createClass({
         'Draw'
       ),
       React.createElement(_draw_tool_list2['default'], null),
-      React.createElement(_color_picker2['default'], null),
-      React.createElement(_draw_surface2['default'], null)
+      React.createElement(_color_picker2['default'], { onPrimaryColorChange: this.setPrimaryColor,
+        onSecondaryColorChange: this.setSecondaryColor }),
+      React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
+        primaryColorAlpha: this.state.primaryColorAlpha,
+        secondaryColor: this.state.secondaryColor,
+        secondaryColorAlpha: this.state.secondaryColorAlpha })
     );
+  },
+
+  setPrimaryColor: function setPrimaryColor(color) {
+    this.setState({
+      primaryColor: parseInt(color.toHex(), 16),
+      primaryColorAlpha: color.getAlpha()
+    });
+  },
+
+  setSecondaryColor: function setSecondaryColor(color) {
+    this.setState({
+      secondaryColor: parseInt(color.toHex(), 16),
+      secondaryColorAlpha: color.getAlpha()
+    });
   }
 });
 
@@ -61874,12 +61916,14 @@ var DrawCanvas = React.createClass({
     var x = _getTileCoordinates2.x;
     var y = _getTileCoordinates2.y;
 
-    var color = 0;
     var pixel = this.state.grid[x][y];
-
     var fillX = x * this.props.tileSize;
     var fillY = y * this.props.tileSize;
+    var color = this.props.primaryColor;
+    var alpha = this.props.primaryColorAlpha;
+
     this.drawGfx.beginFill(color);
+    this.drawGfx.fillAlpha = alpha;
     this.drawGfx.drawRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
     pixel.color = color;
   },
@@ -61916,7 +61960,11 @@ var DrawTool = React.createClass({
         "button",
         { className: className,
           onClick: this.handleClick },
-        React.createElement("img", { className: "icon", src: this.props.imgUrl })
+        React.createElement(
+          "div",
+          { className: "img-container" },
+          React.createElement("img", { className: "icon", src: this.props.imgUrl })
+        )
       )
     );
   },

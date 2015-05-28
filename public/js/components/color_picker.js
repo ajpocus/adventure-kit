@@ -20,22 +20,37 @@ let ColorPicker = React.createClass({
   },
 
   componentDidMount: function () {
+    var component = this;
+
     // Set up spectrum -- with Browserify it's rather borked.
     Spectrum($);
 
     $("#primary-color").spectrum({
       showInput: true,
+      showPalette: true,
       preferredFormat: 'hex',
       color: '#000000',
-      replacerClassName: 'primary'
+      replacerClassName: 'primary',
+      change: component.handlePrimaryColorChange
     });
 
     $("#secondary-color").spectrum({
       showInput: true,
+      showPalette: true,
       preferredFormat: 'hex',
       color: 'rgba(0, 0, 0, 0)',
-      replacerClassName: 'secondary'
+      replacerClassName: 'secondary',
+      change: component.handleSecondaryColorChange
     });
+  },
+
+  handlePrimaryColorChange: function (color) {
+    console.log(color);
+    this.props.onPrimaryColorChange(color);
+  },
+
+  handleSecondaryColorChange: function (color) {
+    this.props.onSecondaryColorChange(color);
   }
 });
 

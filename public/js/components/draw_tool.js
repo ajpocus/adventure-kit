@@ -11,7 +11,9 @@ let DrawTool = React.createClass({
       <li className="tool">
         <button className={className}
                 onClick={this.handleClick}>
-          <img className="icon" src={this.props.imgUrl}/>
+          <div className="img-container">
+            <img className="icon" src={this.props.imgUrl}/>
+          </div>
         </button>
       </li>
     );
