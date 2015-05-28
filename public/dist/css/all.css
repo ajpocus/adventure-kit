@@ -110,6 +110,12 @@ img.pixel {
   cursor: crosshair;
 }
 
+#draw #render canvas.draw {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
 #draw .color-picker {
   position: relative;
   width: 50px;

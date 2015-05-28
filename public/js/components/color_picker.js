@@ -45,7 +45,6 @@ let ColorPicker = React.createClass({
   },
 
   handlePrimaryColorChange: function (color) {
-    console.log(color);
     this.props.onPrimaryColorChange(color);
   },
 

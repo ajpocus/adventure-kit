@@ -16,7 +16,6 @@
     "jquery": "^2.1.4",
     "morgan": "^1.5.1",
     "object-assign": "^2.0.0",
-    "pixi.js": "^3.0.6",
     "react": "^0.13.3",
     "react-router": "^0.13.3",
     "serve-favicon": "^2.2.0"

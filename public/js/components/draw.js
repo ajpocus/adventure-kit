@@ -7,10 +7,8 @@ import DrawSurface from './draw_surface';
 let Draw = React.createClass({
   getInitialState: function () {
     return {
-      primaryColor: 0xffffff,
-      primaryColorAlpha: 1,
-      secondaryColor: 0x000000,
-      secondaryColorAlpha: 0
+      primaryColor: "#ffffff",
+      secondaryColor: "rgba(0, 0, 0, 0)"
     }
   },
 
@@ -32,15 +30,13 @@ let Draw = React.createClass({
 
   setPrimaryColor: function (color) {
     this.setState({
-      primaryColor: parseInt(color.toHex(), 16),
-      primaryColorAlpha: color.getAlpha()
+      primaryColor: color.toRgbString()
     });
   },
 
   setSecondaryColor: function (color) {
     this.setState({
-      secondaryColor: parseInt(color.toHex(), 16),
-      secondaryColorAlpha: color.getAlpha()
+      secondaryColor: color.toRgbString()
     });
   }
 });

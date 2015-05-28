@@ -61707,7 +61707,6 @@ var ColorPicker = React.createClass({
   },
 
   handlePrimaryColorChange: function handlePrimaryColorChange(color) {
-    console.log(color);
     this.props.onPrimaryColorChange(color);
   },
 
@@ -61747,10 +61746,8 @@ var Draw = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      primaryColor: 16777215,
-      primaryColorAlpha: 1,
-      secondaryColor: 0,
-      secondaryColorAlpha: 0
+      primaryColor: '#ffffff',
+      secondaryColor: 'rgba(0, 0, 0, 0)'
     };
   },
 
@@ -61775,15 +61772,13 @@ var Draw = React.createClass({
 
   setPrimaryColor: function setPrimaryColor(color) {
     this.setState({
-      primaryColor: parseInt(color.toHex(), 16),
-      primaryColorAlpha: color.getAlpha()
+      primaryColor: color.toRgbString()
     });
   },
 
   setSecondaryColor: function setSecondaryColor(color) {
     this.setState({
-      secondaryColor: parseInt(color.toHex(), 16),
-      secondaryColorAlpha: color.getAlpha()
+      secondaryColor: color.toRgbString()
     });
   }
 });
@@ -61826,34 +61821,31 @@ var DrawCanvas = React.createClass({
   },
 
   render: function render() {
-    return React.createElement('div', { id: 'render',
-      onMouseMove: this.mouseMoved,
-      onMouseOut: this.clearHighlight,
-      onMouseDown: this.paintPixel,
-      onContextMenu: this.paintPixel,
-      onMouseUp: this.setMouseUp });
+    return React.createElement(
+      'div',
+      { id: 'render',
+        onMouseMove: this.mouseMoved,
+        onMouseOut: this.clearHighlight,
+        onMouseDown: this.paintPixel,
+        onContextMenu: this.paintPixel,
+        onMouseUp: this.setMouseUp },
+      React.createElement('canvas', { id: 'bg-canvas', className: 'draw', width: this.props.width,
+        height: this.props.height }),
+      React.createElement('canvas', { id: 'draw-canvas', className: 'draw', width: this.props.width,
+        height: this.props.height }),
+      React.createElement('canvas', { id: 'overlay-canvas', className: 'draw', width: this.props.width,
+        height: this.props.height })
+    );
   },
 
   componentDidMount: function componentDidMount() {
-    this.stage = new PIXI.Container();
-    this.renderer = PIXI.autoDetectRenderer(this.props.width, this.props.height);
-    React.findDOMNode(this).appendChild(this.renderer.view);
+    var renderNode = $(React.findDOMNode(this));
 
-    this.bgGfx = new PIXI.Graphics();
-    this.drawGfx = new PIXI.Graphics();
-    this.overlayGfx = new PIXI.Graphics();
-    this.stage.addChild(this.bgGfx);
-    this.stage.addChild(this.drawGfx);
-    this.stage.addChild(this.overlayGfx);
+    this.bgCtx = renderNode.find('#bg-canvas')[0].getContext('2d');
+    this.drawCtx = renderNode.find('#draw-canvas')[0].getContext('2d');
+    this.overlayCtx = renderNode.find('#overlay-canvas')[0].getContext('2d');
 
     this.initBackground();
-
-    var component = this;
-    (function render() {
-      requestAnimationFrame(render);
-
-      component.renderer.render(component.stage);
-    })();
   },
 
   initBackground: function initBackground() {
@@ -61865,10 +61857,10 @@ var DrawCanvas = React.createClass({
         var x = i * this.props.bgTileSize;
         var y = j * this.props.bgTileSize;
 
-        var fill = (i + j) % 2 == 0 ? 10066329 : 7829367;
+        var fill = (i + j) % 2 == 0 ? '#999' : '#777';
 
-        this.bgGfx.beginFill(fill);
-        this.bgGfx.drawRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
+        this.bgCtx.fillStyle = fill;
+        this.bgCtx.fillRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
       }
     }
   },
@@ -61886,8 +61878,8 @@ var DrawCanvas = React.createClass({
       var fillX = currentPixel.x * this.props.tileSize;
       var fillY = currentPixel.y * this.props.tileSize;
 
-      this.overlayGfx.beginFill(16777215, 0.2);
-      this.overlayGfx.drawRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
+      this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      this.overlayCtx.fillRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
       currentPixel.highlighted = true;
     }
 
@@ -61899,13 +61891,24 @@ var DrawCanvas = React.createClass({
   },
 
   clearHighlight: function clearHighlight(ev, currentPixel) {
-    this.overlayGfx.clear();
-    if (currentPixel) {
-      var fillX = currentPixel.x * this.props.tileSize;
-      var fillY = currentPixel.y * this.props.tileSize;
+    var numPixelsH = this.props.width / this.props.tileSize;
+    var numPixelsV = this.props.height / this.props.tileSize;
 
-      this.overlayGfx.beginFill(16777215, 0.2);
-      this.overlayGfx.drawRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
+    for (var ix = 0; ix < numPixelsH; ix++) {
+      for (var iy = 0; iy < numPixelsV; iy++) {
+        var pixel = this.state.grid[ix][iy];
+        if (pixel === currentPixel) {
+          continue;
+        }
+
+        if (pixel.highlighted) {
+          var fillX = pixel.x * this.props.tileSize;
+          var fillY = pixel.y * this.props.tileSize;
+
+          this.overlayCtx.clearRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
+          pixel.highlighted = false;
+        }
+      }
     }
   },
 
@@ -61924,17 +61927,15 @@ var DrawCanvas = React.createClass({
 
     var button = ev.which || ev.button;
     var color = this.props.primaryColor;
-    var alpha = this.props.primaryColorAlpha;
 
     if (button === 2) {
       color = this.props.secondaryColor;
-      alpha = this.props.secondaryColorAlpha;
     }
 
     console.log(color);
-    console.log(alpha);
-    this.drawGfx.beginFill(color, alpha);
-    this.drawGfx.drawRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
+    this.drawCtx.fillStyle = color;
+    this.drawCtx.clearRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
+    this.drawCtx.fillRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
     pixel.color = color;
   },
 

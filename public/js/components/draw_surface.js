@@ -27,31 +27,24 @@ let DrawCanvas = React.createClass({
           onMouseDown={this.paintPixel}
           onContextMenu={this.paintPixel}
           onMouseUp={this.setMouseUp}>
+        <canvas id="bg-canvas" className="draw" width={this.props.width}
+                height={this.props.height}></canvas>
+        <canvas id="draw-canvas" className="draw" width={this.props.width}
+                height={this.props.height}></canvas>
+        <canvas id="overlay-canvas" className="draw" width={this.props.width}
+                height={this.props.height}></canvas>
       </div>
     );
   },
 
   componentDidMount: function () {
-    this.stage = new PIXI.Container();
-    this.renderer = PIXI.autoDetectRenderer(this.props.width,
-                                            this.props.height);
-    React.findDOMNode(this).appendChild(this.renderer.view);
+    let renderNode = $(React.findDOMNode(this));
 
-    this.bgGfx = new PIXI.Graphics();
-    this.drawGfx = new PIXI.Graphics();
-    this.overlayGfx = new PIXI.Graphics();
-    this.stage.addChild(this.bgGfx);
-    this.stage.addChild(this.drawGfx);
-    this.stage.addChild(this.overlayGfx);
+    this.bgCtx = renderNode.find("#bg-canvas")[0].getContext('2d');
+    this.drawCtx = renderNode.find("#draw-canvas")[0].getContext('2d');
+    this.overlayCtx = renderNode.find("#overlay-canvas")[0].getContext('2d');
 
     this.initBackground();
-
-    var component = this;
-    (function render() {
-      requestAnimationFrame(render);
-
-      component.renderer.render(component.stage);
-    })();
   },
 
   initBackground: function () {
@@ -63,10 +56,10 @@ let DrawCanvas = React.createClass({
         let x = i * this.props.bgTileSize;
         let y = j * this.props.bgTileSize;
 
-        let fill = ((i + j) % 2 == 0) ? 0x999999 : 0x777777;
+        let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
 
-        this.bgGfx.beginFill(fill);
-        this.bgGfx.drawRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
+        this.bgCtx.fillStyle = fill;
+        this.bgCtx.fillRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
       }
     }
   },
@@ -80,8 +73,8 @@ let DrawCanvas = React.createClass({
       let fillX = currentPixel.x * this.props.tileSize;
       let fillY = currentPixel.y * this.props.tileSize;
 
-      this.overlayGfx.beginFill(0xffffff, 0.2);
-      this.overlayGfx.drawRect(fillX, fillY, this.props.tileSize,
+      this.overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)"
+      this.overlayCtx.fillRect(fillX, fillY, this.props.tileSize,
                                this.props.tileSize);
       currentPixel.highlighted = true;
     }
@@ -94,14 +87,25 @@ let DrawCanvas = React.createClass({
   },
 
   clearHighlight: function (ev, currentPixel) {
-    this.overlayGfx.clear();
-    if (currentPixel) {
-      let fillX = currentPixel.x * this.props.tileSize;
-      let fillY = currentPixel.y * this.props.tileSize;
+    let numPixelsH = this.props.width / this.props.tileSize;
+    let numPixelsV = this.props.height / this.props.tileSize;
 
-      this.overlayGfx.beginFill(0xffffff, 0.2);
-      this.overlayGfx.drawRect(fillX, fillY, this.props.tileSize,
-                               this.props.tileSize);
+    for (let ix = 0; ix < numPixelsH; ix++) {
+      for (let iy = 0; iy < numPixelsV; iy++) {
+        let pixel = this.state.grid[ix][iy];
+        if (pixel === currentPixel) {
+          continue;
+        }
+
+        if (pixel.highlighted) {
+          let fillX = pixel.x * this.props.tileSize;
+          let fillY = pixel.y * this.props.tileSize;
+
+          this.overlayCtx.clearRect(fillX, fillY, this.props.tileSize,
+                                    this.props.tileSize);
+          pixel.highlighted = false;
+        }
+      }
     }
   },
 
@@ -116,17 +120,16 @@ let DrawCanvas = React.createClass({
 
     let button = ev.which || ev.button;
     let color = this.props.primaryColor;
-    let alpha = this.props.primaryColorAlpha;
 
     if (button === 2) {
       color = this.props.secondaryColor;
-      alpha = this.props.secondaryColorAlpha;
     }
 
     console.log(color);
-    console.log(alpha);
-    this.drawGfx.beginFill(color, alpha);
-    this.drawGfx.drawRect(fillX, fillY, this.props.tileSize,
+    this.drawCtx.fillStyle = color;
+    this.drawCtx.clearRect(fillX, fillY, this.props.tileSize,
+                           this.props.tileSize);
+    this.drawCtx.fillRect(fillX, fillY, this.props.tileSize,
                           this.props.tileSize);
     pixel.color = color;
   },
