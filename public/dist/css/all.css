@@ -44,6 +44,10 @@ body {
   align-items: flex-end;
 }
 
+#header nav .tab {
+  margin: 0 6px;
+}
+
 #header nav .tab a {
   display: inline-block;
   text-decoration: none;
@@ -51,7 +55,6 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-bottom: none;
   padding: 6px 12px;
-  margin: 0 6px;
 }
 
 #header nav .tab.active {
