@@ -61750,7 +61750,7 @@ var Draw = React.createClass({
       primaryColor: 16777215,
       primaryColorAlpha: 1,
       secondaryColor: 0,
-      secondaryColorAlpha: 0.2
+      secondaryColorAlpha: 0
     };
   },
 
@@ -61830,6 +61830,7 @@ var DrawCanvas = React.createClass({
       onMouseMove: this.mouseMoved,
       onMouseOut: this.clearHighlight,
       onMouseDown: this.paintPixel,
+      onContextMenu: this.paintPixel,
       onMouseUp: this.setMouseUp });
   },
 
@@ -61909,6 +61910,7 @@ var DrawCanvas = React.createClass({
   },
 
   paintPixel: function paintPixel(ev) {
+    ev.preventDefault();
     this.setState({ isMouseDown: true });
 
     var _getTileCoordinates2 = this.getTileCoordinates(ev);
@@ -61919,11 +61921,19 @@ var DrawCanvas = React.createClass({
     var pixel = this.state.grid[x][y];
     var fillX = x * this.props.tileSize;
     var fillY = y * this.props.tileSize;
+
+    var button = ev.which || ev.button;
     var color = this.props.primaryColor;
     var alpha = this.props.primaryColorAlpha;
 
-    this.drawGfx.beginFill(color);
-    this.drawGfx.fillAlpha = alpha;
+    if (button === 2) {
+      color = this.props.secondaryColor;
+      alpha = this.props.secondaryColorAlpha;
+    }
+
+    console.log(color);
+    console.log(alpha);
+    this.drawGfx.beginFill(color, alpha);
     this.drawGfx.drawRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
     pixel.color = color;
   },

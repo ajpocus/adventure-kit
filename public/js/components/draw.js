@@ -8,9 +8,9 @@ let Draw = React.createClass({
   getInitialState: function () {
     return {
       primaryColor: 0xffffff,
-      primaryColorAlpha: 1.0,
+      primaryColorAlpha: 1,
       secondaryColor: 0x000000,
-      secondaryColorAlpha: 0.2
+      secondaryColorAlpha: 0
     }
   },
 

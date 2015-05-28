@@ -25,6 +25,7 @@ let DrawCanvas = React.createClass({
           onMouseMove={this.mouseMoved}
           onMouseOut={this.clearHighlight}
           onMouseDown={this.paintPixel}
+          onContextMenu={this.paintPixel}
           onMouseUp={this.setMouseUp}>
       </div>
     );
@@ -105,16 +106,26 @@ let DrawCanvas = React.createClass({
   },
 
   paintPixel: function (ev) {
+    ev.preventDefault();
     this.setState({ isMouseDown: true });
+
     let { x, y } = this.getTileCoordinates(ev);
     let pixel = this.state.grid[x][y];
     let fillX = x * this.props.tileSize;
     let fillY = y * this.props.tileSize;
+
+    let button = ev.which || ev.button;
     let color = this.props.primaryColor;
     let alpha = this.props.primaryColorAlpha;
 
-    this.drawGfx.beginFill(color);
-    this.drawGfx.fillAlpha = alpha;
+    if (button === 2) {
+      color = this.props.secondaryColor;
+      alpha = this.props.secondaryColorAlpha;
+    }
+
+    console.log(color);
+    console.log(alpha);
+    this.drawGfx.beginFill(color, alpha);
     this.drawGfx.drawRect(fillX, fillY, this.props.tileSize,
                           this.props.tileSize);
     pixel.color = color;
