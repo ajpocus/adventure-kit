@@ -7,7 +7,7 @@ import DrawSurface from './draw_surface';
 let Draw = React.createClass({
   getInitialState: function () {
     return {
-      primaryColor: "#ffffff",
+      primaryColor: "#fff",
       secondaryColor: "rgba(0, 0, 0, 0)"
     }
   },

@@ -28,6 +28,7 @@ let ColorPicker = React.createClass({
     $("#primary-color").spectrum({
       showInput: true,
       showPalette: true,
+      palette: ["#000", "rgba(0, 0, 0, 0)", "#00f"],
       preferredFormat: 'hex',
       color: '#000000',
       replacerClassName: 'primary',
@@ -37,6 +38,7 @@ let ColorPicker = React.createClass({
     $("#secondary-color").spectrum({
       showInput: true,
       showPalette: true,
+      palette: ["#000", "rgba(0, 0, 0, 0)", "#fff"],
       preferredFormat: 'hex',
       color: 'rgba(0, 0, 0, 0)',
       replacerClassName: 'secondary',

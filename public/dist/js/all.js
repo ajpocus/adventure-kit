@@ -61690,6 +61690,7 @@ var ColorPicker = React.createClass({
     $('#primary-color').spectrum({
       showInput: true,
       showPalette: true,
+      palette: ['#000', 'rgba(0, 0, 0, 0)', '#00f'],
       preferredFormat: 'hex',
       color: '#000000',
       replacerClassName: 'primary',
@@ -61699,6 +61700,7 @@ var ColorPicker = React.createClass({
     $('#secondary-color').spectrum({
       showInput: true,
       showPalette: true,
+      palette: ['#000', 'rgba(0, 0, 0, 0)', '#fff'],
       preferredFormat: 'hex',
       color: 'rgba(0, 0, 0, 0)',
       replacerClassName: 'secondary',
@@ -61746,7 +61748,7 @@ var Draw = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      primaryColor: '#ffffff',
+      primaryColor: '#fff',
       secondaryColor: 'rgba(0, 0, 0, 0)'
     };
   },
@@ -64549,3 +64551,5 @@ $(function () {
 
 },{"./components/draw":417,"./components/map":421,"./components/music":422,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[426])
 
+
+//# sourceMappingURL=public/dist/js/all.js.map
