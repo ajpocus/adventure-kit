@@ -9,9 +9,9 @@ let Link = Router.Link;
 let Route = Router.Route;
 let RouteHandler = Router.RouteHandler;
 
-import Draw from './draw';
-import Map from './map';
-import Music from './music';
+import Draw from './components/draw';
+import Map from './components/map';
+import Music from './components/music';
 
 $(function () {
   let App = React.createClass({

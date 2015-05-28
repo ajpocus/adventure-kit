@@ -1,6 +1,6 @@
 let React = require('react');
 let $ = require('jquery');
-let Spectrum = require('./lib/spectrum');
+let Spectrum = require('../lib/spectrum');
 
 let ColorPicker = React.createClass({
   getInitialState: function () {
@@ -36,18 +36,6 @@ let ColorPicker = React.createClass({
       color: 'rgba(0, 0, 0, 0)',
       replacerClassName: 'secondary'
     });
-  },
-
-  setPrimary: function (color) {
-    let colorHex = color.toHexString();
-    $("#primary-color").spectrum('set', colorHex);
-    this.primaryColor = colorHex;
-  },
-
-  setFlat: function (color) {
-    let colorHex = color.toHexString();
-    $("#flat-color").spectrum('set', colorHex);
-    this.primaryColor = colorHex;
   }
 });
 

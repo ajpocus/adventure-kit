@@ -1,13 +1,23 @@
-import Pixel from './pixel';
+import Pixel from '../models/pixel';
 
 let TiledSurface = {
-  width: 512,
-  height: 512,
-  tileSize: 32,
+  getDefaultProps: function () {
+    return {
+      width: 512,
+      height: 512,
+      tileSize: 32
+    };
+  },
+
+  getInitialState: function () {
+    return {
+      grid: this.initTiles()
+    };
+  },
 
   initTiles: function () {
-    let numTilesH = this.width / this.tileSize;
-    let numTilesV = this.height / this.tileSize;
+    let numTilesH = this.props.width / this.props.tileSize;
+    let numTilesV = this.props.height / this.props.tileSize;
     let grid = [];
 
     for (let x = 0; x < numTilesH; x++) {
@@ -28,10 +38,14 @@ let TiledSurface = {
     let x = absX - elRect.left;
     let y = absY - elRect.top;
 
-    let tileX = Math.floor(x / this.tileSize);
-    let tileY = Math.floor(y / this.tileSize);
+    let tileX = Math.floor(x / this.props.tileSize);
+    let tileY = Math.floor(y / this.props.tileSize);
 
     return { x: tileX, y: tileY };
+  },
+
+  componentDidMount: function () {
+    this.initTiles();
   }
 };
 

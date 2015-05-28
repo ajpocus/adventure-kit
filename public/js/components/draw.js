@@ -2,7 +2,7 @@ let React = require('react');
 
 import DrawTools from './draw_tools';
 import ColorPicker from './color_picker';
-import DrawCanvas from './draw_canvas';
+import DrawSurface from './draw_surface';
 
 let Draw = React.createClass({
   render: function () {
@@ -12,7 +12,7 @@ let Draw = React.createClass({
 
         <DrawTools/>
         <ColorPicker/>
-        <DrawCanvas/>
+        <DrawSurface/>
       </div>
     );
   }
