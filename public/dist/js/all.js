@@ -61661,6 +61661,7 @@ Object.defineProperty(exports, '__esModule', {
 var React = require('react');
 var $ = require('jquery');
 var Spectrum = require('../lib/spectrum');
+var assign = require('object-assign');
 
 var ColorPicker = React.createClass({
   displayName: 'ColorPicker',
@@ -61682,30 +61683,32 @@ var ColorPicker = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    var component = this;
-
     // Set up spectrum -- with Browserify it's rather borked.
     Spectrum($);
 
-    $('#primary-color').spectrum({
+    var baseParams = {
       showInput: true,
       showPalette: true,
-      palette: ['#000', 'rgba(0, 0, 0, 0)', '#00f'],
+      palette: ['#000', 'rgba(0, 0, 0, 0)'],
       preferredFormat: 'hex',
-      color: '#000000',
+      showButtons: false
+    };
+
+    var primaryParams = assign(baseParams, {
+      color: '#000',
       replacerClassName: 'primary',
-      change: component.handlePrimaryColorChange
+      change: this.handlePrimaryColorChange
     });
 
-    $('#secondary-color').spectrum({
-      showInput: true,
-      showPalette: true,
-      palette: ['#000', 'rgba(0, 0, 0, 0)', '#fff'],
-      preferredFormat: 'hex',
+    $('#primary-color').spectrum(primaryParams);
+
+    var secondaryParams = assign(baseParams, {
       color: 'rgba(0, 0, 0, 0)',
       replacerClassName: 'secondary',
-      change: component.handleSecondaryColorChange
+      change: this.handleSecondaryColorChange
     });
+
+    $('#secondary-color').spectrum(secondaryParams);
   },
 
   handlePrimaryColorChange: function handlePrimaryColorChange(color) {
@@ -61720,7 +61723,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"../lib/spectrum":423,"jquery":99,"react":415}],417:[function(require,module,exports){
+},{"../lib/spectrum":423,"jquery":99,"object-assign":100,"react":415}],417:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
