@@ -61704,7 +61704,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"../lib/spectrum":422,"jquery":99,"react":415}],417:[function(require,module,exports){
+},{"../lib/spectrum":423,"jquery":99,"react":415}],417:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -61713,9 +61713,9 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _draw_tools = require('./draw_tools');
+var _draw_tool_list = require('./draw_tool_list');
 
-var _draw_tools2 = _interopRequireDefault(_draw_tools);
+var _draw_tool_list2 = _interopRequireDefault(_draw_tool_list);
 
 var _color_picker = require('./color_picker');
 
@@ -61739,7 +61739,7 @@ var Draw = React.createClass({
         null,
         'Draw'
       ),
-      React.createElement(_draw_tools2['default'], null),
+      React.createElement(_draw_tool_list2['default'], null),
       React.createElement(_color_picker2['default'], null),
       React.createElement(_draw_surface2['default'], null)
     );
@@ -61749,7 +61749,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":416,"./draw_surface":418,"./draw_tools":419,"react":415}],418:[function(require,module,exports){
+},{"./color_picker":416,"./draw_surface":418,"./draw_tool_list":420,"react":415}],418:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -61892,7 +61892,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":423,"jquery":99,"pixi.js":204,"react":415}],419:[function(require,module,exports){
+},{"../mixins/tiled_surface":424,"jquery":99,"pixi.js":204,"react":415}],419:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61900,43 +61900,103 @@ Object.defineProperty(exports, "__esModule", {
 });
 var React = require("react");
 
-var DrawTools = React.createClass({
-  displayName: "DrawTools",
+var DrawTool = React.createClass({
+  displayName: "DrawTool",
 
   render: function render() {
+    var className = "btn";
+    if (this.props.active) {
+      className += " active";
+    }
+
     return React.createElement(
-      "div",
-      { className: "draw-tools" },
+      "li",
+      { className: "tool" },
       React.createElement(
-        "ul",
-        { className: "tool-list" },
-        React.createElement(
-          "li",
-          { className: "tool" },
-          React.createElement(
-            "button",
-            { className: "btn" },
-            React.createElement("img", { className: "icon", src: "/img/icons/glyphicons-31-pencil.png" })
-          )
-        ),
-        React.createElement(
-          "li",
-          { className: "tool" },
-          React.createElement(
-            "button",
-            { className: "btn" },
-            React.createElement("img", { className: "icon", src: "/img/icons/glyphicons-481-bucket.png" })
-          )
-        )
+        "button",
+        { className: className,
+          onClick: this.handleClick },
+        React.createElement("img", { className: "icon", src: this.props.imgUrl })
       )
     );
+  },
+
+  handleClick: function handleClick() {
+    this.props.onClick(this.props.name);
   }
 });
 
-exports["default"] = DrawTools;
+exports["default"] = DrawTool;
 module.exports = exports["default"];
 
 },{"react":415}],420:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _draw_tool = require('./draw_tool');
+
+var _draw_tool2 = _interopRequireDefault(_draw_tool);
+
+var React = require('react');
+
+var DrawToolList = React.createClass({
+  displayName: 'DrawToolList',
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      tools: [{
+        name: 'Pencil',
+        imgUrl: '/img/icons/glyphicons-31-pencil.png'
+      }, {
+        name: 'Bucket',
+        imgUrl: '/img/icons/glyphicons-481-bucket.png'
+      }]
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      activeToolName: 'Pencil'
+    };
+  },
+
+  render: function render() {
+    var toolList = [];
+    for (var i = 0; i < this.props.tools.length; i++) {
+      var tool = this.props.tools[i];
+
+      toolList.push(React.createElement(_draw_tool2['default'], { name: tool.name,
+        imgUrl: tool.imgUrl,
+        active: tool.name === this.state.activeToolName,
+        onClick: this.setActive }));
+    }
+
+    return React.createElement(
+      'div',
+      { className: 'draw-tools' },
+      React.createElement(
+        'ul',
+        { className: 'tool-list' },
+        toolList
+      )
+    );
+  },
+
+  setActive: function setActive(name) {
+    console.log(name);
+    this.setState({ activeToolName: name });
+  }
+});
+
+exports['default'] = DrawToolList;
+module.exports = exports['default'];
+
+},{"./draw_tool":419,"react":415}],421:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61963,7 +62023,7 @@ var Map = React.createClass({
 exports["default"] = Map;
 module.exports = exports["default"];
 
-},{"react":415}],421:[function(require,module,exports){
+},{"react":415}],422:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61990,7 +62050,7 @@ var Music = React.createClass({
 exports["default"] = Music;
 module.exports = exports["default"];
 
-},{"react":415}],422:[function(require,module,exports){
+},{"react":415}],423:[function(require,module,exports){
 // Spectrum Colorpicker v1.7.0
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
@@ -64215,7 +64275,7 @@ module.exports = exports["default"];
     });
 });
 
-},{}],423:[function(require,module,exports){
+},{}],424:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64280,7 +64340,7 @@ var TiledSurface = {
 exports['default'] = TiledSurface;
 module.exports = exports['default'];
 
-},{"../models/pixel":424}],424:[function(require,module,exports){
+},{"../models/pixel":425}],425:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64301,7 +64361,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],425:[function(require,module,exports){
+},{}],426:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -64428,5 +64488,5 @@ $(function () {
   });
 });
 
-},{"./components/draw":417,"./components/map":420,"./components/music":421,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[425])
+},{"./components/draw":417,"./components/map":421,"./components/music":422,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[426])
 

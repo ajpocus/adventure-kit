@@ -1,6 +1,6 @@
 let React = require('react');
 
-import DrawTools from './draw_tools';
+import DrawToolList from './draw_tool_list';
 import ColorPicker from './color_picker';
 import DrawSurface from './draw_surface';
 
@@ -10,7 +10,7 @@ let Draw = React.createClass({
       <div id="draw">
         <h1>Draw</h1>
 
-        <DrawTools/>
+        <DrawToolList/>
         <ColorPicker/>
         <DrawSurface/>
       </div>

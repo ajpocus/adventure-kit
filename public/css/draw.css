@@ -38,3 +38,12 @@
   display: flex;
   flex-direction: column;
 }
+
+.draw-tools .tool-list .btn {
+  padding: 0;
+  box-sizing: border-box
+}
+
+.draw-tools .tool-list .btn.active {
+  border: 5px solid #07a;
+}

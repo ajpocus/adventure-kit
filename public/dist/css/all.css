@@ -44,12 +44,10 @@ body {
   align-items: flex-end;
 }
 
-#header nav .tabs a {
+#header nav .tab a {
+  display: inline-block;
   text-decoration: none;
   color: #111;
-}
-
-#header nav .tab {
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-bottom: none;
   padding: 6px 12px;
@@ -57,7 +55,7 @@ body {
 }
 
 #header nav .tab.active {
-  background: #00a;
+  background: #07a;
 }
 
 #header nav .tab.active a {
@@ -141,6 +139,15 @@ img.pixel {
 #draw .draw-tools .tool-list {
   display: flex;
   flex-direction: column;
+}
+
+.draw-tools .tool-list .btn {
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.draw-tools .tool-list .btn.active {
+  border: 5px solid #07a;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
