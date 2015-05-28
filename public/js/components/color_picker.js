@@ -6,7 +6,7 @@ let assign = require('object-assign');
 let ColorPicker = React.createClass({
   getInitialState: function () {
     return {
-      primaryColor: "#000000",
+      primaryColor: "#000",
       secondaryColor: "rgba(0, 0, 0, 0)"
     };
   },

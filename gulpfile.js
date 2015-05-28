@@ -47,6 +47,7 @@ gulp.task('serve', ['js', 'css'], function () {
   nodemon({
     script: 'bin/www',
     ignore: ['./public/js/all.js'],
-    tasks: ['css']
+    tasks: ['css'],
+    ext: 'css ejs'
   });
 });

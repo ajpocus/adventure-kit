@@ -61668,7 +61668,7 @@ var ColorPicker = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      primaryColor: '#000000',
+      primaryColor: '#000',
       secondaryColor: 'rgba(0, 0, 0, 0)'
     };
   },
@@ -61723,7 +61723,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"../lib/spectrum":423,"jquery":99,"object-assign":100,"react":415}],417:[function(require,module,exports){
+},{"../lib/spectrum":424,"jquery":99,"object-assign":100,"react":415}],417:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -61735,6 +61735,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 var _draw_tool_list = require('./draw_tool_list');
 
 var _draw_tool_list2 = _interopRequireDefault(_draw_tool_list);
+
+var _palette_manager = require('./palette_manager');
+
+var _palette_manager2 = _interopRequireDefault(_palette_manager);
 
 var _color_picker = require('./color_picker');
 
@@ -61766,6 +61770,7 @@ var Draw = React.createClass({
         'Draw'
       ),
       React.createElement(_draw_tool_list2['default'], null),
+      React.createElement(_palette_manager2['default'], null),
       React.createElement(_color_picker2['default'], { onPrimaryColorChange: this.setPrimaryColor,
         onSecondaryColorChange: this.setSecondaryColor }),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
@@ -61791,7 +61796,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":416,"./draw_surface":418,"./draw_tool_list":420,"react":415}],418:[function(require,module,exports){
+},{"./color_picker":416,"./draw_surface":418,"./draw_tool_list":420,"./palette_manager":423,"react":415}],418:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -61952,7 +61957,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":424,"jquery":99,"pixi.js":204,"react":415}],419:[function(require,module,exports){
+},{"../mixins/tiled_surface":425,"jquery":99,"pixi.js":204,"react":415}],419:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -62115,6 +62120,67 @@ exports["default"] = Music;
 module.exports = exports["default"];
 
 },{"react":415}],423:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var React = require("react");
+
+var PaletteManager = React.createClass({
+  displayName: "PaletteManager",
+
+  getInitialState: function getInitialState() {
+    return {
+      palettes: {
+        "Rainbow": ["#ff00000", "#ff7f00", "#ffff00", "#00ff00", "#0000ff", "#4b0082", "#8f00ff"]
+      },
+      currentPalette: "Rainbow"
+    };
+  },
+
+  render: function render() {
+    var paletteOptions = [];
+    for (var paletteName in this.state.palettes) {
+      if (this.state.palettes.hasOwnProperty(paletteName)) {
+        paletteOptions.push(React.createElement(
+          "option",
+          { value: paletteName },
+          paletteName
+        ));
+      }
+    }
+
+    var currentPalette = this.state.palettes[this.state.currentPalette];
+    var paletteColors = [];
+    for (var i = 0; i < currentPalette.length; i++) {
+      var color = currentPalette[i];
+      var liStyle = { background: color };
+
+      paletteColors.push(React.createElement("li", { className: "color", style: liStyle }));
+    }
+
+    return React.createElement(
+      "div",
+      { className: "palette-manager" },
+      React.createElement(
+        "select",
+        { name: "currentPalette", className: "palette-chooser" },
+        paletteOptions
+      ),
+      React.createElement(
+        "ul",
+        { className: "palette" },
+        paletteColors
+      )
+    );
+  }
+});
+
+exports["default"] = PaletteManager;
+module.exports = exports["default"];
+
+},{"react":415}],424:[function(require,module,exports){
 // Spectrum Colorpicker v1.7.0
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
@@ -64339,7 +64405,7 @@ module.exports = exports["default"];
     });
 });
 
-},{}],424:[function(require,module,exports){
+},{}],425:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64404,7 +64470,7 @@ var TiledSurface = {
 exports['default'] = TiledSurface;
 module.exports = exports['default'];
 
-},{"../models/pixel":425}],425:[function(require,module,exports){
+},{"../models/pixel":426}],426:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64425,7 +64491,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],426:[function(require,module,exports){
+},{}],427:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -64552,7 +64618,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":417,"./components/map":421,"./components/music":422,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[426])
+},{"./components/draw":417,"./components/map":421,"./components/music":422,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[427])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

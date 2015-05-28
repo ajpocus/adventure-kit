@@ -1,6 +1,7 @@
 let React = require('react');
 
 import DrawToolList from './draw_tool_list';
+import PaletteManager from './palette_manager';
 import ColorPicker from './color_picker';
 import DrawSurface from './draw_surface';
 
@@ -18,8 +19,10 @@ let Draw = React.createClass({
         <h1>Draw</h1>
 
         <DrawToolList/>
+        <PaletteManager/>
         <ColorPicker onPrimaryColorChange={this.setPrimaryColor}
                      onSecondaryColorChange={this.setSecondaryColor}/>
+
         <DrawSurface primaryColor={this.state.primaryColor}
                      primaryColorAlpha={this.state.primaryColorAlpha}
                      secondaryColor={this.state.secondaryColor}
