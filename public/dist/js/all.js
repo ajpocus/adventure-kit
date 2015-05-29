@@ -63311,9 +63311,14 @@ var PaletteManager = React.createClass({
     var paletteOptions = [];
     for (var paletteName in this.state.palettes) {
       if (this.state.palettes.hasOwnProperty(paletteName)) {
+        var selected = '';
+        if (paletteName === this.state.currentPalette) {
+          selected = 'selected';
+        }
+
         paletteOptions.push(React.createElement(
           'option',
-          { value: paletteName },
+          { value: paletteName, selected: selected },
           paletteName
         ));
       }
@@ -63362,8 +63367,12 @@ var PaletteManager = React.createClass({
 
   newPalette: function newPalette() {
     var paletteName = prompt('New palette name');
-    console.log(paletteName);
-    this.state.palettes[paletteName] = {};
+    var newPalette = {};
+    // Can't set in Object.assign because paletteName won't be eval'ed
+    newPalette[paletteName] = {};
+    var updatedPalettes = Object.assign(this.state.palettes, newPalette);
+    this.setState({ palettes: updatedPalettes });
+    this.setState({ currentPalette: paletteName });
   }
 });
 

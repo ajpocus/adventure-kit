@@ -12,15 +12,15 @@
 #draw #render {
   position: relative;
   align-self: flex-end;
-  cursor: crosshair;
   width: 550px;
   height: 550px;
 }
 
 #draw #render canvas.draw {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 0;
+  left: 0;
+  cursor: crosshair;
 }
 
 #draw .color-picker {
