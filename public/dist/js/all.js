@@ -63294,10 +63294,6 @@ var EditPalette = React.createClass({
     );
   },
 
-  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    this.handlePaletteChange();
-  },
-
   removeColor: function removeColor(color) {
     var idx = this.state.palette.indexOf(color);
     // Can't just splice and save the result, because it'll be the removed color
