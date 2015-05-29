@@ -113,20 +113,6 @@ img.pixel {
   margin: 12px;
 }
 
-#draw #render {
-  position: relative;
-  align-self: flex-end;
-  width: 512px;
-  height: 512px;
-}
-
-#draw #render canvas.draw {
-  position: absolute;
-  top: 0;
-  left: 0;
-  cursor: crosshair;
-}
-
 #draw .color-picker {
   width: 50px;
   height: 50px;
@@ -184,6 +170,25 @@ img.pixel {
   width: 20px;
   height: 20px;
   margin: 2px;
+}
+
+#draw #render {
+  position: relative;
+  align-self: flex-end;
+  width: 512px;
+  height: 512px;
+}
+
+#draw #render canvas.draw {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: crosshair;
+}
+
+#draw .palette-manager .icon {
+  width: 12px;
+  height: 12px;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126

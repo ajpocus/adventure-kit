@@ -63348,14 +63348,19 @@ var PaletteManager = React.createClass({
         'Palette'
       ),
       React.createElement(
+        'button',
+        { className: 'new-palette', onClick: this.newPalette },
+        React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-433-plus.png' })
+      ),
+      React.createElement(
         'select',
         { name: 'currentPalette', className: 'palette-chooser' },
         paletteOptions
       ),
       React.createElement(
         'button',
-        { className: 'new-palette', onClick: this.newPalette },
-        '+'
+        { className: 'edit-palette', onClick: this.editPalette },
+        React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-31-pencil.png' })
       ),
       React.createElement(
         'ul',
@@ -63372,10 +63377,15 @@ var PaletteManager = React.createClass({
 
   newPalette: function newPalette() {
     var paletteName = prompt('New palette name');
+    if (paletteName.length === 0) {
+      return;
+    }
+
     var newPalette = {};
     // Can't set in Object.assign because paletteName won't be eval'ed
     newPalette[paletteName] = {};
     var updatedPalettes = Object.assign(this.state.palettes, newPalette);
+
     this.setState({ palettes: updatedPalettes });
     this.setState({ currentPalette: paletteName });
   }
