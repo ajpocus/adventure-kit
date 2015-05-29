@@ -1,5 +1,9 @@
 let React = require('react');
 let tinycolor = require('tinycolor2');
+let $ = require('jquery');
+
+import EditPalette from './edit_palette';
+import Transparency from '../mixing/transparency';
 
 let PaletteManager = React.createClass({
   getInitialState: function () {
@@ -37,7 +41,7 @@ let PaletteManager = React.createClass({
       // When transparent, use a checkerboard pattern.
       let liStyle = { background: color };
       if (color === "rgba(0, 0, 0, 0)") {
-        liStyle.background = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==")';
+        liStyle.background = Transparency.background;
       }
 
       paletteColors.push(
@@ -84,9 +88,17 @@ let PaletteManager = React.createClass({
     // Can't set in Object.assign because paletteName won't be eval'ed
     newPalette[paletteName] = {};
     let updatedPalettes = Object.assign(this.state.palettes, newPalette);
-    
+
     this.setState({ palettes: updatedPalettes });
     this.setState({ currentPalette: paletteName });
+  },
+
+  editPalette: function () {
+    let name = this.state.currentPalette;
+    let palette = this.state.palettes[name];
+
+    React.render(<EditPalette palette={palette} name={name}/>,
+                 document.getElementById('modal-container'));
   }
 });
 

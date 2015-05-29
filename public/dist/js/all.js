@@ -62844,8 +62844,6 @@ var ColorPicker = React.createClass({
     // Set up spectrum -- with Browserify it's rather borked.
     Spectrum($);
 
-    console.log('ColorPicker: ' + this.props.primaryColor);
-
     var baseParams = {
       showInput: true,
       showPalette: true,
@@ -62888,7 +62886,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"../lib/spectrum":425,"jquery":99,"object-assign":100,"react":415}],418:[function(require,module,exports){
+},{"../lib/spectrum":426,"jquery":99,"object-assign":100,"react":415}],418:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -62963,7 +62961,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":421,"./palette_manager":424,"react":415}],419:[function(require,module,exports){
+},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":421,"./palette_manager":425,"react":415}],419:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63124,7 +63122,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":426,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
+},{"../mixins/tiled_surface":427,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63233,6 +63231,112 @@ exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
 },{"./draw_tool":420,"react":415}],422:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _mixinsTransparency = require('../mixins/transparency');
+
+var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
+
+var React = require('react');
+
+var EditPalette = React.createClass({
+  displayName: 'EditPalette',
+
+  getInitialState: function getInitialState() {
+    return {
+      name: this.props.name,
+      palette: this.props.palette
+    };
+  },
+
+  render: function render() {
+    var colorList = [];
+    for (var i = 0; i < this.state.palette.length; i++) {
+      var color = this.state.palette[i];
+      var swatchStyle = { background: color };
+      if (color === 'rgba(0, 0, 0, 0)') {
+        swatchStyle.background = _mixinsTransparency2['default'].background;
+      }
+
+      colorList.push(React.createElement(
+        'li',
+        { className: 'color' },
+        React.createElement(
+          'span',
+          { className: 'remove', onClick: this.removeColor.bind(this, color) },
+          'x'
+        ),
+        React.createElement('div', { className: 'swatch', style: swatchStyle })
+      ));
+    }
+
+    return React.createElement(
+      'div',
+      { className: 'edit-palette modal' },
+      React.createElement(
+        'div',
+        { className: 'modal-background' },
+        React.createElement(
+          'div',
+          { className: 'modal-content' },
+          React.createElement(
+            'h3',
+            null,
+            'Edit Palette'
+          ),
+          React.createElement(
+            'span',
+            { className: 'close-modal', onClick: this.closeEdit },
+            'x'
+          ),
+          React.createElement(
+            'span',
+            { className: 'palette-name' },
+            this.props.name
+          ),
+          React.createElement(
+            'ul',
+            { className: 'colors' },
+            colorList
+          ),
+          React.createElement(
+            'button',
+            { className: 'cancel btn' },
+            'Cancel'
+          ),
+          React.createElement(
+            'button',
+            { className: 'save btn' },
+            'Save'
+          )
+        )
+      )
+    );
+  },
+
+  removeColor: function removeColor(color) {
+    var idx = this.state.palette.indexOf(color);
+    // Can't just splice and save the result, because it'll be the removed color
+    var updatedPalette = this.state.palette;
+    updatedPalette.splice(idx, 1);
+    this.setState({ palette: updatedPalette });
+  },
+
+  closeEdit: function closeEdit() {
+    React.unmountComponentAtNode(document.getElementById('modal-container'));
+  }
+});
+
+exports['default'] = EditPalette;
+module.exports = exports['default'];
+
+},{"../mixins/transparency":428,"react":415}],423:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63259,7 +63363,7 @@ var Map = React.createClass({
 exports["default"] = Map;
 module.exports = exports["default"];
 
-},{"react":415}],423:[function(require,module,exports){
+},{"react":415}],424:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63286,14 +63390,22 @@ var Music = React.createClass({
 exports["default"] = Music;
 module.exports = exports["default"];
 
-},{"react":415}],424:[function(require,module,exports){
+},{"react":415}],425:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _edit_palette = require('./edit_palette');
+
+var _edit_palette2 = _interopRequireDefault(_edit_palette);
+
 var React = require('react');
 var tinycolor = require('tinycolor2');
+var $ = require('jquery');
 
 var PaletteManager = React.createClass({
   displayName: 'PaletteManager',
@@ -63388,13 +63500,20 @@ var PaletteManager = React.createClass({
 
     this.setState({ palettes: updatedPalettes });
     this.setState({ currentPalette: paletteName });
+  },
+
+  editPalette: function editPalette() {
+    var name = this.state.currentPalette;
+    var palette = this.state.palettes[name];
+
+    React.render(React.createElement(_edit_palette2['default'], { palette: palette, name: name }), document.getElementById('modal-container'));
   }
 });
 
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"react":415,"tinycolor2":416}],425:[function(require,module,exports){
+},{"./edit_palette":422,"jquery":99,"react":415,"tinycolor2":416}],426:[function(require,module,exports){
 // Spectrum Colorpicker v1.7.0
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
@@ -65619,7 +65738,7 @@ module.exports = exports['default'];
     });
 });
 
-},{}],426:[function(require,module,exports){
+},{}],427:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -65684,7 +65803,20 @@ var TiledSurface = {
 exports['default'] = TiledSurface;
 module.exports = exports['default'];
 
-},{"../models/pixel":427}],427:[function(require,module,exports){
+},{"../models/pixel":429}],428:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var Transparency = {
+  background: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==")'
+};
+
+exports['default'] = Transparency;
+module.exports = exports['default'];
+
+},{}],429:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -65705,7 +65837,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],428:[function(require,module,exports){
+},{}],430:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -65790,6 +65922,7 @@ $(function () {
           { id: 'content' },
           React.createElement(RouteHandler, null)
         ),
+        React.createElement('div', { id: 'modal-container' }),
         React.createElement(
           'footer',
           { id: 'footer' },
@@ -65832,7 +65965,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":418,"./components/map":422,"./components/music":423,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[428])
+},{"./components/draw":418,"./components/map":423,"./components/music":424,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[430])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

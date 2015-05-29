@@ -33,6 +33,8 @@ $(function () {
             <RouteHandler/>
           </div>
 
+          <div id="modal-container"></div>
+
           <footer id="footer">
             <ul className="links">
               <li className="attribution">

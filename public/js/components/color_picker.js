@@ -17,8 +17,6 @@ let ColorPicker = React.createClass({
     // Set up spectrum -- with Browserify it's rather borked.
     Spectrum($);
 
-    console.log("ColorPicker: " + this.props.primaryColor);
-
     let baseParams = {
       showInput: true,
       showPalette: true,

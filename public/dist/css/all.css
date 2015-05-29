@@ -190,6 +190,53 @@ img.pixel {
   width: 12px;
   height: 12px;
 }
+
+.edit-palette .modal-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.edit-palette .modal-content {
+  width: 400px;
+  margin: 200px auto;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  position: relative;
+}
+
+.edit-palette .close-modal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+}
+
+.edit-palette .colors {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.edit-palette .color {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin: 3px;
+}
+
+.edit-palette .color .swatch {
+  width: 40px;
+  height: 40px;
+}
+
+.edit-palette .color .remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
