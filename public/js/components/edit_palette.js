@@ -42,8 +42,14 @@ let EditPalette = React.createClass({
               {colorList}
             </ul>
 
-            <button className="cancel btn">Cancel</button>
-            <button className="save btn">Save</button>
+            <div className="buttons">
+              <button className="cancel btn" onClick={this.closeEdit}>
+                Cancel
+              </button>
+              <button className="save btn" onClick={this.savePalette}>
+                Save
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -51,7 +57,7 @@ let EditPalette = React.createClass({
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    // call the callback in props set by PaletteManager
+    this.handlePaletteChange();
   },
 
   removeColor: function (color) {
@@ -64,6 +70,16 @@ let EditPalette = React.createClass({
 
   closeEdit: function () {
     React.unmountComponentAtNode(document.getElementById('modal-container'));
+  },
+
+  savePalette: function () {
+    console.log('save');
+    this.handlePaletteChange();
+    this.closeEdit();
+  },
+
+  handlePaletteChange: function () {
+    this.props.onPaletteChange(this.state.palette);
   }
 });
 

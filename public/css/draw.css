@@ -108,7 +108,9 @@
   top: 12px;
   right: 12px;
   cursor: pointer;
-  padding: 8px;
+  padding: 4px;
+  font-face: bold;
+  font-size: 14px;
 }
 
 .edit-palette .colors {
@@ -133,4 +135,8 @@
   top: 0;
   right: 0;
   cursor: pointer;
+  font-face: bold;
+  font-size: 14px;
+  color: #000;
+  margin-right: 2px;
 }

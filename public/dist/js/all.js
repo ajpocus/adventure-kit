@@ -62886,7 +62886,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"../lib/spectrum":426,"jquery":99,"object-assign":100,"react":415}],418:[function(require,module,exports){
+},{"../lib/spectrum":425,"jquery":99,"object-assign":100,"react":415}],418:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -62961,7 +62961,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":421,"./palette_manager":425,"react":415}],419:[function(require,module,exports){
+},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":420,"./palette_manager":424,"react":415}],419:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63046,8 +63046,9 @@ var DrawCanvas = React.createClass({
     var x = _getTileCoordinates.x;
     var y = _getTileCoordinates.y;
 
-    var numPixels = this.state.grid.length;
-    var currentPixel = this.state.grid[x][y];
+    var grid = this.state.grid;
+    var numPixels = grid.length;
+    var currentPixel = grid[x][y];
 
     if (!currentPixel.highlighted) {
       var fillX = currentPixel.x * this.props.tileSize;
@@ -63058,6 +63059,7 @@ var DrawCanvas = React.createClass({
       currentPixel.highlighted = true;
     }
 
+    this.setState({ grid: grid });
     this.clearHighlight(null, currentPixel);
 
     if (this.state.isMouseDown) {
@@ -63068,10 +63070,11 @@ var DrawCanvas = React.createClass({
   clearHighlight: function clearHighlight(ev, currentPixel) {
     var numPixelsH = this.props.width / this.props.tileSize;
     var numPixelsV = this.props.height / this.props.tileSize;
+    var grid = this.state.grid;
 
     for (var ix = 0; ix < numPixelsH; ix++) {
       for (var iy = 0; iy < numPixelsV; iy++) {
-        var pixel = this.state.grid[ix][iy];
+        var pixel = grid[ix][iy];
         if (pixel === currentPixel) {
           continue;
         }
@@ -63085,18 +63088,21 @@ var DrawCanvas = React.createClass({
         }
       }
     }
+
+    this.setState({ grid: grid });
   },
 
   paintPixel: function paintPixel(ev) {
     ev.preventDefault();
     this.setState({ isMouseDown: true });
+    var grid = this.state.grid;
 
     var _getTileCoordinates2 = this.getTileCoordinates(ev);
 
     var x = _getTileCoordinates2.x;
     var y = _getTileCoordinates2.y;
 
-    var pixel = this.state.grid[x][y];
+    var pixel = grid[x][y];
     var fillX = x * this.props.tileSize;
     var fillY = y * this.props.tileSize;
 
@@ -63107,11 +63113,11 @@ var DrawCanvas = React.createClass({
       color = this.props.secondaryColor;
     }
 
-    console.log(color);
     this.drawCtx.fillStyle = color;
     this.drawCtx.clearRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
     this.drawCtx.fillRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
     pixel.color = color;
+    this.setState({ grid: grid });
   },
 
   setMouseUp: function setMouseUp() {
@@ -63122,7 +63128,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":427,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
+},{"../mixins/tiled_surface":426,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63130,72 +63136,24 @@ Object.defineProperty(exports, "__esModule", {
 });
 var React = require("react");
 
-var DrawTool = React.createClass({
-  displayName: "DrawTool",
-
-  render: function render() {
-    var className = "btn";
-    if (this.props.active) {
-      className += " active";
-    }
-
-    return React.createElement(
-      "li",
-      { className: "tool" },
-      React.createElement(
-        "button",
-        { className: className,
-          onClick: this.handleClick },
-        React.createElement(
-          "div",
-          { className: "img-container" },
-          React.createElement("img", { className: "icon", src: this.props.imgUrl })
-        )
-      )
-    );
-  },
-
-  handleClick: function handleClick() {
-    this.props.onClick(this.props.name);
-  }
-});
-
-exports["default"] = DrawTool;
-module.exports = exports["default"];
-
-},{"react":415}],421:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _draw_tool = require('./draw_tool');
-
-var _draw_tool2 = _interopRequireDefault(_draw_tool);
-
-var React = require('react');
-
 var DrawToolList = React.createClass({
-  displayName: 'DrawToolList',
+  displayName: "DrawToolList",
 
   getDefaultProps: function getDefaultProps() {
     return {
       tools: [{
-        name: 'Pencil',
-        imgUrl: '/img/icons/glyphicons-31-pencil.png'
+        name: "Pencil",
+        imgUrl: "/img/icons/glyphicons-31-pencil.png"
       }, {
-        name: 'Bucket',
-        imgUrl: '/img/icons/glyphicons-481-bucket.png'
+        name: "Bucket",
+        imgUrl: "/img/icons/glyphicons-481-bucket.png"
       }]
     };
   },
 
   getInitialState: function getInitialState() {
     return {
-      activeToolName: 'Pencil'
+      activeTool: "Pencil"
     };
   },
 
@@ -63203,34 +63161,46 @@ var DrawToolList = React.createClass({
     var toolList = [];
     for (var i = 0; i < this.props.tools.length; i++) {
       var tool = this.props.tools[i];
+      var className = "btn";
+      if (tool.name === this.state.activeTool) {
+        className += " active";
+      }
 
-      toolList.push(React.createElement(_draw_tool2['default'], { name: tool.name,
-        imgUrl: tool.imgUrl,
-        active: tool.name === this.state.activeToolName,
-        onClick: this.setActive }));
+      toolList.push(React.createElement(
+        "li",
+        { className: "tool" },
+        React.createElement(
+          "button",
+          { className: className,
+            onClick: this.setActiveTool.bind(this, tool.name) },
+          React.createElement(
+            "div",
+            { className: "img-container" },
+            React.createElement("img", { className: "icon", src: tool.imgUrl })
+          )
+        )
+      ));
     }
 
     return React.createElement(
-      'div',
-      { className: 'draw-tools' },
+      "div",
+      { className: "draw-tools" },
       React.createElement(
-        'ul',
-        { className: 'tool-list' },
+        "ul",
+        { className: "tool-list" },
         toolList
       )
     );
   },
 
-  setActive: function setActive(name) {
-    console.log(name);
-    this.setState({ activeToolName: name });
-  }
-});
+  setActiveTool: function setActiveTool(name) {
+    this.setState({ activeTool: name });
+  } });
 
-exports['default'] = DrawToolList;
-module.exports = exports['default'];
+exports["default"] = DrawToolList;
+module.exports = exports["default"];
 
-},{"./draw_tool":420,"react":415}],422:[function(require,module,exports){
+},{"react":415}],421:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63306,18 +63276,26 @@ var EditPalette = React.createClass({
             colorList
           ),
           React.createElement(
-            'button',
-            { className: 'cancel btn' },
-            'Cancel'
-          ),
-          React.createElement(
-            'button',
-            { className: 'save btn' },
-            'Save'
+            'div',
+            { className: 'buttons' },
+            React.createElement(
+              'button',
+              { className: 'cancel btn', onClick: this.closeEdit },
+              'Cancel'
+            ),
+            React.createElement(
+              'button',
+              { className: 'save btn', onClick: this.savePalette },
+              'Save'
+            )
           )
         )
       )
     );
+  },
+
+  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+    this.handlePaletteChange();
   },
 
   removeColor: function removeColor(color) {
@@ -63330,13 +63308,23 @@ var EditPalette = React.createClass({
 
   closeEdit: function closeEdit() {
     React.unmountComponentAtNode(document.getElementById('modal-container'));
+  },
+
+  savePalette: function savePalette() {
+    console.log('save');
+    this.handlePaletteChange();
+    this.closeEdit();
+  },
+
+  handlePaletteChange: function handlePaletteChange() {
+    this.props.onPaletteChange(this.state.palette);
   }
 });
 
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":428,"react":415}],423:[function(require,module,exports){
+},{"../mixins/transparency":427,"react":415}],422:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63363,7 +63351,7 @@ var Map = React.createClass({
 exports["default"] = Map;
 module.exports = exports["default"];
 
-},{"react":415}],424:[function(require,module,exports){
+},{"react":415}],423:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63390,7 +63378,7 @@ var Music = React.createClass({
 exports["default"] = Music;
 module.exports = exports["default"];
 
-},{"react":415}],425:[function(require,module,exports){
+},{"react":415}],424:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63402,6 +63390,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 var _edit_palette = require('./edit_palette');
 
 var _edit_palette2 = _interopRequireDefault(_edit_palette);
+
+var _mixinsTransparency = require('../mixins/transparency');
+
+var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var React = require('react');
 var tinycolor = require('tinycolor2');
@@ -63444,7 +63436,7 @@ var PaletteManager = React.createClass({
       // When transparent, use a checkerboard pattern.
       var liStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
-        liStyle.background = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==")';
+        liStyle.background = _mixinsTransparency2['default'].background;
       }
 
       paletteColors.push(React.createElement('li', { className: 'color', style: liStyle,
@@ -63506,14 +63498,22 @@ var PaletteManager = React.createClass({
     var name = this.state.currentPalette;
     var palette = this.state.palettes[name];
 
-    React.render(React.createElement(_edit_palette2['default'], { palette: palette, name: name }), document.getElementById('modal-container'));
+    React.render(React.createElement(_edit_palette2['default'], { palette: palette, name: name,
+      onPaletteChange: this.onPaletteChange }), document.getElementById('modal-container'));
+  },
+
+  onPaletteChange: function onPaletteChange(palette) {
+    var name = this.state.currentPalette;
+    var palettes = this.state.palettes;
+    palettes[name] = palette;
+    this.setState({ palettes: palettes });
   }
 });
 
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"./edit_palette":422,"jquery":99,"react":415,"tinycolor2":416}],426:[function(require,module,exports){
+},{"../mixins/transparency":427,"./edit_palette":421,"jquery":99,"react":415,"tinycolor2":416}],425:[function(require,module,exports){
 // Spectrum Colorpicker v1.7.0
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
@@ -65738,7 +65738,7 @@ module.exports = exports['default'];
     });
 });
 
-},{}],427:[function(require,module,exports){
+},{}],426:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -65803,7 +65803,7 @@ var TiledSurface = {
 exports['default'] = TiledSurface;
 module.exports = exports['default'];
 
-},{"../models/pixel":429}],428:[function(require,module,exports){
+},{"../models/pixel":428}],427:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -65816,7 +65816,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],429:[function(require,module,exports){
+},{}],428:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -65837,7 +65837,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],430:[function(require,module,exports){
+},{}],429:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -65965,7 +65965,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":418,"./components/map":423,"./components/music":424,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[430])
+},{"./components/draw":418,"./components/map":422,"./components/music":423,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[429])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

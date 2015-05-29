@@ -3,7 +3,7 @@ let tinycolor = require('tinycolor2');
 let $ = require('jquery');
 
 import EditPalette from './edit_palette';
-import Transparency from '../mixing/transparency';
+import Transparency from '../mixins/transparency';
 
 let PaletteManager = React.createClass({
   getInitialState: function () {
@@ -97,8 +97,16 @@ let PaletteManager = React.createClass({
     let name = this.state.currentPalette;
     let palette = this.state.palettes[name];
 
-    React.render(<EditPalette palette={palette} name={name}/>,
+    React.render(<EditPalette palette={palette} name={name}
+                  onPaletteChange={this.onPaletteChange}/>,
                  document.getElementById('modal-container'));
+  },
+
+  onPaletteChange: function (palette) {
+    let name = this.state.currentPalette;
+    let palettes = this.state.palettes;
+    palettes[name] = palette;
+    this.setState({ palettes: palettes });
   }
 });
 

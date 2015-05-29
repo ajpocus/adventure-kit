@@ -27,7 +27,7 @@ let DrawToolList = React.createClass({
     for (let i = 0; i < this.props.tools.length; i++) {
       let tool = this.props.tools[i];
       let className = "btn";
-      if (tool.name === activeTool) {
+      if (tool.name === this.state.activeTool) {
         className += " active";
       }
 
@@ -54,7 +54,7 @@ let DrawToolList = React.createClass({
 
   setActiveTool: function (name) {
     this.setState({ activeTool: name });
-  }
+  },
 });
 
 export default DrawToolList;
