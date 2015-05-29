@@ -1,11 +1,12 @@
 let React = require('react');
+let tinycolor = require('tinycolor2');
 
 let PaletteManager = React.createClass({
   getInitialState: function () {
     return {
       palettes: {
         "Rainbow": [
-          "#ff00000", "#ff7f00", "#ffff00", "#00ff00",
+          "#ff0000", "#ff7f00", "#ffff00", "#00ff00",
           "#0000ff", "#4b0082", "#8f00ff"
         ]
       },
@@ -30,12 +31,14 @@ let PaletteManager = React.createClass({
       let liStyle = { background: color };
 
       paletteColors.push(
-        <li className="color" style={liStyle}></li>
+        <li className="color" style={liStyle}
+            onClick={this.selectColor.bind(this, color)}></li>
       );
     }
 
     return (
       <div className="palette-manager">
+        <h2>Palette</h2>
         <select name="currentPalette" className="palette-chooser">
           {paletteOptions}
         </select>
@@ -45,6 +48,11 @@ let PaletteManager = React.createClass({
         </ul>
       </div>
     );
+  },
+
+  selectColor: function (color) {
+    console.log(color);
+    this.props.onColorChange(tinycolor(color));
   }
 });
 

@@ -108,6 +108,12 @@ img.pixel {
   flex-direction: row;
 }
 
+#draw .toolbar {
+  display: flex;
+  flex-direction: column;
+  margin: 12px;
+}
+
 #draw #render {
   align-self: flex-end;
   cursor: crosshair;
@@ -120,28 +126,29 @@ img.pixel {
 }
 
 #draw .color-picker {
-  position: relative;
   width: 50px;
   height: 50px;
 }
 
 #draw .color-picker .primary {
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   z-index: 1;
 }
 
 #draw .color-picker .secondary {
-  position: absolute;
-  bottom: 0;
-  right: 0;
+  position: relative;
+  bottom: 14px;
+  left: 14px;
   z-index: 0;
 }
 
 #draw .draw-tools .tool-list {
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  width: 100px;
 }
 
 .draw-tools .tool-list .btn {
@@ -158,19 +165,23 @@ img.pixel {
 }
 
 .draw-tools .tool-list .btn img {
-  padding: 6px;
+  padding: 3px;
 }
 
-.palette {
-  position: relative;
-  top: 50px;
+#draw .palette-manager {
+  margin: 12px 0;
+}
+
+#draw .palette {
+  width: 48px;
   display: flex;
   flex-wrap: wrap;
 }
 
-.palette .color {
+#draw .palette .color {
   width: 20px;
   height: 20px;
+  margin: 2px;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126

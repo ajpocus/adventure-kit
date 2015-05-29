@@ -8,7 +8,7 @@ import DrawSurface from './draw_surface';
 let Draw = React.createClass({
   getInitialState: function () {
     return {
-      primaryColor: "#fff",
+      primaryColor: "#000",
       secondaryColor: "rgba(0, 0, 0, 0)"
     }
   },
@@ -16,12 +16,14 @@ let Draw = React.createClass({
   render: function () {
     return (
       <div id="draw">
-        <h1>Draw</h1>
-
-        <DrawToolList/>
-        <PaletteManager/>
-        <ColorPicker onPrimaryColorChange={this.setPrimaryColor}
-                     onSecondaryColorChange={this.setSecondaryColor}/>
+        <div className="toolbar">
+          <DrawToolList/>
+          <PaletteManager onColorChange={this.setPrimaryColor}/>
+          <ColorPicker primaryColor={this.state.primaryColor}
+                       secondaryColor={this.state.secondaryColor}
+                       onPrimaryColorChange={this.setPrimaryColor}
+                       onSecondaryColorChange={this.setSecondaryColor}/>
+        </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}
                      primaryColorAlpha={this.state.primaryColorAlpha}
@@ -32,6 +34,7 @@ let Draw = React.createClass({
   },
 
   setPrimaryColor: function (color) {
+    console.log(color);
     this.setState({
       primaryColor: color.toRgbString()
     });

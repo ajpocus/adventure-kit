@@ -4,13 +4,6 @@ let Spectrum = require('../lib/spectrum');
 let assign = require('object-assign');
 
 let ColorPicker = React.createClass({
-  getInitialState: function () {
-    return {
-      primaryColor: "#000",
-      secondaryColor: "rgba(0, 0, 0, 0)"
-    };
-  },
-
   render: function () {
     return (
       <div className="color-picker">
@@ -24,16 +17,18 @@ let ColorPicker = React.createClass({
     // Set up spectrum -- with Browserify it's rather borked.
     Spectrum($);
 
+    console.log("ColorPicker: " + this.props.primaryColor);
+
     let baseParams = {
       showInput: true,
       showPalette: true,
-      palette: ["#000", "rgba(0, 0, 0, 0)"],
+      palette: [],
       preferredFormat: 'hex',
       showButtons: false
     };
 
     let primaryParams = assign(baseParams, {
-      color: "#000",
+      color: this.props.primaryColor,
       replacerClassName: 'primary',
       change: this.handlePrimaryColorChange
     });
@@ -41,12 +36,17 @@ let ColorPicker = React.createClass({
     $("#primary-color").spectrum(primaryParams);
 
     let secondaryParams = assign(baseParams, {
-      color: "rgba(0, 0, 0, 0)",
+      color: this.props.secondaryColor,
       replacerClassName: 'secondary',
       change: this.handleSecondaryColorChange
     });
 
     $("#secondary-color").spectrum(secondaryParams);
+  },
+
+  componentDidUpdate: function () {
+    $("#primary-color").spectrum('set', this.props.primaryColor);
+    $("#secondary-color").spectrum('set', this.props.secondaryColor);
   },
 
   handlePrimaryColorChange: function (color) {
