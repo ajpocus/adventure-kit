@@ -66,8 +66,9 @@ let DrawCanvas = React.createClass({
 
   mouseMoved: function (ev) {
     let { x, y } = this.getTileCoordinates(ev);
-    let numPixels = this.state.grid.length;
-    let currentPixel = this.state.grid[x][y];
+    let grid = this.state.grid;
+    let numPixels = grid.length;
+    let currentPixel = grid[x][y];
 
     if (!currentPixel.highlighted) {
       let fillX = currentPixel.x * this.props.tileSize;
@@ -79,6 +80,7 @@ let DrawCanvas = React.createClass({
       currentPixel.highlighted = true;
     }
 
+    this.setState({ grid: grid });
     this.clearHighlight(null, currentPixel);
 
     if (this.state.isMouseDown) {
@@ -89,10 +91,11 @@ let DrawCanvas = React.createClass({
   clearHighlight: function (ev, currentPixel) {
     let numPixelsH = this.props.width / this.props.tileSize;
     let numPixelsV = this.props.height / this.props.tileSize;
+    let grid = this.state.grid;
 
     for (let ix = 0; ix < numPixelsH; ix++) {
       for (let iy = 0; iy < numPixelsV; iy++) {
-        let pixel = this.state.grid[ix][iy];
+        let pixel = grid[ix][iy];
         if (pixel === currentPixel) {
           continue;
         }
@@ -107,14 +110,17 @@ let DrawCanvas = React.createClass({
         }
       }
     }
+
+    this.setState({ grid: grid });
   },
 
   paintPixel: function (ev) {
     ev.preventDefault();
     this.setState({ isMouseDown: true });
+    let grid = this.state.grid;
 
     let { x, y } = this.getTileCoordinates(ev);
-    let pixel = this.state.grid[x][y];
+    let pixel = grid[x][y];
     let fillX = x * this.props.tileSize;
     let fillY = y * this.props.tileSize;
 
@@ -125,13 +131,13 @@ let DrawCanvas = React.createClass({
       color = this.props.secondaryColor;
     }
 
-    console.log(color);
     this.drawCtx.fillStyle = color;
     this.drawCtx.clearRect(fillX, fillY, this.props.tileSize,
                            this.props.tileSize);
     this.drawCtx.fillRect(fillX, fillY, this.props.tileSize,
                           this.props.tileSize);
     pixel.color = color;
+    this.setState({ grid: grid });
   },
 
   setMouseUp: function () {

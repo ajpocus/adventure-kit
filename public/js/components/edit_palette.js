@@ -50,6 +50,10 @@ let EditPalette = React.createClass({
     );
   },
 
+  componentDidUpdate: function (prevProps, prevState) {
+    // call the callback in props set by PaletteManager
+  },
+
   removeColor: function (color) {
     let idx = this.state.palette.indexOf(color);
     // Can't just splice and save the result, because it'll be the removed color

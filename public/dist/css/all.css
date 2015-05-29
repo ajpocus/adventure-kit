@@ -212,6 +212,7 @@ img.pixel {
   top: 12px;
   right: 12px;
   cursor: pointer;
+  padding: 8px;
 }
 
 .edit-palette .colors {
