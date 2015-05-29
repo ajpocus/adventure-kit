@@ -63301,7 +63301,7 @@ var PaletteManager = React.createClass({
   getInitialState: function getInitialState() {
     return {
       palettes: {
-        'Rainbow': ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8f00ff']
+        'Rainbow': ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8f00ff', 'rgba(0, 0, 0, 0)']
       },
       currentPalette: 'Rainbow'
     };
@@ -63328,7 +63328,12 @@ var PaletteManager = React.createClass({
     var paletteColors = [];
     for (var i = 0; i < currentPalette.length; i++) {
       var color = currentPalette[i];
+
+      // When transparent, use a checkerboard pattern.
       var liStyle = { background: color };
+      if (color === 'rgba(0, 0, 0, 0)') {
+        liStyle.background = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==")';
+      }
 
       paletteColors.push(React.createElement('li', { className: 'color', style: liStyle,
         onClick: this.selectColor.bind(this, color) }));

@@ -12,8 +12,8 @@
 #draw #render {
   position: relative;
   align-self: flex-end;
-  width: 550px;
-  height: 550px;
+  width: 512px;
+  height: 512px;
 }
 
 #draw #render canvas.draw {

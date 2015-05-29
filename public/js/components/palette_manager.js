@@ -7,7 +7,7 @@ let PaletteManager = React.createClass({
       palettes: {
         "Rainbow": [
           "#ff0000", "#ff7f00", "#ffff00", "#00ff00",
-          "#0000ff", "#4b0082", "#8f00ff"
+          "#0000ff", "#4b0082", "#8f00ff", "rgba(0, 0, 0, 0)"
         ]
       },
       currentPalette: "Rainbow"
@@ -33,7 +33,12 @@ let PaletteManager = React.createClass({
     let paletteColors = [];
     for (let i = 0; i < currentPalette.length; i++) {
       let color = currentPalette[i];
+
+      // When transparent, use a checkerboard pattern.
       let liStyle = { background: color };
+      if (color === "rgba(0, 0, 0, 0)") {
+        liStyle.background = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==")';
+      }
 
       paletteColors.push(
         <li className="color" style={liStyle}
