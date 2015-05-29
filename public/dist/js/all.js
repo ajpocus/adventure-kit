@@ -63214,6 +63214,8 @@ var _mixinsTransparency = require('../mixins/transparency');
 var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var React = require('react');
+var $ = require('jquery');
+var Spectrum = require('../lib/spectrum');
 
 var EditPalette = React.createClass({
   displayName: 'EditPalette',
@@ -63256,24 +63258,42 @@ var EditPalette = React.createClass({
           'div',
           { className: 'modal-content' },
           React.createElement(
-            'h3',
-            null,
-            'Edit Palette'
+            'div',
+            { className: 'header' },
+            React.createElement(
+              'h3',
+              null,
+              'Edit Palette'
+            ),
+            React.createElement(
+              'span',
+              { className: 'palette-name' },
+              this.props.name
+            ),
+            React.createElement(
+              'span',
+              { className: 'close-modal', onClick: this.closeEdit },
+              'x'
+            )
           ),
           React.createElement(
-            'span',
-            { className: 'close-modal', onClick: this.closeEdit },
-            'x'
-          ),
-          React.createElement(
-            'span',
-            { className: 'palette-name' },
-            this.props.name
-          ),
-          React.createElement(
-            'ul',
-            { className: 'colors' },
-            colorList
+            'div',
+            { className: 'content' },
+            React.createElement(
+              'ul',
+              { className: 'colors' },
+              colorList
+            ),
+            React.createElement(
+              'div',
+              { className: 'sidebar' },
+              React.createElement('input', { type: 'color', className: 'color-picker' }),
+              React.createElement(
+                'button',
+                { className: 'add btn' },
+                'Add color'
+              )
+            )
           ),
           React.createElement(
             'div',
@@ -63292,6 +63312,18 @@ var EditPalette = React.createClass({
         )
       )
     );
+  },
+
+  componentDidMount: function componentDidMount() {
+    // set up spectrum
+    Spectrum($);
+
+    $('.edit-palette .color-picker').spectrum({
+      flat: true,
+      showInitial: true,
+      showInput: true,
+      preferredFormat: 'hex'
+    });
   },
 
   removeColor: function removeColor(color) {
@@ -63320,7 +63352,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":427,"react":415}],422:[function(require,module,exports){
+},{"../lib/spectrum":425,"../mixins/transparency":427,"jquery":99,"react":415}],422:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

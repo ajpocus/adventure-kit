@@ -1,4 +1,6 @@
 let React = require('react');
+let $ = require('jquery');
+let Spectrum = require('../lib/spectrum');
 
 import Transparency from '../mixins/transparency';
 
@@ -33,14 +35,22 @@ let EditPalette = React.createClass({
       <div className="edit-palette modal">
         <div className="modal-background">
           <div className="modal-content">
-            <h3>Edit Palette</h3>
-            <span className="close-modal" onClick={this.closeEdit}>x</span>
+            <div className="header">
+              <h3>Edit Palette</h3>
+              <span className="palette-name">{this.props.name}</span>
+              <span className="close-modal" onClick={this.closeEdit}>x</span>
+            </div>
 
-            <span className="palette-name">{this.props.name}</span>
+            <div className="content">
+              <ul className="colors">
+                {colorList}
+              </ul>
 
-            <ul className="colors">
-              {colorList}
-            </ul>
+              <div className="sidebar">
+                <input type="color" className="color-picker"/>
+                <button className="add btn">Add color</button>
+              </div>
+            </div>
 
             <div className="buttons">
               <button className="cancel btn" onClick={this.closeEdit}>
@@ -54,6 +64,18 @@ let EditPalette = React.createClass({
         </div>
       </div>
     );
+  },
+
+  componentDidMount: function () {
+    // set up spectrum
+    Spectrum($);
+
+    $(".edit-palette .color-picker").spectrum({
+      flat: true,
+      showInitial: true,
+      showInput: true,
+      preferredFormat: 'hex'
+    });
   },
 
   removeColor: function (color) {

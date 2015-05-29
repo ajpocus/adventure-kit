@@ -97,9 +97,10 @@
 }
 
 .edit-palette .modal-content {
-  width: 400px;
+  width: 550px;
   margin: 200px auto;
   border: 2px solid rgba(255, 255, 255, 0.5);
+  background: #222;
   position: relative;
 }
 
@@ -116,6 +117,7 @@
 .edit-palette .colors {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
 }
 
 .edit-palette .color {
@@ -139,4 +141,8 @@
   font-size: 14px;
   color: #000;
   margin-right: 2px;
+}
+
+.edit-palette .content {
+  display: flex;
 }
