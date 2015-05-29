@@ -5,14 +5,18 @@ html, body, #root {
   height: 100%;
 }
 
-/* Background made by Anchour on subtlepatterns.com */
+/* Background made by Carlos Aguilar on subtlepatterns.com */
 body {
-  background: url('/img/concrete_seamless.png');
+  background: url('/img/footer_lodyas.png');
+  color: #ebebeb;
+}
+
+body a:visited {
+  color: #ebebeb;
 }
 
 #root {
   font-family: 'Open Sans', sans-serif;
-  color: #111;
   width: 100%;
   height: 100%;
 }
@@ -71,14 +75,9 @@ body {
   border-top: 1px solid rgba(0, 0, 0, 0.3);
 }
 
-#content {
-  position: relative;
-}
-
-#render {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+#footer .links .attribution {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
 }
 
 /* Huge thanks to Kasper Sebastian Brandt on StackOverflow for this fix. */

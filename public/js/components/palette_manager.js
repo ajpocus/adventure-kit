@@ -42,6 +42,9 @@ let PaletteManager = React.createClass({
         <select name="currentPalette" className="palette-chooser">
           {paletteOptions}
         </select>
+        <button className="new-palette" onClick={this.newPalette}>
+          +
+        </button>
 
         <ul className="palette">
           {paletteColors}
@@ -53,6 +56,12 @@ let PaletteManager = React.createClass({
   selectColor: function (color) {
     console.log(color);
     this.props.onColorChange(tinycolor(color));
+  },
+
+  newPalette: function () {
+    let paletteName = prompt("New palette name");
+    console.log(paletteName);
+    this.state.palettes[paletteName] = {};
   }
 });
 

@@ -10,8 +10,11 @@
 }
 
 #draw #render {
+  position: relative;
   align-self: flex-end;
-  cursor: crosshair
+  cursor: crosshair;
+  width: 550px;
+  height: 550px;
 }
 
 #draw #render canvas.draw {

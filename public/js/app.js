@@ -35,9 +35,10 @@ $(function () {
 
           <footer id="footer">
             <ul className="links">
-              <li>
-                "<a href="http://glyphicons.com/">GLYPHICONS</a>"
-                is licensed under
+              <li className="attribution">
+                "<a href="http://glyphicons.com/">
+                GLYPHICONS
+                </a>"&nbsp;is licensed under&nbsp;
                 <a href="https://creativecommons.org/licenses/by/3.0/us/">
                   CC BY 3.0
                 </a>

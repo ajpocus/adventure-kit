@@ -63343,6 +63343,11 @@ var PaletteManager = React.createClass({
         paletteOptions
       ),
       React.createElement(
+        'button',
+        { className: 'new-palette', onClick: this.newPalette },
+        '+'
+      ),
+      React.createElement(
         'ul',
         { className: 'palette' },
         paletteColors
@@ -63353,6 +63358,12 @@ var PaletteManager = React.createClass({
   selectColor: function selectColor(color) {
     console.log(color);
     this.props.onColorChange(tinycolor(color));
+  },
+
+  newPalette: function newPalette() {
+    var paletteName = prompt('New palette name');
+    console.log(paletteName);
+    this.state.palettes[paletteName] = {};
   }
 });
 
@@ -65763,14 +65774,14 @@ $(function () {
             { className: 'links' },
             React.createElement(
               'li',
-              null,
+              { className: 'attribution' },
               '"',
               React.createElement(
                 'a',
                 { href: 'http://glyphicons.com/' },
                 'GLYPHICONS'
               ),
-              '" is licensed under',
+              '" is licensed under ',
               React.createElement(
                 'a',
                 { href: 'https://creativecommons.org/licenses/by/3.0/us/' },
