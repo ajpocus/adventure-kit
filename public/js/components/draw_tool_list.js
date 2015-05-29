@@ -1,7 +1,5 @@
 let React = require('react');
 
-import DrawTool from './draw_tool';
-
 let DrawToolList = React.createClass({
   getDefaultProps: function () {
     return {
@@ -20,7 +18,7 @@ let DrawToolList = React.createClass({
 
   getInitialState: function () {
     return {
-      activeToolName: 'Pencil'
+      activeTool: 'Pencil'
     }
   },
 
@@ -28,12 +26,20 @@ let DrawToolList = React.createClass({
     let toolList = [];
     for (let i = 0; i < this.props.tools.length; i++) {
       let tool = this.props.tools[i];
+      let className = "btn";
+      if (tool.name === activeTool) {
+        className += " active";
+      }
 
       toolList.push(
-        <DrawTool name={tool.name}
-                  imgUrl={tool.imgUrl}
-                  active={tool.name === this.state.activeToolName}
-                  onClick={this.setActive}/>
+        <li className="tool">
+          <button className={className}
+                  onClick={this.setActiveTool.bind(this, tool.name)}>
+            <div className="img-container">
+              <img className="icon" src={tool.imgUrl}/>
+            </div>
+          </button>
+        </li>
       );
     }
 
@@ -46,9 +52,8 @@ let DrawToolList = React.createClass({
     );
   },
 
-  setActive: function (name) {
-    console.log(name);
-    this.setState({ activeToolName: name });
+  setActiveTool: function (name) {
+    this.setState({ activeTool: name });
   }
 });
 
