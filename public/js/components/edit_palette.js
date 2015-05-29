@@ -22,7 +22,7 @@ let EditPalette = React.createClass({
       }
 
       colorList.push(
-        <li className="color">
+        <li className="color" onClick={this.setActiveColor.bind(this, color)}>
           <span className="remove" onClick={this.removeColor.bind(this, color)}>
             x
           </span>
@@ -30,6 +30,12 @@ let EditPalette = React.createClass({
         </li>
       );
     }
+
+    colorList.push(
+      <li className="new color" onClick={this.addColor}>
+        <div className="swatch">+</div>
+      </li>
+    );
 
     return (
       <div className="edit-palette modal">
@@ -56,6 +62,7 @@ let EditPalette = React.createClass({
               <button className="cancel btn" onClick={this.closeEdit}>
                 Cancel
               </button>
+
               <button className="save btn" onClick={this.savePalette}>
                 Save
               </button>
@@ -74,8 +81,17 @@ let EditPalette = React.createClass({
       flat: true,
       showInitial: true,
       showInput: true,
-      preferredFormat: 'hex'
+      preferredFormat: 'hex',
+      change: this.updateColor
     });
+  },
+
+  componentDidUpdate: function () {
+    $(".edit-palette .color-picker").spectrum('set', this.state.activeColor);
+  },
+
+  setActiveColor: function (color) {
+    this.setState({ activeColor: color });
   },
 
   removeColor: function (color) {
@@ -86,12 +102,25 @@ let EditPalette = React.createClass({
     this.setState({ palette: updatedPalette });
   },
 
+  addColor: function () {
+    let palette = this.state.palette;
+    palette.push("#000");
+    this.setState({ activeColor: "#000", palette: palette });
+  },
+
+  updateColor: function (color) {
+    let palette = this.state.palette;
+    let idx = palette.indexOf(this.state.activeColor);
+    palette.splice(idx, 1);
+    palette.push(color);
+    this.setState({ activeColor: color, palette: palette });
+  },
+
   closeEdit: function () {
     React.unmountComponentAtNode(document.getElementById('modal-container'));
   },
 
   savePalette: function () {
-    console.log('save');
     this.handlePaletteChange();
     this.closeEdit();
   },

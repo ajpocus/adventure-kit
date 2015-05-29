@@ -63238,7 +63238,7 @@ var EditPalette = React.createClass({
 
       colorList.push(React.createElement(
         'li',
-        { className: 'color' },
+        { className: 'color', onClick: this.setActiveColor.bind(this, color) },
         React.createElement(
           'span',
           { className: 'remove', onClick: this.removeColor.bind(this, color) },
@@ -63247,6 +63247,16 @@ var EditPalette = React.createClass({
         React.createElement('div', { className: 'swatch', style: swatchStyle })
       ));
     }
+
+    colorList.push(React.createElement(
+      'li',
+      { className: 'new color', onClick: this.addColor },
+      React.createElement(
+        'div',
+        { className: 'swatch' },
+        '+'
+      )
+    ));
 
     return React.createElement(
       'div',
@@ -63322,8 +63332,17 @@ var EditPalette = React.createClass({
       flat: true,
       showInitial: true,
       showInput: true,
-      preferredFormat: 'hex'
+      preferredFormat: 'hex',
+      change: this.updateColor
     });
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    $('.edit-palette .color-picker').spectrum('set', this.state.activeColor);
+  },
+
+  setActiveColor: function setActiveColor(color) {
+    this.setState({ activeColor: color });
   },
 
   removeColor: function removeColor(color) {
@@ -63334,12 +63353,25 @@ var EditPalette = React.createClass({
     this.setState({ palette: updatedPalette });
   },
 
+  addColor: function addColor() {
+    var palette = this.state.palette;
+    palette.push('#000');
+    this.setState({ activeColor: '#000', palette: palette });
+  },
+
+  updateColor: function updateColor(color) {
+    var palette = this.state.palette;
+    var idx = palette.indexOf(this.state.activeColor);
+    palette.splice(idx, 1);
+    palette.push(color);
+    this.setState({ activeColor: color, palette: palette });
+  },
+
   closeEdit: function closeEdit() {
     React.unmountComponentAtNode(document.getElementById('modal-container'));
   },
 
   savePalette: function savePalette() {
-    console.log('save');
     this.handlePaletteChange();
     this.closeEdit();
   },
