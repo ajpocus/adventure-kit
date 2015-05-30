@@ -63279,7 +63279,8 @@ var EditPalette = React.createClass({
             React.createElement(
               'div',
               { className: 'sidebar' },
-              React.createElement('input', { type: 'color', id: 'palette-color' }),
+              React.createElement('input', { type: 'color', id: 'palette-color',
+                onChange: this.updateColor }),
               React.createElement(
                 'button',
                 { className: 'add btn' },
@@ -63328,7 +63329,8 @@ var EditPalette = React.createClass({
     this.setState({ activeColor: '#000', palette: palette });
   },
 
-  updateColor: function updateColor(color) {
+  updateColor: function updateColor(ev) {
+    var color = ev.target.value;
     var palette = this.state.palette;
     var idx = palette.indexOf(this.state.activeColor);
     palette[idx] = color;

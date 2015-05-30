@@ -52,7 +52,8 @@ let EditPalette = React.createClass({
               </ul>
 
               <div className="sidebar">
-                <input type="color" id="palette-color"/>
+                <input type="color" id="palette-color"
+                       onChange={this.updateColor}/>
                 <button className="add btn">Add color</button>
               </div>
             </div>
@@ -94,7 +95,8 @@ let EditPalette = React.createClass({
     this.setState({ activeColor: "#000", palette: palette });
   },
 
-  updateColor: function (color) {
+  updateColor: function (ev) {
+    let color = ev.target.value;
     let palette = this.state.palette;
     let idx = palette.indexOf(this.state.activeColor);
     palette[idx] = color;
