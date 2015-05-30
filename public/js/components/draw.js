@@ -4,6 +4,7 @@ import DrawToolList from './draw_tool_list';
 import PaletteManager from './palette_manager';
 import ColorPicker from './color_picker';
 import DrawSurface from './draw_surface';
+import ManageDrawList from './manage_draw_list';
 
 let Draw = React.createClass({
   getInitialState: function () {

@@ -62886,7 +62886,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"../lib/spectrum":425,"jquery":99,"object-assign":100,"react":415}],418:[function(require,module,exports){
+},{"../lib/spectrum":426,"jquery":99,"object-assign":100,"react":415}],418:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -62910,6 +62910,10 @@ var _color_picker2 = _interopRequireDefault(_color_picker);
 var _draw_surface = require('./draw_surface');
 
 var _draw_surface2 = _interopRequireDefault(_draw_surface);
+
+var _manage_draw_list = require('./manage_draw_list');
+
+var _manage_draw_list2 = _interopRequireDefault(_manage_draw_list);
 
 var React = require('react');
 
@@ -62944,7 +62948,7 @@ var Draw = React.createClass({
       React.createElement(
         'div',
         { className: 'manage-surface' },
-        React.createElement(ManageDrawList, null)
+        React.createElement(_manage_draw_list2['default'], null)
       )
     );
   },
@@ -62966,7 +62970,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":420,"./palette_manager":424,"react":415}],419:[function(require,module,exports){
+},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":420,"./manage_draw_list":422,"./palette_manager":425,"react":415}],419:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63133,7 +63137,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":426,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
+},{"../mixins/tiled_surface":427,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63391,7 +63395,61 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../lib/spectrum":425,"../mixins/transparency":427,"jquery":99,"react":415}],422:[function(require,module,exports){
+},{"../lib/spectrum":426,"../mixins/transparency":428,"jquery":99,"react":415}],422:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var React = require('react');
+
+var ManageDrawList = React.createClass({
+  displayName: 'ManageDrawList',
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      tools: [{
+        name: 'Resize',
+        imgUrl: '/img/icons/glyphicons-216-resize-full.png'
+      }, {
+        name: 'Export',
+        imgUrl: '/img/icons/glyphicons-420-disk-export.png'
+      }]
+    };
+  },
+
+  render: function render() {
+    var toolList = [];
+    for (var i = 0; i < this.props.tools.length; i++) {
+      var tool = this.props.tools[i];
+
+      toolList.push(React.createElement(
+        'li',
+        { className: 'tool' },
+        React.createElement(
+          'button',
+          { className: 'btn' },
+          React.createElement(
+            'div',
+            { className: 'img-container' },
+            React.createElement('img', { className: 'icon', src: tool.imgUrl })
+          )
+        )
+      ));
+    }
+
+    return React.createElement(
+      'ul',
+      { className: 'manage-buttons' },
+      toolList
+    );
+  }
+});
+
+exports['default'] = ManageDrawList;
+module.exports = exports['default'];
+
+},{"react":415}],423:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63418,7 +63476,7 @@ var Map = React.createClass({
 exports["default"] = Map;
 module.exports = exports["default"];
 
-},{"react":415}],423:[function(require,module,exports){
+},{"react":415}],424:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63445,7 +63503,7 @@ var Music = React.createClass({
 exports["default"] = Music;
 module.exports = exports["default"];
 
-},{"react":415}],424:[function(require,module,exports){
+},{"react":415}],425:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63580,7 +63638,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":427,"./edit_palette":421,"jquery":99,"react":415,"tinycolor2":416}],425:[function(require,module,exports){
+},{"../mixins/transparency":428,"./edit_palette":421,"jquery":99,"react":415,"tinycolor2":416}],426:[function(require,module,exports){
 // Spectrum Colorpicker v1.7.0
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
@@ -65805,7 +65863,7 @@ module.exports = exports['default'];
     });
 });
 
-},{}],426:[function(require,module,exports){
+},{}],427:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -65870,7 +65928,7 @@ var TiledSurface = {
 exports['default'] = TiledSurface;
 module.exports = exports['default'];
 
-},{"../models/pixel":428}],427:[function(require,module,exports){
+},{"../models/pixel":429}],428:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -65883,7 +65941,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],428:[function(require,module,exports){
+},{}],429:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -65904,7 +65962,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],429:[function(require,module,exports){
+},{}],430:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -66032,7 +66090,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":418,"./components/map":422,"./components/music":423,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[429])
+},{"./components/draw":418,"./components/map":423,"./components/music":424,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[430])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map
