@@ -9,6 +9,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var gutil = require('gulp-util');
 var concatCss = require('gulp-concat-css');
+var sass = require('gulp-sass');
 var nodemon = require('gulp-nodemon');
 
 gulp.task('default', ['serve']);
@@ -37,7 +38,13 @@ function bundle() {
     .pipe(gulp.dest('public/dist/js/'));
 }
 
-gulp.task('css', function () {
+gulp.task('sass', function () {
+  gulp.src('./public/css/**/*.scss')
+    .pipe(sass.sync().on('error', sass.logError))
+    .pipe(gulp.dest('./public/css/'));
+});
+
+gulp.task('css', ['sass'], function () {
   return gulp.src('public/css/**/*.css')
     .pipe(concatCss('all.css'))
     .pipe(gulp.dest('public/dist/css/'));
@@ -48,6 +55,6 @@ gulp.task('serve', ['js', 'css'], function () {
     script: 'bin/www',
     ignore: ['./public/js/all.js'],
     tasks: ['css'],
-    ext: 'css ejs'
+    ext: 'css scss ejs'
   });
 });
