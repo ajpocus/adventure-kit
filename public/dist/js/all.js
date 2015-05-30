@@ -62836,9 +62836,7 @@ var ColorPicker = React.createClass({
       'div',
       { className: 'color-picker' },
       React.createElement('input', { type: 'color', id: 'primary-color', className: 'color' }),
-      React.createElement('input', { type: 'color', id: 'secondary-color', className: 'color' }),
-      React.createElement('div', { id: 'primary-container' }),
-      React.createElement('div', { id: 'secondary-container' })
+      React.createElement('input', { type: 'color', id: 'secondary-color', className: 'color' })
     );
   },
 
@@ -62856,8 +62854,7 @@ var ColorPicker = React.createClass({
     var primaryParams = assign(baseParams, {
       color: this.props.primaryColor,
       replacerClassName: 'primary',
-      change: this.handlePrimaryColorChange,
-      appendTo: $('#primary-container')
+      change: this.handlePrimaryColorChange
     });
 
     $('#primary-color').spectrum(primaryParams);
@@ -62865,8 +62862,7 @@ var ColorPicker = React.createClass({
     var secondaryParams = assign(baseParams, {
       color: this.props.secondaryColor,
       replacerClassName: 'secondary',
-      change: this.handleSecondaryColorChange,
-      appendTo: $('#secondary-container')
+      change: this.handleSecondaryColorChange
     });
 
     $('#secondary-color').spectrum(secondaryParams);
@@ -62951,13 +62947,13 @@ var Draw = React.createClass({
   setPrimaryColor: function setPrimaryColor(color) {
     console.log('setting primary color ' + color);
     this.setState({
-      primaryColor: color.toRgbString()
+      primaryColor: color
     });
   },
 
   setSecondaryColor: function setSecondaryColor(color) {
     this.setState({
-      secondaryColor: color.toRgbString()
+      secondaryColor: color
     });
   }
 });

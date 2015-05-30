@@ -9,9 +9,6 @@ let ColorPicker = React.createClass({
       <div className="color-picker">
         <input type="color" id="primary-color" className="color"/>
         <input type="color" id="secondary-color" className="color"/>
-
-        <div id="primary-container"></div>
-        <div id="secondary-container"></div>
       </div>
     );
   },
@@ -31,8 +28,7 @@ let ColorPicker = React.createClass({
     let primaryParams = assign(baseParams, {
       color: this.props.primaryColor,
       replacerClassName: 'primary',
-      change: this.handlePrimaryColorChange,
-      appendTo: $('#primary-container')
+      change: this.handlePrimaryColorChange
     });
 
     $("#primary-color").spectrum(primaryParams);
@@ -40,8 +36,7 @@ let ColorPicker = React.createClass({
     let secondaryParams = assign(baseParams, {
       color: this.props.secondaryColor,
       replacerClassName: 'secondary',
-      change: this.handleSecondaryColorChange,
-      appendTo: $('#secondary-container')
+      change: this.handleSecondaryColorChange
     });
 
     $("#secondary-color").spectrum(secondaryParams);
