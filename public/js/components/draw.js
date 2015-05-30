@@ -10,7 +10,7 @@ let Draw = React.createClass({
   getInitialState: function () {
     return {
       primaryColor: "#000",
-      secondaryColor: "rgba(0, 0, 0, 0)"
+      secondaryColor: "#fff"
     }
   },
 
@@ -39,7 +39,7 @@ let Draw = React.createClass({
   },
 
   setPrimaryColor: function (color) {
-    console.log('setting primary color ' + color);
+    console.log('setting primary color', color);
     this.setState({
       primaryColor: color
     });
