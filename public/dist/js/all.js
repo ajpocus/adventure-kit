@@ -62940,7 +62940,12 @@ var Draw = React.createClass({
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
         primaryColorAlpha: this.state.primaryColorAlpha,
         secondaryColor: this.state.secondaryColor,
-        secondaryColorAlpha: this.state.secondaryColorAlpha })
+        secondaryColorAlpha: this.state.secondaryColorAlpha }),
+      React.createElement(
+        'div',
+        { className: 'manage-surface' },
+        React.createElement(ManageDrawList, null)
+      )
     );
   },
 

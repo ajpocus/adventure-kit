@@ -29,6 +29,10 @@ let Draw = React.createClass({
                      primaryColorAlpha={this.state.primaryColorAlpha}
                      secondaryColor={this.state.secondaryColor}
                      secondaryColorAlpha={this.state.secondaryColorAlpha}/>
+
+        <div className="manage-surface">
+          <ManageDrawList/>
+        </div>
       </div>
     );
   },
