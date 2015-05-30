@@ -34,6 +34,7 @@ let Draw = React.createClass({
   },
 
   setPrimaryColor: function (color) {
+    console.log('setting primary color ' + color);
     this.setState({
       primaryColor: color.toRgbString()
     });

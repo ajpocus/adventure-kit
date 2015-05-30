@@ -62873,7 +62873,7 @@ var ColorPicker = React.createClass({
   },
 
   componentDidUpdate: function componentDidUpdate() {
-    console.log(this.props.primaryColor);
+    console.log('setting colorpicker to ' + this.props.primaryColor);
     $('#primary-color').spectrum('set', this.props.primaryColor);
     $('#secondary-color').spectrum('set', this.props.secondaryColor);
   },
@@ -62949,6 +62949,7 @@ var Draw = React.createClass({
   },
 
   setPrimaryColor: function setPrimaryColor(color) {
+    console.log('setting primary color ' + color);
     this.setState({
       primaryColor: color.toRgbString()
     });
@@ -63540,6 +63541,7 @@ var PaletteManager = React.createClass({
   },
 
   selectColor: function selectColor(color) {
+    console.log('selected ' + color);
     this.props.onColorChange(color);
   },
 
