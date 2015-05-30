@@ -113,6 +113,7 @@ let EditPalette = React.createClass({
     let palette = this.state.palette;
     let idx = palette.indexOf(this.state.activeColor);
     palette[idx] = color;
+
     this.setState({ activeColor: color, palette: palette });
   },
 
