@@ -82,7 +82,8 @@ let EditPalette = React.createClass({
       showInitial: true,
       showInput: true,
       preferredFormat: 'hex',
-      change: this.updateColor
+      change: this.updateColor,
+      appendTo: $('.edit-palette')
     });
   },
 
