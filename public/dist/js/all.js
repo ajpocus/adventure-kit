@@ -62826,29 +62826,20 @@ Object.defineProperty(exports, '__esModule', {
 var React = require('react');
 var $ = require('jquery');
 var assign = require('object-assign');
-var jscolor = require('../lib/jscolor');
+var JSColor = require('../lib/jscolor');
 
 var ColorPicker = React.createClass({
   displayName: 'ColorPicker',
 
   render: function render() {
+    var colorClass = 'color {hash:true}';
+
     return React.createElement(
       'div',
       { className: 'color-picker' },
-      React.createElement('input', { id: 'primary-color' }),
-      React.createElement('input', { id: 'secondary-color' })
+      React.createElement('input', { id: 'primary-color', className: colorClass }),
+      React.createElement('input', { id: 'secondary-color', className: colorClass })
     );
-  },
-
-  componentDidMount: function componentDidMount() {
-    var primaryColor = document.getElementById('primary-color');
-    var secondaryColor = document.getElementById('secondary-color');
-    var primaryPicker = new jscolor.color(primaryColor, {
-      hash: true
-    });
-    var secondaryPicker = new jscolor.color(secondaryColor, {
-      hash: true
-    });
   },
 
   componentDidUpdate: function componentDidUpdate() {
@@ -63193,7 +63184,7 @@ var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var React = require('react');
 var $ = require('jquery');
-var jscolor = require('../lib/jscolor');
+var JSColor = require('../lib/jscolor');
 
 var EditPalette = React.createClass({
   displayName: 'EditPalette',
@@ -63236,7 +63227,7 @@ var EditPalette = React.createClass({
       )
     ));
 
-    var colorClass = 'color {hash:true}';
+    var colorOpts = '{hash:true}';
 
     return React.createElement(
       'div',
@@ -63277,7 +63268,7 @@ var EditPalette = React.createClass({
             React.createElement(
               'div',
               { className: 'sidebar' },
-              React.createElement('input', { id: 'edit-picker', className: colorClass }),
+              React.createElement('input', { className: 'color {colorOpts}' }),
               React.createElement(
                 'button',
                 { className: 'add btn' },
@@ -63304,14 +63295,8 @@ var EditPalette = React.createClass({
     );
   },
 
-  componentDidMount: function componentDidMount() {
-    var picker = new jscolor.color(document.getElementById('edit-picker'), {
-      hash: true
-    });
-  },
-
   componentDidUpdate: function componentDidUpdate() {
-    $('#edit-picker')[0].color.fromString(this.state.activeColor);
+    $('.edit-palette .color-picker')[0].color.fromString(this.state.activeColor);
   },
 
   setActiveColor: function setActiveColor(color) {
@@ -63558,9 +63543,6 @@ module.exports = exports['default'];
 
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-	value: true
-});
 var jscolor = {
 
 	dir: '', // location of jscolor directory (leave empty to autodetect)
@@ -64549,9 +64531,6 @@ var jscolor = {
 };
 
 jscolor.install();
-exports = module.exports = jscolor;
-exports['default'] = jscolor;
-module.exports = exports['default'];
 
 // OK
 

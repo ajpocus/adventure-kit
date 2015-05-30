@@ -1,27 +1,18 @@
 let React = require('react');
 let $ = require('jquery');
 let assign = require('object-assign');
-let jscolor = require('../lib/jscolor');
+let JSColor = require('../lib/jscolor');
 
 let ColorPicker = React.createClass({
   render: function () {
+    let colorClass = "color {hash:true}";
+
     return (
       <div className="color-picker">
-        <input id="primary-color"/>
-        <input id="secondary-color"/>
+        <input id="primary-color" className={colorClass}/>
+        <input id="secondary-color" className={colorClass}/>
       </div>
     );
-  },
-
-  componentDidMount: function () {
-    let primaryColor = document.getElementById('primary-color');
-    let secondaryColor = document.getElementById('secondary-color');
-    let primaryPicker = new jscolor.color(primaryColor, {
-      hash: true
-    });
-    let secondaryPicker = new jscolor.color(secondaryColor, {
-      hash: true
-    });
   },
 
   componentDidUpdate: function () {
