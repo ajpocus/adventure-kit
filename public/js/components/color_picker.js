@@ -21,7 +21,6 @@ let ColorPicker = React.createClass({
   },
 
   componentDidUpdate: function () {
-    console.log("updating input", this.props.primaryColor);
     document.getElementById('primary-color').value = this.props.primaryColor;
     document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
