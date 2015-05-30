@@ -1008,3 +1008,5 @@ var jscolor = {
 
 
 jscolor.install();
+exports = module.exports = jscolor;
+export default jscolor;

@@ -1,6 +1,6 @@
 let React = require('react');
 let $ = require('jquery');
-let JSColor = require('../lib/jscolor');
+let jscolor = require('../lib/jscolor');
 
 import Transparency from '../mixins/transparency';
 
@@ -37,7 +37,7 @@ let EditPalette = React.createClass({
       </li>
     );
 
-    let colorOpts = "{hash:true}";
+    let colorClass = "color {hash:true}";
 
     return (
       <div className="edit-palette modal">
@@ -55,7 +55,7 @@ let EditPalette = React.createClass({
               </ul>
 
               <div className="sidebar">
-                <input className="color {colorOpts}"/>
+                <input id="edit-picker" className={colorClass}/>
                 <button className="add btn">Add color</button>
               </div>
             </div>
@@ -75,8 +75,14 @@ let EditPalette = React.createClass({
     );
   },
 
+  componentDidMount: function () {
+    let picker = new jscolor.color(document.getElementById('edit-picker'), {
+      hash: true
+    });
+  },
+
   componentDidUpdate: function () {
-    $(".edit-palette .color-picker")[0].color.fromString(this.state.activeColor);
+    $("#edit-picker")[0].color.fromString(this.state.activeColor);
   },
 
   setActiveColor: function (color) {

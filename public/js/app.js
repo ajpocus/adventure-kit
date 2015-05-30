@@ -1,3 +1,5 @@
+'use strict';
+
 require('babel/polyfill');
 
 let $ = require('jquery');
