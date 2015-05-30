@@ -1,5 +1,6 @@
 let React = require('react');
 let $ = require('jquery');
+window.$ = $;
 let assign = require('object-assign');
 
 let ColorPicker = React.createClass({
@@ -15,8 +16,14 @@ let ColorPicker = React.createClass({
   },
 
   componentDidMount: function () {
-    $("#primary-color").attr('value', this.props.primaryColor);
-    $("#secondary-color").attr('value', this.props.secondaryColor);
+    document.getElementById('primary-color').value = this.props.primaryColor;
+    document.getElementById('secondary-color').value = this.props.secondaryColor;
+  },
+
+  componentDidUpdate: function () {
+    console.log("updating input", this.props.primaryColor);
+    document.getElementById('primary-color').value = this.props.primaryColor;
+    document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
 
   handlePrimaryColorChange: function (ev) {

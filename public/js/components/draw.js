@@ -9,8 +9,8 @@ import ManageDrawList from './manage_draw_list';
 let Draw = React.createClass({
   getInitialState: function () {
     return {
-      primaryColor: "#000",
-      secondaryColor: "#fff"
+      primaryColor: "#000000",
+      secondaryColor: "#000000"
     }
   },
 

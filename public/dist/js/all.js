@@ -62825,6 +62825,7 @@ Object.defineProperty(exports, '__esModule', {
 });
 var React = require('react');
 var $ = require('jquery');
+window.$ = $;
 var assign = require('object-assign');
 
 var ColorPicker = React.createClass({
@@ -62842,8 +62843,14 @@ var ColorPicker = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    $('#primary-color').attr('value', this.props.primaryColor);
-    $('#secondary-color').attr('value', this.props.secondaryColor);
+    document.getElementById('primary-color').value = this.props.primaryColor;
+    document.getElementById('secondary-color').value = this.props.secondaryColor;
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    console.log('updating input', this.props.primaryColor);
+    document.getElementById('primary-color').value = this.props.primaryColor;
+    document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
 
   handlePrimaryColorChange: function handlePrimaryColorChange(ev) {
@@ -62896,8 +62903,8 @@ var Draw = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      primaryColor: '#000',
-      secondaryColor: '#fff'
+      primaryColor: '#000000',
+      secondaryColor: '#000000'
     };
   },
 
@@ -63490,7 +63497,7 @@ var PaletteManager = React.createClass({
   getInitialState: function getInitialState() {
     return {
       palettes: {
-        'Rainbow': [tinycolor('#ff0000'), tinycolor('#ff7f00'), tinycolor('#ffff00'), tinycolor('#00ff00'), tinycolor('#0000ff'), tinycolor('#4b0082'), tinycolor('#8f00ff'), tinycolor('rgba(0, 0, 0, 0)')]
+        'Rainbow': ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8f00ff', 'rgba(0, 0, 0, 0)']
       },
       currentPalette: 'Rainbow'
     };
