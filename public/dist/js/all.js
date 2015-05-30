@@ -62870,6 +62870,7 @@ var ColorPicker = React.createClass({
   },
 
   componentDidUpdate: function componentDidUpdate() {
+    console.log(this.props.primaryColor);
     $('#primary-color').spectrum('set', this.props.primaryColor);
     $('#secondary-color').spectrum('set', this.props.secondaryColor);
   },
@@ -62944,12 +62945,7 @@ var Draw = React.createClass({
     );
   },
 
-  componentDidUpdate: function componentDidUpdate() {
-    console.dir(this.state);
-  },
-
   setPrimaryColor: function setPrimaryColor(color) {
-    console.log(color);
     this.setState({
       primaryColor: color.toRgbString()
     });
@@ -63345,6 +63341,11 @@ var EditPalette = React.createClass({
     $('.edit-palette .color-picker').spectrum('set', this.state.activeColor);
   },
 
+  componentWillUnmount: function componentWillUnmount() {
+    $('.edit-palette .color-picker').spectrum('disable');
+    $('.edit-palette .color-picker').remove();
+  },
+
   setActiveColor: function setActiveColor(color) {
     this.setState({ activeColor: color });
   },
@@ -63538,7 +63539,6 @@ var PaletteManager = React.createClass({
   },
 
   selectColor: function selectColor(color) {
-    console.log(color);
     this.props.onColorChange(color);
   },
 

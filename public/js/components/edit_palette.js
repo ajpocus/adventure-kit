@@ -90,6 +90,11 @@ let EditPalette = React.createClass({
     $(".edit-palette .color-picker").spectrum('set', this.state.activeColor);
   },
 
+  componentWillUnmount: function () {
+    $('.edit-palette .color-picker').spectrum('disable');
+    $('.edit-palette .color-picker').remove();
+  },
+
   setActiveColor: function (color) {
     this.setState({ activeColor: color });
   },

@@ -75,7 +75,6 @@ let PaletteManager = React.createClass({
   },
 
   selectColor: function (color) {
-    console.log(color);
     this.props.onColorChange(color);
   },
 

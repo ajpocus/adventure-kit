@@ -43,6 +43,7 @@ let ColorPicker = React.createClass({
   },
 
   componentDidUpdate: function () {
+    console.log(this.props.primaryColor);
     $("#primary-color").spectrum('set', this.props.primaryColor);
     $("#secondary-color").spectrum('set', this.props.secondaryColor);
   },
