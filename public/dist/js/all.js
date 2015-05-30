@@ -62949,7 +62949,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":420,"./manage_draw_list":422,"./palette_manager":425,"react":415}],419:[function(require,module,exports){
+},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":420,"./manage_draw_list":424,"./palette_manager":427,"react":415}],419:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63116,7 +63116,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":426,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
+},{"../mixins/tiled_surface":428,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63360,7 +63360,118 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":427,"jquery":99,"react":415}],422:[function(require,module,exports){
+},{"../mixins/transparency":429,"jquery":99,"react":415}],422:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var React = require("react");
+
+var Footer = React.createClass({
+  displayName: "Footer",
+
+  render: function render() {
+    return React.createElement(
+      "footer",
+      { id: "footer" },
+      React.createElement(
+        "ul",
+        { className: "links" },
+        React.createElement(
+          "li",
+          { className: "attribution" },
+          "\"",
+          React.createElement(
+            "a",
+            { href: "http://glyphicons.com/" },
+            "GLYPHICONS"
+          ),
+          "\" is licensed under ",
+          React.createElement(
+            "a",
+            { href: "https://creativecommons.org/licenses/by/3.0/us/" },
+            "CC BY 3.0"
+          )
+        )
+      )
+    );
+  }
+});
+
+exports["default"] = Footer;
+module.exports = exports["default"];
+
+},{"react":415}],423:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var React = require('react');
+var Router = require('react-router');
+var Link = Router.Link;
+
+var Header = React.createClass({
+  displayName: 'Header',
+
+  getInitialState: function getInitialState() {
+    return {
+      activeTab: 'Draw'
+    };
+  },
+
+  render: function render() {
+    var tabs = [];
+    var tabNames = ['Draw', 'Map', 'Music'];
+    for (var i = 0; i < tabNames.length; i++) {
+      var tabName = tabNames[i];
+      var className = 'tab';
+      if (tabName === this.state.activeTab) {
+        className += ' active';
+      }
+
+      tabs.push(React.createElement(
+        'li',
+        { className: className },
+        React.createElement(
+          Link,
+          { to: tabName.toLowerCase(),
+            onClick: this.setActiveTab.bind(this, tabName) },
+          tabName
+        )
+      ));
+    }
+
+    return React.createElement(
+      'header',
+      { id: 'header' },
+      React.createElement(
+        'h1',
+        { className: 'title' },
+        'Adventure Kit'
+      ),
+      React.createElement(
+        'nav',
+        null,
+        React.createElement(
+          'ul',
+          { className: 'tabs' },
+          tabs
+        )
+      )
+    );
+  },
+
+  setActiveTab: function setActiveTab(tabName) {
+    this.setState({ activeTab: tabName });
+  }
+});
+
+exports['default'] = Header;
+module.exports = exports['default'];
+
+},{"react":415,"react-router":246}],424:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63414,7 +63525,7 @@ var ManageDrawList = React.createClass({
 exports['default'] = ManageDrawList;
 module.exports = exports['default'];
 
-},{"react":415}],423:[function(require,module,exports){
+},{"react":415}],425:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63441,7 +63552,7 @@ var Map = React.createClass({
 exports["default"] = Map;
 module.exports = exports["default"];
 
-},{"react":415}],424:[function(require,module,exports){
+},{"react":415}],426:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63468,7 +63579,7 @@ var Music = React.createClass({
 exports["default"] = Music;
 module.exports = exports["default"];
 
-},{"react":415}],425:[function(require,module,exports){
+},{"react":415}],427:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63602,7 +63713,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":427,"./edit_palette":421,"jquery":99,"react":415,"tinycolor2":416}],426:[function(require,module,exports){
+},{"../mixins/transparency":429,"./edit_palette":421,"jquery":99,"react":415,"tinycolor2":416}],428:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63667,7 +63778,7 @@ var TiledSurface = {
 exports['default'] = TiledSurface;
 module.exports = exports['default'];
 
-},{"../models/pixel":428}],427:[function(require,module,exports){
+},{"../models/pixel":430}],429:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63680,7 +63791,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],428:[function(require,module,exports){
+},{}],430:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63701,10 +63812,18 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],429:[function(require,module,exports){
+},{}],431:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _componentsHeader = require('./components/header');
+
+var _componentsHeader2 = _interopRequireDefault(_componentsHeader);
+
+var _componentsFooter = require('./components/footer');
+
+var _componentsFooter2 = _interopRequireDefault(_componentsFooter);
 
 var _componentsDraw = require('./components/draw');
 
@@ -63725,7 +63844,6 @@ var React = require('react');
 var Router = require('react-router');
 
 var DefaultRoute = Router.DefaultRoute;
-var Link = Router.Link;
 var Route = Router.Route;
 var RouteHandler = Router.RouteHandler;
 
@@ -63737,80 +63855,14 @@ $(function () {
       return React.createElement(
         'div',
         { id: 'root' },
-        React.createElement(
-          'header',
-          { id: 'header' },
-          React.createElement(
-            'h1',
-            { className: 'title' },
-            'Adventure Kit'
-          ),
-          React.createElement(
-            'nav',
-            null,
-            React.createElement(
-              'ul',
-              { className: 'tabs' },
-              React.createElement(
-                'li',
-                { className: 'tab active' },
-                React.createElement(
-                  Link,
-                  { to: 'draw' },
-                  'Draw'
-                )
-              ),
-              React.createElement(
-                'li',
-                { className: 'tab' },
-                React.createElement(
-                  Link,
-                  { to: 'map' },
-                  'Map'
-                )
-              ),
-              React.createElement(
-                'li',
-                { className: 'tab' },
-                React.createElement(
-                  Link,
-                  { to: 'music' },
-                  'Music'
-                )
-              )
-            )
-          )
-        ),
+        React.createElement(_componentsHeader2['default'], null),
         React.createElement(
           'div',
           { id: 'content' },
           React.createElement(RouteHandler, null)
         ),
         React.createElement('div', { id: 'modal-container' }),
-        React.createElement(
-          'footer',
-          { id: 'footer' },
-          React.createElement(
-            'ul',
-            { className: 'links' },
-            React.createElement(
-              'li',
-              { className: 'attribution' },
-              '"',
-              React.createElement(
-                'a',
-                { href: 'http://glyphicons.com/' },
-                'GLYPHICONS'
-              ),
-              '" is licensed under ',
-              React.createElement(
-                'a',
-                { href: 'https://creativecommons.org/licenses/by/3.0/us/' },
-                'CC BY 3.0'
-              )
-            )
-          )
-        )
+        React.createElement(_componentsFooter2['default'], null)
       );
     }
   });
@@ -63829,7 +63881,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":418,"./components/map":423,"./components/music":424,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[429])
+},{"./components/draw":418,"./components/footer":422,"./components/header":423,"./components/map":425,"./components/music":426,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[431])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map
