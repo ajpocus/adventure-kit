@@ -62836,7 +62836,9 @@ var ColorPicker = React.createClass({
       'div',
       { className: 'color-picker' },
       React.createElement('input', { type: 'color', id: 'primary-color', className: 'color' }),
-      React.createElement('input', { type: 'color', id: 'secondary-color', className: 'color' })
+      React.createElement('input', { type: 'color', id: 'secondary-color', className: 'color' }),
+      React.createElement('div', { id: 'primary-container' }),
+      React.createElement('div', { id: 'secondary-container' })
     );
   },
 
@@ -62849,13 +62851,13 @@ var ColorPicker = React.createClass({
       showPalette: true,
       palette: [],
       preferredFormat: 'hex',
-      showButtons: false
-    };
+      showButtons: false };
 
     var primaryParams = assign(baseParams, {
       color: this.props.primaryColor,
       replacerClassName: 'primary',
-      change: this.handlePrimaryColorChange
+      change: this.handlePrimaryColorChange,
+      appendTo: $('#primary-container')
     });
 
     $('#primary-color').spectrum(primaryParams);
@@ -62863,7 +62865,8 @@ var ColorPicker = React.createClass({
     var secondaryParams = assign(baseParams, {
       color: this.props.secondaryColor,
       replacerClassName: 'secondary',
-      change: this.handleSecondaryColorChange
+      change: this.handleSecondaryColorChange,
+      appendTo: $('#secondary-container')
     });
 
     $('#secondary-color').spectrum(secondaryParams);
@@ -63334,16 +63337,12 @@ var EditPalette = React.createClass({
       showInput: true,
       preferredFormat: 'hex',
       change: this.updateColor,
-      appendTo: $('.edit-palette')
+      appendTo: $('#modal-container')
     });
   },
 
   componentDidUpdate: function componentDidUpdate() {
     $('.edit-palette .color-picker').spectrum('set', this.state.activeColor);
-  },
-
-  componentWillUnmount: function componentWillUnmount() {
-    $('.edit-palette .color-picker').spectrum('disable');
   },
 
   setActiveColor: function setActiveColor(color) {
@@ -63372,6 +63371,7 @@ var EditPalette = React.createClass({
   },
 
   closeEdit: function closeEdit() {
+    $('.edit-palette .color-picker').spectrum('disable');
     React.unmountComponentAtNode(document.getElementById('modal-container'));
   },
 

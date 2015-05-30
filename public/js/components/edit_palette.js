@@ -83,16 +83,12 @@ let EditPalette = React.createClass({
       showInput: true,
       preferredFormat: 'hex',
       change: this.updateColor,
-      appendTo: $('.edit-palette')
+      appendTo: $('#modal-container')
     });
   },
 
   componentDidUpdate: function () {
     $(".edit-palette .color-picker").spectrum('set', this.state.activeColor);
-  },
-
-  componentWillUnmount: function () {
-    $('.edit-palette .color-picker').spectrum('disable');
   },
 
   setActiveColor: function (color) {
@@ -121,6 +117,7 @@ let EditPalette = React.createClass({
   },
 
   closeEdit: function () {
+    $('.edit-palette .color-picker').spectrum('disable');
     React.unmountComponentAtNode(document.getElementById('modal-container'));
   },
 
