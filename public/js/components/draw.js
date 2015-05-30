@@ -34,15 +34,11 @@ let Draw = React.createClass({
   },
 
   setPrimaryColor: function (color) {
-    this.setState({
-      primaryColor: color.toRgbString()
-    });
+    this.setState({ primaryColor: color });
   },
 
   setSecondaryColor: function (color) {
-    this.setState({
-      secondaryColor: color.toRgbString()
-    });
+    this.setState({ secondaryColor: color });
   }
 });
 

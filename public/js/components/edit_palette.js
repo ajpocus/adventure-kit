@@ -1,6 +1,6 @@
 let React = require('react');
 let $ = require('jquery');
-let Spectrum = require('../lib/spectrum');
+let JSColor = require('../lib/jscolor');
 
 import Transparency from '../mixins/transparency';
 
@@ -37,6 +37,8 @@ let EditPalette = React.createClass({
       </li>
     );
 
+    let colorOpts = "{hash:true}";
+
     return (
       <div className="edit-palette modal">
         <div className="modal-background">
@@ -53,7 +55,7 @@ let EditPalette = React.createClass({
               </ul>
 
               <div className="sidebar">
-                <input type="color" className="color-picker"/>
+                <input className="color {colorOpts}"/>
                 <button className="add btn">Add color</button>
               </div>
             </div>
@@ -73,22 +75,8 @@ let EditPalette = React.createClass({
     );
   },
 
-  componentDidMount: function () {
-    // set up spectrum
-    Spectrum($);
-
-    $(".edit-palette .color-picker").spectrum({
-      flat: true,
-      showInitial: true,
-      showInput: true,
-      preferredFormat: 'hex',
-      change: this.updateColor,
-      appendTo: $('#modal-container')
-    });
-  },
-
   componentDidUpdate: function () {
-    $(".edit-palette .color-picker").spectrum('set', this.state.activeColor);
+    $(".edit-palette .color-picker")[0].color.fromString(this.state.activeColor);
   },
 
   setActiveColor: function (color) {
@@ -117,7 +105,6 @@ let EditPalette = React.createClass({
   },
 
   closeEdit: function () {
-    $('.edit-palette .color-picker').spectrum('disable');
     React.unmountComponentAtNode(document.getElementById('modal-container'));
   },
 

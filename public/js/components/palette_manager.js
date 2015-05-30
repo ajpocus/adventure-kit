@@ -10,9 +10,8 @@ let PaletteManager = React.createClass({
     return {
       palettes: {
         "Rainbow": [
-          tinycolor("#ff0000"), tinycolor("#ff7f00"), tinycolor("#ffff00"),
-          tinycolor("#00ff00"), tinycolor("#0000ff"), tinycolor("#4b0082"),
-          tinycolor("#8f00ff"), tinycolor("rgba(0, 0, 0, 0)")
+          "#ff0000", "#ff7f00", "#ffff00", "#00ff00", "#0000ff", "#4b0082",
+          "#8f00ff", "rgba(0, 0, 0, 0)"
         ]
       },
       currentPalette: "Rainbow"
