@@ -63343,7 +63343,6 @@ var EditPalette = React.createClass({
 
   componentWillUnmount: function componentWillUnmount() {
     $('.edit-palette .color-picker').spectrum('disable');
-    $('.edit-palette .color-picker').remove();
   },
 
   setActiveColor: function setActiveColor(color) {
