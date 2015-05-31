@@ -19,7 +19,6 @@
     "object-assign": "^2.0.0",
     "react": "^0.13.3",
     "react-colorpicker": "^0.3.13",
-    "react-modal": "^0.2.0",
     "react-router": "^0.13.3",
     "serve-favicon": "^2.2.0",
     "tinycolor2": "^1.1.2"

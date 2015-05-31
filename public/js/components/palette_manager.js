@@ -1,15 +1,11 @@
 let React = require('react');
 let tinycolor = require('tinycolor2');
 let $ = require('jquery');
-let Modal = require('react-modal');
 
 import EditPalette from './edit_palette';
 import Transparency from '../mixins/transparency';
 import DrawStoreActions from '../actions/draw_store_actions';
-
-let modalEl = document.getElementById('modal-container');
-Modal.setAppElement(modalEl);
-Modal.injectCSS();
+import Modal from './modal';
 
 let PaletteManager = React.createClass({
   render: function () {
