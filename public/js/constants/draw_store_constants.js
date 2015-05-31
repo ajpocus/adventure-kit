@@ -10,7 +10,9 @@ let DrawStoreConstants = keyMirror({
   ADD_PALETTE_COLOR: null,
   UPDATE_PALETTE_COLOR: null,
   NEW_PALETTE: null,
-  EDIT_PALETTE: null
+  EDIT_PALETTE: null,
+  SAVE_PALETTE: null,
+  CLOSE_EDIT: null
 });
 
 export default DrawStoreConstants;

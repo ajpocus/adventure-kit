@@ -32,9 +32,7 @@ let DrawController = React.createClass({
           <PaletteManager palettes={this.state.palettes}
                           activePalette={this.state.activePalette}/>
           <ColorPicker primaryColor={this.state.primaryColor}
-                       secondaryColor={this.state.secondaryColor}
-                       onPrimaryColorChange={this.setPrimaryColor}
-                       onSecondaryColorChange={this.setSecondaryColor}/>
+                       secondaryColor={this.state.secondaryColor}/>
         </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}
@@ -51,18 +49,6 @@ let DrawController = React.createClass({
 
   _onChange: function () {
     this.setState(getAppState());
-  },
-
-  setPrimaryColor: function (color) {
-    this.setState({
-      primaryColor: color
-    });
-  },
-
-  setSecondaryColor: function (color) {
-    this.setState({
-      secondaryColor: color
-    });
   }
 });
 

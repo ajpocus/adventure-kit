@@ -77,6 +77,20 @@ let DrawStoreActions = {
       actionType: DrawStoreConstants.EDIT_PALETTE,
       data: data
     });
+  },
+
+  savePalette: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.SAVE_PALETTE,
+      data: data
+    });
+  },
+
+  closeEdit: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.CLOSE_EDIT,
+      data: data
+    });
   }
 };
 

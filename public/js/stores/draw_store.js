@@ -101,10 +101,15 @@ let DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case DrawStoreConstants.EDIT_PALETTE:
-        let palette = _draw.palettes[_draw.activePalette].slice(0);
-        _draw.editPalette = palette;
-        React.render(<EditPalette palette={palette}/>,
-                     document.getElementById('modal-container'));
+        _draw.isEditingPalette = true;
+        break;
+
+      case DrawStoreConstants.SAVE_PALETTE:
+        _draw.palettes[_draw.activePalette] = _draw.editPalette;
+        break;
+
+      case DrawStoreConstants.CLOSE_EDIT:
+        _draw.isEditingPalette = false;
         break;
 
       default:

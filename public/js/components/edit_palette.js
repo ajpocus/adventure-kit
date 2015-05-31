@@ -96,10 +96,11 @@ let EditPalette = React.createClass({
 
   savePalette: function () {
     this.closeEdit();
+    DrawStoreActions.savePalette();
   },
 
   closeEdit: function () {
-    React.unmountComponentAtNode(document.getElementById('modal-container'));
+    DrawStoreActions.closeEdit();
   }
 });
 

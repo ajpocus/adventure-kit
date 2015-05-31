@@ -1,10 +1,15 @@
 let React = require('react');
 let tinycolor = require('tinycolor2');
 let $ = require('jquery');
+let Modal = require('react-modal');
 
 import EditPalette from './edit_palette';
 import Transparency from '../mixins/transparency';
 import DrawStoreActions from '../actions/draw_store_actions';
+
+let modalEl = document.getElementById('modal-container');
+Modal.setAppElement(modalEl);
+Modal.injectCSS();
 
 let PaletteManager = React.createClass({
   render: function () {
@@ -39,6 +44,8 @@ let PaletteManager = React.createClass({
       );
     }
 
+    let paletteCopy = activePalette.splice(0);
+
     return (
       <div className="palette-manager">
         <h2>Palette</h2>
@@ -58,6 +65,10 @@ let PaletteManager = React.createClass({
         <ul className="palette">
           {paletteColors}
         </ul>
+
+        <Modal isOpen={this.props.isEditingPalette}>
+          <EditPalette palette={paletteCopy}/>
+        </Modal>
       </div>
     );
   },
