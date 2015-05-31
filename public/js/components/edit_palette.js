@@ -2,6 +2,7 @@ let React = require('react');
 let $ = require('jquery');
 
 import Transparency from '../mixins/transparency';
+import DrawStoreActions from '../actions/draw_store_actions';
 
 let EditPalette = React.createClass({
   render: function () {

@@ -1,5 +1,5 @@
 import AppDispatcher from '../dispatcher/app_dispatcher';
-import AppStoreConstants from '../constants/app_store_constants';
+import DrawStoreConstants from '../constants/draw_store_constants';
 
 let DrawStoreActions = {
   loadDraw: function (data) {

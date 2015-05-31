@@ -4,6 +4,7 @@ let $ = require('jquery');
 
 import EditPalette from './edit_palette';
 import Transparency from '../mixins/transparency';
+import DrawStoreActions from '../actions/draw_store_actions';
 
 let PaletteManager = React.createClass({
   render: function () {
@@ -34,7 +35,7 @@ let PaletteManager = React.createClass({
 
       paletteColors.push(
         <li className="color" style={liStyle}
-            onClick={this.setActiveColor.bind(this, color)}></li>
+            onClick={this.setPrimaryColor.bind(this, color)}></li>
       );
     }
 
@@ -61,8 +62,8 @@ let PaletteManager = React.createClass({
     );
   },
 
-  setActiveColor: function (color) {
-    DrawStoreActions.setActiveColor(color);
+  setPrimaryColor: function (color) {
+    DrawStoreActions.setPrimaryColor(color);
   },
 
   newPalette: function () {

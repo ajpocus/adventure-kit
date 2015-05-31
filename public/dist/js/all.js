@@ -63445,6 +63445,98 @@ else {
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _dispatcherApp_dispatcher = require('../dispatcher/app_dispatcher');
+
+var _dispatcherApp_dispatcher2 = _interopRequireDefault(_dispatcherApp_dispatcher);
+
+var _constantsDraw_store_constants = require('../constants/draw_store_constants');
+
+var _constantsDraw_store_constants2 = _interopRequireDefault(_constantsDraw_store_constants);
+
+var DrawStoreActions = {
+  loadDraw: function loadDraw(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].LOAD_DRAW,
+      data: data
+    });
+  },
+
+  setActiveTool: function setActiveTool(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].SET_ACTIVE_TOOL,
+      data: data
+    });
+  },
+
+  setPrimaryColor: function setPrimaryColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].SET_PRIMARY_COLOR,
+      data: data
+    });
+  },
+
+  setSecondaryColor: function setSecondaryColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].SET_SECONDARY_COLOR,
+      data: data
+    });
+  },
+
+  setPaletteColor: function setPaletteColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].SET_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  removePaletteColor: function removePaletteColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].REMOVE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  addPaletteColor: function addPaletteColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].ADD_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  updatePaletteColor: function updatePaletteColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].UPDATE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  newPalette: function newPalette(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].NEW_PALETTE,
+      data: data
+    });
+  },
+
+  setActiveColor: function setActiveColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].SET_ACTIVE_COLOR,
+      data: data
+    });
+  }
+};
+
+exports['default'] = DrawStoreActions;
+module.exports = exports['default'];
+
+},{"../constants/draw_store_constants":433,"../dispatcher/app_dispatcher":434}],422:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 var React = require('react');
 var $ = require('jquery');
 window.$ = $;
@@ -63487,7 +63579,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"jquery":103,"react":419}],422:[function(require,module,exports){
+},{"jquery":103,"react":419}],423:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63542,7 +63634,6 @@ var DrawController = React.createClass({
   },
 
   render: function render() {
-    console.log(this.state);
     return React.createElement(
       'div',
       { id: 'draw' },
@@ -63589,7 +63680,7 @@ var DrawController = React.createClass({
 exports['default'] = DrawController;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":437,"./color_picker":421,"./draw_surface":423,"./draw_tool_list":424,"./manage_draw_list":428,"./palette_manager":431,"react":419}],423:[function(require,module,exports){
+},{"../stores/draw_store":438,"./color_picker":422,"./draw_surface":424,"./draw_tool_list":425,"./manage_draw_list":429,"./palette_manager":432,"react":419}],424:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63756,7 +63847,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":434,"jquery":103,"pixi.js":208,"react":419}],424:[function(require,module,exports){
+},{"../mixins/tiled_surface":435,"jquery":103,"pixi.js":208,"react":419}],425:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63828,7 +63919,7 @@ var DrawToolList = React.createClass({
 exports["default"] = DrawToolList;
 module.exports = exports["default"];
 
-},{"react":419}],425:[function(require,module,exports){
+},{"react":419}],426:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63840,6 +63931,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 var _mixinsTransparency = require('../mixins/transparency');
 
 var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
+
+var _actionsDraw_store_actions = require('../actions/draw_store_actions');
+
+var _actionsDraw_store_actions2 = _interopRequireDefault(_actionsDraw_store_actions);
 
 var React = require('react');
 var $ = require('jquery');
@@ -63952,20 +64047,20 @@ var EditPalette = React.createClass({
   },
 
   setPaletteColor: function setPaletteColor(color) {
-    DrawStoreActions.setPaletteColor(color);
+    _actionsDraw_store_actions2['default'].setPaletteColor(color);
   },
 
   removePaletteColor: function removePaletteColor(color) {
-    DrawStoreActions.removePaletteColor(color);
+    _actionsDraw_store_actions2['default'].removePaletteColor(color);
   },
 
   addPaletteColor: function addPaletteColor() {
-    DrawStoreActions.addPaletteColor();
+    _actionsDraw_store_actions2['default'].addPaletteColor();
   },
 
   updatePaletteColor: function updatePaletteColor(ev) {
     var color = ev.target.value;
-    DrawStoreActions.updateColor(color);
+    _actionsDraw_store_actions2['default'].updateColor(color);
   },
 
   savePalette: function savePalette() {
@@ -63980,7 +64075,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":435,"jquery":103,"react":419}],426:[function(require,module,exports){
+},{"../actions/draw_store_actions":421,"../mixins/transparency":436,"jquery":103,"react":419}],427:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64022,7 +64117,7 @@ var Footer = React.createClass({
 exports["default"] = Footer;
 module.exports = exports["default"];
 
-},{"react":419}],427:[function(require,module,exports){
+},{"react":419}],428:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64091,7 +64186,7 @@ var Header = React.createClass({
 exports['default'] = Header;
 module.exports = exports['default'];
 
-},{"react":419,"react-router":250}],428:[function(require,module,exports){
+},{"react":419,"react-router":250}],429:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64145,7 +64240,7 @@ var ManageDrawList = React.createClass({
 exports['default'] = ManageDrawList;
 module.exports = exports['default'];
 
-},{"react":419}],429:[function(require,module,exports){
+},{"react":419}],430:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64172,7 +64267,7 @@ var MapController = React.createClass({
 exports["default"] = MapController;
 module.exports = exports["default"];
 
-},{"react":419}],430:[function(require,module,exports){
+},{"react":419}],431:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64199,7 +64294,7 @@ var MusicController = React.createClass({
 exports["default"] = MusicController;
 module.exports = exports["default"];
 
-},{"react":419}],431:[function(require,module,exports){
+},{"react":419}],432:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64215,6 +64310,10 @@ var _edit_palette2 = _interopRequireDefault(_edit_palette);
 var _mixinsTransparency = require('../mixins/transparency');
 
 var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
+
+var _actionsDraw_store_actions = require('../actions/draw_store_actions');
+
+var _actionsDraw_store_actions2 = _interopRequireDefault(_actionsDraw_store_actions);
 
 var React = require('react');
 var tinycolor = require('tinycolor2');
@@ -64252,7 +64351,7 @@ var PaletteManager = React.createClass({
       }
 
       paletteColors.push(React.createElement('li', { className: 'color', style: liStyle,
-        onClick: this.setActiveColor.bind(this, color) }));
+        onClick: this.setPrimaryColor.bind(this, color) }));
     }
 
     return React.createElement(
@@ -64286,8 +64385,8 @@ var PaletteManager = React.createClass({
     );
   },
 
-  setActiveColor: function setActiveColor(color) {
-    DrawStoreActions.setActiveColor(color);
+  setPrimaryColor: function setPrimaryColor(color) {
+    _actionsDraw_store_actions2['default'].setPrimaryColor(color);
   },
 
   newPalette: function newPalette() {
@@ -64296,7 +64395,7 @@ var PaletteManager = React.createClass({
       return;
     }
 
-    DrawStoreActions.newPalette(paletteName);
+    _actionsDraw_store_actions2['default'].newPalette(paletteName);
   },
 
   editPalette: function editPalette() {
@@ -64310,7 +64409,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":435,"./edit_palette":425,"jquery":103,"react":419,"tinycolor2":420}],432:[function(require,module,exports){
+},{"../actions/draw_store_actions":421,"../mixins/transparency":436,"./edit_palette":426,"jquery":103,"react":419,"tinycolor2":420}],433:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64334,7 +64433,7 @@ var DrawConstants = keyMirror({
 exports['default'] = DrawConstants;
 module.exports = exports['default'];
 
-},{"react/lib/keyMirror":404}],433:[function(require,module,exports){
+},{"react/lib/keyMirror":404}],434:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64354,7 +64453,7 @@ AppDispatcher.handleAction = function (action) {
 exports['default'] = AppDispatcher;
 module.exports = exports['default'];
 
-},{"flux":100}],434:[function(require,module,exports){
+},{"flux":100}],435:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64419,7 +64518,7 @@ var TiledSurface = {
 exports['default'] = TiledSurface;
 module.exports = exports['default'];
 
-},{"../models/pixel":436}],435:[function(require,module,exports){
+},{"../models/pixel":437}],436:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64432,7 +64531,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],436:[function(require,module,exports){
+},{}],437:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64453,7 +64552,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],437:[function(require,module,exports){
+},{}],438:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64576,7 +64675,7 @@ var DrawStore = assign(EventEmitter.prototype, {
 exports['default'] = DrawStore;
 module.exports = exports['default'];
 
-},{"../constants/draw_store_constants":432,"../dispatcher/app_dispatcher":433,"events":92,"object-assign":104}],438:[function(require,module,exports){
+},{"../constants/draw_store_constants":433,"../dispatcher/app_dispatcher":434,"events":92,"object-assign":104}],439:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -64645,7 +64744,7 @@ $(function () {
   });
 });
 
-},{"./components/draw_controller":422,"./components/footer":426,"./components/header":427,"./components/map_controller":429,"./components/music_controller":430,"babel/polyfill":91,"jquery":103,"react":419,"react-router":250}]},{},[438])
+},{"./components/draw_controller":423,"./components/footer":427,"./components/header":428,"./components/map_controller":430,"./components/music_controller":431,"babel/polyfill":91,"jquery":103,"react":419,"react-router":250}]},{},[439])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

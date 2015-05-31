@@ -25,7 +25,6 @@ let DrawController = React.createClass({
   },
 
   render: function () {
-    console.log(this.state);
     return (
       <div id="draw">
         <div className="toolbar">
