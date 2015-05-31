@@ -1,8 +1,10 @@
 let EventEmitter = require('events').EventEmitter;
 let assign = require('object-assign');
+let React = require('react');
 
 import AppDispatcher from '../dispatcher/app_dispatcher';
-import DrawConstants from '../constants/draw_store_constants';
+import DrawStoreConstants from '../constants/draw_store_constants';
+import EditPalette from '../components/edit_palette';
 
 let _draw = {
   primaryColor: '#000000',
@@ -42,59 +44,70 @@ let DrawStore = assign(EventEmitter.prototype, {
     let action = payload.action;
 
     switch (action.actionType) {
-      case DrawConstants.LOAD_DRAW:
+      case DrawStoreConstants.LOAD_DRAW:
         loadDraw(action.data);
         break;
 
-      case DrawConstants.SET_ACTIVE_TOOL:
+      case DrawStoreConstants.SET_ACTIVE_TOOL:
         _draw.activeTool = action.data;
         break;
 
-      case DrawConstants.SET_PRIMARY_COLOR:
+      case DrawStoreConstants.SET_PRIMARY_COLOR:
         _draw.primaryColor = action.data;
         break;
 
-      case DrawConstants.SET_SECONDARY_COLOR:
+      case DrawStoreConstants.SET_SECONDARY_COLOR:
         _draw.secondaryColor = action.data;
         break;
 
-      case DrawConstants.SET_PALETTE_COLOR:
+      case DrawStoreConstants.SET_PALETTE_COLOR:
         _draw.paletteColor = action.data;
         break;
 
-      case DrawConstants.REMOVE_PALETTE_COLOR:
+      case DrawStoreConstants.REMOVE_PALETTE_COLOR:
         let palette = _draw.palettes[_draw.activePalette];
         let idx = palette.indexOf(action.data);
         palette.splice(idx, 1);
         _draw.palettes[_draw.activePalette] = palette;
         break;
 
-      case DrawConstants.ADD_PALETTE_COLOR:
-        let palette = _draw.palettes[_draw.activePalette];
+      case DrawStoreConstants.ADD_PALETTE_COLOR:
+        let palette = _draw.editPalette;
         let newColor = '#ffffff';
         palette.push(newColor);
-        _draw.palettes[_draw.activePalette] = palette;
-        _draw.activeColor = newColor;
+        _draw.editPalette = palette;
+        _draw.activePaletteColor = newColor;
         break;
 
-      case DrawConstants.UPDATE_PALETTE_COLOR:
-        let palette = _draw.palettes[_draw.activePalette];
-        let idx = palette.indexOf(_draw.activeColor);
+      case DrawStoreConstants.UPDATE_PALETTE_COLOR:
+        let palette = _draw.editPalette;
+        let idx = palette.indexOf(_draw.activePaletteColor);
         let updatedColor = action.data;
         palette[idx] = updatedColor;
-        _draw.activeColor = updatedColor;
-        _draw.palettes[_draw.activePalette] = palette;
+        _draw.activePaletteColor = updatedColor;
+        _draw.editPalette = palette;
         break;
 
-      case DrawConstants.NEW_PALETTE:
+      case DrawStoreConstants.NEW_PALETTE:
         let paletteName = action.data;
         _draw.palettes[paletteName] = {};
         _draw.activePalette = paletteName;
         break;
 
-      case DrawConstants.SET_ACTIVE_COLOR:
+      case DrawStoreConstants.SET_ACTIVE_PALETTE_COLOR:
         let color = action.data;
-        _draw.activeColor = color;
+        _draw.activePaletteColor = color;
+        break;
+
+      case DrawStoreConstants.EDIT_PALETTE:
+        let name = _draw.activePalette;
+        let palette = _draw.palettes[name];
+        _draw.editPalette = palette;
+        let activeColor = _draw.activePaletteColor;
+        
+        React.render(<EditPalette palette={palette} name={name}
+                                  activePaletteColor={activeColor}/>,
+                     document.getElementById('modal-container'));
         break;
 
       default:

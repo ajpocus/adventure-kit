@@ -10,7 +10,7 @@ let DrawConstants = keyMirror({
   ADD_PALETTE_COLOR: null,
   UPDATE_PALETTE_COLOR: null,
   NEW_PALETTE: null,
-  SET_ACTIVE_COLOR: null
+  EDIT_PALETTE: null
 });
 
 export default DrawConstants;

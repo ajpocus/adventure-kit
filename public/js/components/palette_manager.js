@@ -76,11 +76,7 @@ let PaletteManager = React.createClass({
   },
 
   editPalette: function () {
-    let name = this.props.activePalette;
-    let palette = this.props.palettes[name];
-
-    React.render(<EditPalette palette={palette} name={name}/>,
-                 document.getElementById('modal-container'));
+    DrawStoreActions.editPalette();
   }
 });
 

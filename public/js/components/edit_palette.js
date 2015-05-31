@@ -16,7 +16,7 @@ let EditPalette = React.createClass({
 
       colorList.push(
         <li className="color"
-            onClick={this.setPaletteColor.bind(this, color)}>
+            onClick={this.setActivePaletteColor.bind(this, color)}>
           <span className="remove"
                 onClick={this.removePaletteColor.bind(this, color)}>
             x
@@ -73,6 +73,10 @@ let EditPalette = React.createClass({
     document.getElementById('palette-color').value = this.props.activeColor;
   },
 
+  setActivePaletteColor: function (color) {
+    DrawStoreActions.setActivePaletteColor(color);
+  },
+
   setPaletteColor: function (color) {
     DrawStoreActions.setPaletteColor(color);
   },
@@ -87,7 +91,7 @@ let EditPalette = React.createClass({
 
   updatePaletteColor: function (ev) {
     let color = ev.target.value;
-    DrawStoreActions.updateColor(color);
+    DrawStoreActions.updatePaletteColor(color);
   },
 
   savePalette: function () {

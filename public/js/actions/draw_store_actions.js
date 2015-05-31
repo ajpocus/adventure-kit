@@ -65,9 +65,16 @@ let DrawStoreActions = {
     });
   },
 
-  setActiveColor: function (data) {
+  setActivePaletteColor: function (data) {
     AppDispatcher.handleAction({
-      actionType: DrawStoreConstants.SET_ACTIVE_COLOR,
+      actionType: DrawStoreConstants.SET_ACTIVE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  editPalette: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.EDIT_PALETTE,
       data: data
     });
   }
