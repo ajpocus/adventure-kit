@@ -10,7 +10,6 @@ let RouteHandler = Router.RouteHandler;
 
 import Header from './components/header';
 import Footer from './components/footer';
-
 import DrawController from './components/draw_controller';
 import MapController from './components/map_controller';
 import MusicController from './components/music_controller';

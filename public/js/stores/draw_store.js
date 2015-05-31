@@ -1,26 +1,27 @@
 let EventEmitter = require('events').EventEmitter;
+let assign = require('object-assign');
 
-import AppDispatcher from './dispatcher/app_dispatcher';
-import DrawConstants from './constants/draw_constants';
+import AppDispatcher from '../dispatcher/app_dispatcher';
+import DrawConstants from '../constants/draw_store_constants';
 
 let _draw = {
   primaryColor: '#000000',
   secondaryColor: '#ffffff',
-  activeTool: 'Pencil'
+  activeTool: 'Pencil',
   palettes: {
     'Rainbow': [
       '#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082',
       '#8f00ff'
     ]
   },
-  currentPalette: 'Rainbow'
+  activePalette: 'Rainbow'
 };
 
 function loadDraw(data) {
   _draw = data.draw;
 }
 
-let DrawStore = Object.assign(EventEmitter.prototype, {
+let DrawStore = assign(EventEmitter.prototype, {
   getDraw: function () {
     return _draw;
   },

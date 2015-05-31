@@ -1,14 +1,16 @@
-let DrawConstants = {
-  LOAD_DRAW,
-  SET_ACTIVE_TOOL,
-  SET_PRIMARY_COLOR,
-  SET_SECONDARY_COLOR,
-  SET_PALETTE_COLOR,
-  REMOVE_PALETTE_COLOR,
-  ADD_PALETTE_COLOR,
-  UPDATE_PALETTE_COLOR,
-  NEW_PALETTE,
-  SET_ACTIVE_COLOR
-};
+let keyMirror = require('react/lib/keyMirror');
+
+let DrawConstants = keyMirror({
+  LOAD_DRAW: null,
+  SET_ACTIVE_TOOL: null,
+  SET_PRIMARY_COLOR: null,
+  SET_SECONDARY_COLOR: null,
+  SET_PALETTE_COLOR: null,
+  REMOVE_PALETTE_COLOR: null,
+  ADD_PALETTE_COLOR: null,
+  UPDATE_PALETTE_COLOR: null,
+  NEW_PALETTE: null,
+  SET_ACTIVE_COLOR: null
+});
 
 export default DrawConstants;

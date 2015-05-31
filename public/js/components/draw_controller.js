@@ -8,10 +8,8 @@ import DrawSurface from './draw_surface';
 import ManageDrawList from './manage_draw_list';
 
 function getAppState() {
-  return {
-    draw: DrawStore.getDraw()
-  };
-)
+  return DrawStore.getDraw();
+}
 
 let DrawController = React.createClass({
   getInitialState: function () {
@@ -27,6 +25,7 @@ let DrawController = React.createClass({
   },
 
   render: function () {
+    console.log(this.state);
     return (
       <div id="draw">
         <div className="toolbar">
