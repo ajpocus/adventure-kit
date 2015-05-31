@@ -25,7 +25,7 @@ $(function () {
             <RouteHandler/>
           </div>
 
-          <div id="modal-container"></div>
+          <ModalController/>
 
           <Footer/>
         </div>

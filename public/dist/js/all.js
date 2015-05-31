@@ -64425,7 +64425,7 @@ Object.defineProperty(exports, '__esModule', {
 });
 var keyMirror = require('react/lib/keyMirror');
 
-var DrawConstants = keyMirror({
+var DrawStoreConstants = keyMirror({
   LOAD_DRAW: null,
   SET_ACTIVE_TOOL: null,
   SET_PRIMARY_COLOR: null,
@@ -64438,7 +64438,7 @@ var DrawConstants = keyMirror({
   EDIT_PALETTE: null
 });
 
-exports['default'] = DrawConstants;
+exports['default'] = DrawStoreConstants;
 module.exports = exports['default'];
 
 },{"react/lib/keyMirror":404}],434:[function(require,module,exports){
@@ -64744,7 +64744,7 @@ $(function () {
           { id: 'content' },
           React.createElement(RouteHandler, null)
         ),
-        React.createElement('div', { id: 'modal-container' }),
+        React.createElement(ModalController, null),
         React.createElement(_componentsFooter2['default'], null)
       );
     }

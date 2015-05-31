@@ -1,6 +1,6 @@
 let keyMirror = require('react/lib/keyMirror');
 
-let DrawConstants = keyMirror({
+let DrawStoreConstants = keyMirror({
   LOAD_DRAW: null,
   SET_ACTIVE_TOOL: null,
   SET_PRIMARY_COLOR: null,
@@ -13,4 +13,4 @@ let DrawConstants = keyMirror({
   EDIT_PALETTE: null
 });
 
-export default DrawConstants;
+export default DrawStoreConstants;
