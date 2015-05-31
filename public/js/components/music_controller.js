@@ -1,6 +1,6 @@
 let React = require('react');
 
-let Music = React.createClass({
+let MusicController = React.createClass({
   render: function () {
     return (
       <div id="music">
@@ -10,4 +10,4 @@ let Music = React.createClass({
   }
 });
 
-export default Music;
+export default MusicController;

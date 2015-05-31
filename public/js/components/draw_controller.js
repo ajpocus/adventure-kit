@@ -1,17 +1,29 @@
 let React = require('react');
 
+import DrawStore from '../stores/draw_store';
 import DrawToolList from './draw_tool_list';
 import PaletteManager from './palette_manager';
 import ColorPicker from './color_picker';
 import DrawSurface from './draw_surface';
 import ManageDrawList from './manage_draw_list';
 
-let Draw = React.createClass({
+function getAppState() {
+  return {
+    draw: DrawStore.getDraw()
+  };
+)
+
+let DrawController = React.createClass({
   getInitialState: function () {
-    return {
-      primaryColor: "#000000",
-      secondaryColor: "#000000"
-    }
+    return getAppState();
+  },
+
+  componentDidMount: function () {
+    DrawStore.addChangeListener(this._onChange);
+  },
+
+  componentWillUnmount: function () {
+    DrawStore.removeChangeListener(this._onChange);
   },
 
   render: function () {
@@ -19,7 +31,8 @@ let Draw = React.createClass({
       <div id="draw">
         <div className="toolbar">
           <DrawToolList/>
-          <PaletteManager onColorChange={this.setPrimaryColor}/>
+          <PaletteManager palettes={this.state.palettes}
+                          activePalette={this.state.activePalette}/>
           <ColorPicker primaryColor={this.state.primaryColor}
                        secondaryColor={this.state.secondaryColor}
                        onPrimaryColorChange={this.setPrimaryColor}
@@ -38,6 +51,10 @@ let Draw = React.createClass({
     );
   },
 
+  _onChange: function () {
+    this.setState(getAppState());
+  },
+
   setPrimaryColor: function (color) {
     this.setState({
       primaryColor: color
@@ -51,4 +68,4 @@ let Draw = React.createClass({
   }
 });
 
-export default Draw;
+export default DrawController;

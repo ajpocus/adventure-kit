@@ -1,7 +1,6 @@
 let React = require('react');
 let $ = require('jquery');
 window.$ = $;
-let assign = require('object-assign');
 
 let ColorPicker = React.createClass({
   render: function () {

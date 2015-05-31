@@ -1,6 +1,6 @@
 let React = require('react');
 
-let Map = React.createClass({
+let MapController = React.createClass({
   render: function () {
     return (
       <div id="map">
@@ -10,4 +10,4 @@ let Map = React.createClass({
   }
 });
 
-export default Map;
+export default MapController;

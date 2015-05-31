@@ -6,24 +6,12 @@ import EditPalette from './edit_palette';
 import Transparency from '../mixins/transparency';
 
 let PaletteManager = React.createClass({
-  getInitialState: function () {
-    return {
-      palettes: {
-        "Rainbow": [
-          "#ff0000", "#ff7f00", "#ffff00", "#00ff00", "#0000ff", "#4b0082",
-          "#8f00ff", "rgba(0, 0, 0, 0)"
-        ]
-      },
-      currentPalette: "Rainbow"
-    };
-  },
-
   render: function () {
     let paletteOptions = [];
-    for (let paletteName in this.state.palettes) {
-      if (this.state.palettes.hasOwnProperty(paletteName)) {
+    for (let paletteName in this.props.palettes) {
+      if (this.props.palettes.hasOwnProperty(paletteName)) {
         let selected = "";
-        if (paletteName === this.state.currentPalette) {
+        if (paletteName === this.props.activePalette) {
           selected = "selected";
         }
 
@@ -33,10 +21,10 @@ let PaletteManager = React.createClass({
       }
     }
 
-    let currentPalette = this.state.palettes[this.state.currentPalette];
+    let activePalette = this.props.palettes[this.props.activePalette];
     let paletteColors = [];
-    for (let i = 0; i < currentPalette.length; i++) {
-      let color = currentPalette[i];
+    for (let i = 0; i < activePalette.length; i++) {
+      let color = activePalette[i];
 
       // When transparent, use a checkerboard pattern.
       let liStyle = { background: color };
@@ -46,7 +34,7 @@ let PaletteManager = React.createClass({
 
       paletteColors.push(
         <li className="color" style={liStyle}
-            onClick={this.selectColor.bind(this, color)}></li>
+            onClick={this.setActiveColor.bind(this, color)}></li>
       );
     }
 
@@ -58,7 +46,7 @@ let PaletteManager = React.createClass({
           <img className="icon" src="/img/icons/glyphicons-433-plus.png"/>
         </button>
 
-        <select name="currentPalette" className="palette-chooser">
+        <select name="activePalette" className="palette-chooser">
           {paletteOptions}
         </select>
 
@@ -73,8 +61,8 @@ let PaletteManager = React.createClass({
     );
   },
 
-  selectColor: function (color) {
-    this.props.onColorChange(color);
+  setActiveColor: function (color) {
+    DrawStoreActions.setActiveColor(color);
   },
 
   newPalette: function () {
@@ -83,29 +71,15 @@ let PaletteManager = React.createClass({
       return;
     }
 
-    let newPalette = {};
-    // Can't set in Object.assign because paletteName won't be eval'ed
-    newPalette[paletteName] = {};
-    let updatedPalettes = Object.assign(this.state.palettes, newPalette);
-
-    this.setState({ palettes: updatedPalettes });
-    this.setState({ currentPalette: paletteName });
+    DrawStoreActions.newPalette(paletteName);
   },
 
   editPalette: function () {
-    let name = this.state.currentPalette;
-    let palette = this.state.palettes[name];
+    let name = this.props.activePalette;
+    let palette = this.props.palettes[name];
 
-    React.render(<EditPalette palette={palette} name={name}
-                  onPaletteChange={this.onPaletteChange}/>,
+    React.render(<EditPalette palette={palette} name={name}/>,
                  document.getElementById('modal-container'));
-  },
-
-  onPaletteChange: function (palette) {
-    let name = this.state.currentPalette;
-    let palettes = this.state.palettes;
-    palettes[name] = palette;
-    this.setState({ palettes: palettes });
   }
 });
 
