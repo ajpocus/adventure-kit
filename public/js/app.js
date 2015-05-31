@@ -10,9 +10,9 @@ let RouteHandler = Router.RouteHandler;
 
 import Header from './components/header';
 import Footer from './components/footer';
-import DrawController from './components/draw_controller';
-import MapController from './components/map_controller';
-import MusicController from './components/music_controller';
+import Draw from './components/draw';
+import Map from './components/map';
+import Music from './components/music';
 
 $(function () {
   let App = React.createClass({
@@ -26,7 +26,7 @@ $(function () {
           </div>
 
           <div id="modal-container"></div>
-          
+
           <Footer/>
         </div>
       );
@@ -35,10 +35,10 @@ $(function () {
 
   let routes = (
     <Route name="app" path="/" handler={App}>
-      <Route name="draw" handler={DrawController}/>
-      <Route name="map" handler={MapController}/>
-      <Route name="music" handler={MusicController}/>
-      <DefaultRoute handler={DrawController}/>
+      <Route name="draw" handler={Draw}/>
+      <Route name="map" handler={Map}/>
+      <Route name="music" handler={Music}/>
+      <DefaultRoute handler={Draw}/>
     </Route>
   );
 

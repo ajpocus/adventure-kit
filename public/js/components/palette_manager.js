@@ -4,26 +4,27 @@ let $ = require('jquery');
 
 import EditPalette from './edit_palette';
 import Transparency from '../mixins/transparency';
-import DrawStoreActions from '../actions/draw_store_actions';
 import Modal from './modal';
 
 let PaletteManager = React.createClass({
+  getInitialState: function () {
+    return {
+      palettes: this.props.palettes,
+      activePalette: this.props.activePalette
+    };
+  },
+
   render: function () {
     let paletteOptions = [];
-    for (let paletteName in this.props.palettes) {
-      if (this.props.palettes.hasOwnProperty(paletteName)) {
-        let selected = "";
-        if (paletteName === this.props.activePalette) {
-          selected = "selected";
-        }
-
+    for (let paletteName in this.state.palettes) {
+      if (this.state.palettes.hasOwnProperty(paletteName)) {
         paletteOptions.push(
-          <option value={paletteName} selected={selected}>{paletteName}</option>
+          <option value={paletteName}>{paletteName}</option>
         );
       }
     }
 
-    let activePalette = this.props.palettes[this.props.activePalette];
+    let activePalette = this.state.palettes[this.state.activePalette];
     let paletteColors = [];
     for (let i = 0; i < activePalette.length; i++) {
       let color = activePalette[i];
@@ -35,7 +36,7 @@ let PaletteManager = React.createClass({
       }
 
       paletteColors.push(
-        <li className="color" style={liStyle}
+        <li className="color" style={liStyle} key={i}
             onClick={this.setPrimaryColor.bind(this, color)}></li>
       );
     }
@@ -50,7 +51,8 @@ let PaletteManager = React.createClass({
           <img className="icon" src="/img/icons/glyphicons-433-plus.png"/>
         </button>
 
-        <select name="activePalette" className="palette-chooser">
+        <select name="activePalette" className="palette-chooser"
+                value={this.state.activePalette}>
           {paletteOptions}
         </select>
 
@@ -70,7 +72,7 @@ let PaletteManager = React.createClass({
   },
 
   setPrimaryColor: function (color) {
-    DrawStoreActions.setPrimaryColor(color);
+    this.props.onPrimaryColorChange(color);
   },
 
   newPalette: function () {
@@ -79,11 +81,29 @@ let PaletteManager = React.createClass({
       return;
     }
 
-    DrawStoreActions.newPalette(paletteName);
+    if (this.state.palettes[paletteName]) {
+      alert("That palette name is already taken.");
+    }
+
+    let palettes = this.state.palettes;
+    palettes[paletteName] = {};
+    this.setState({ palettes: palettes });
   },
 
   editPalette: function () {
-    DrawStoreActions.editPalette();
+    let name = this.state.activePalette;
+    let palette = this.state.palettes[name].splice(0);
+
+    React.render(<EditPalette palette={palette} name={name}
+                  onPaletteChange={this.onPaletteChange}/>,
+                 document.getElementById('modal-container'));
+  },
+
+  onPaletteChange: function (palette) {
+    let name = this.state.activePalette;
+    let palettes = this.state.palettes;
+    palettes[name] = palette;
+    this.setState({ palettes: palettes });
   }
 });
 

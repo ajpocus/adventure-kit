@@ -2,7 +2,6 @@ let React = require('react');
 let $ = require('jquery');
 
 import Transparency from '../mixins/transparency';
-import DrawStoreActions from '../actions/draw_store_actions';
 
 let EditPalette = React.createClass({
   render: function () {
@@ -74,33 +73,39 @@ let EditPalette = React.createClass({
   },
 
   setActivePaletteColor: function (color) {
-    DrawStoreActions.setActivePaletteColor(color);
-  },
-
-  setPaletteColor: function (color) {
-    DrawStoreActions.setPaletteColor(color);
+    this.setState({ activePaletteColor: color });
   },
 
   removePaletteColor: function (color) {
-    DrawStoreActions.removePaletteColor(color);
+    let palette = this.state.palette;
+    let idx = palette.indexOf(color);
+    palette.splice(idx, 1);
+    this.setState({ palette: palette });
   },
 
   addPaletteColor: function () {
-    DrawStoreActions.addPaletteColor();
+    let palette = this.state.palette;
+    let newColor = '#ffffff';
+    palette.push(newColor);
+    this.setState({ palette: palette, activePaletteColor: newColor });
   },
 
   updatePaletteColor: function (ev) {
     let color = ev.target.value;
-    DrawStoreActions.updatePaletteColor(color);
+    let palette = this.state.palette;
+    let idx = palette.indexOf(this.state.activePaletteColor);
+    palette[idx] = color;
+    this.setState({ palette: palette, activePaletteColor: color });
   },
 
   savePalette: function () {
+    this.props.onPaletteChange(this.state.palette);
     this.closeEdit();
-    DrawStoreActions.savePalette();
   },
 
   closeEdit: function () {
-    DrawStoreActions.closeEdit();
+    let container = document.getElementById('modal-container');
+    React.unmountComponentAtNode(container);
   }
 });
 

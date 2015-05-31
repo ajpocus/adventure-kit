@@ -3,6 +3,13 @@ let $ = require('jquery');
 window.$ = $;
 
 let ColorPicker = React.createClass({
+  getInitialState: function () {
+    return {
+      primaryColor: this.props.primaryColor,
+      secondaryColor: this.props.secondaryColor
+    };
+  },
+
   render: function () {
     return (
       <div className="color-picker">
@@ -15,13 +22,13 @@ let ColorPicker = React.createClass({
   },
 
   componentDidMount: function () {
-    document.getElementById('primary-color').value = this.props.primaryColor;
-    document.getElementById('secondary-color').value = this.props.secondaryColor;
+    document.getElementById('primary-color').value = this.state.primaryColor;
+    document.getElementById('secondary-color').value = this.state.secondaryColor;
   },
 
   componentDidUpdate: function () {
-    document.getElementById('primary-color').value = this.props.primaryColor;
-    document.getElementById('secondary-color').value = this.props.secondaryColor;
+    document.getElementById('primary-color').value = this.state.primaryColor;
+    document.getElementById('secondary-color').value = this.state.secondaryColor;
   },
 
   handlePrimaryColorChange: function (ev) {
