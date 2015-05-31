@@ -16,7 +16,8 @@ let _draw = {
       '#8f00ff'
     ]
   },
-  activePalette: 'Rainbow'
+  activePalette: 'Rainbow',
+  editPalette: []
 };
 
 function loadDraw(data) {
@@ -65,10 +66,10 @@ let DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case DrawStoreConstants.REMOVE_PALETTE_COLOR:
-        let palette = _draw.palettes[_draw.activePalette];
+        let palette = _draw.editPalette;
         let idx = palette.indexOf(action.data);
         palette.splice(idx, 1);
-        _draw.palettes[_draw.activePalette] = palette;
+        _draw.editPalette = palette;
         break;
 
       case DrawStoreConstants.ADD_PALETTE_COLOR:
@@ -100,13 +101,9 @@ let DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case DrawStoreConstants.EDIT_PALETTE:
-        let name = _draw.activePalette;
-        let palette = _draw.palettes[name];
+        let palette = _draw.palettes[_draw.activePalette].slice(0);
         _draw.editPalette = palette;
-        let activeColor = _draw.activePaletteColor;
-        
-        React.render(<EditPalette palette={palette} name={name}
-                                  activePaletteColor={activeColor}/>,
+        React.render(<EditPalette palette={palette}/>,
                      document.getElementById('modal-container'));
         break;
 

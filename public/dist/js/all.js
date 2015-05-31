@@ -64592,7 +64592,8 @@ var _draw = {
   palettes: {
     'Rainbow': ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8f00ff']
   },
-  activePalette: 'Rainbow'
+  activePalette: 'Rainbow',
+  editPalette: []
 };
 
 function loadDraw(data) {
@@ -64641,10 +64642,10 @@ var DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case _constantsDraw_store_constants2['default'].REMOVE_PALETTE_COLOR:
-        var palette = _draw.palettes[_draw.activePalette];
+        var palette = _draw.editPalette;
         var idx = palette.indexOf(action.data);
         palette.splice(idx, 1);
-        _draw.palettes[_draw.activePalette] = palette;
+        _draw.editPalette = palette;
         break;
 
       case _constantsDraw_store_constants2['default'].ADD_PALETTE_COLOR:
@@ -64676,13 +64677,9 @@ var DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case _constantsDraw_store_constants2['default'].EDIT_PALETTE:
-        var name = _draw.activePalette;
-        var palette = _draw.palettes[name];
+        var palette = _draw.palettes[_draw.activePalette].slice(0);
         _draw.editPalette = palette;
-        var activeColor = _draw.activePaletteColor;
-
-        React.render(React.createElement(_componentsEdit_palette2['default'], { palette: palette, name: name,
-          activePaletteColor: activeColor }), document.getElementById('modal-container'));
+        React.render(React.createElement(_componentsEdit_palette2['default'], { palette: palette }), document.getElementById('modal-container'));
         break;
 
       default:
