@@ -13,7 +13,8 @@ let Draw = React.createClass({
       primaryColor: '#000000',
       secondaryColor: '#ffffff',
       width: 512,
-      height: 512
+      height: 512,
+      tileSize: 32
     };
   },
 
@@ -33,11 +34,11 @@ let Draw = React.createClass({
         <DrawSurface primaryColor={this.state.primaryColor}
                      secondaryColor={this.state.secondaryColor}
                      width={this.state.width}
-                     height={this.state.height}/>
+                     height={this.state.height}
+                     tileSize={this.state.tileSize}/>
 
         <div className="manage-surface">
-          <ManageDrawList onResizeClick={this.onResizeClick}
-                          handleResize={this.handleResize}/>
+          <ManageDrawList onResizeClick={this.onResizeClick}/>
         </div>
       </div>
     );
@@ -52,7 +53,7 @@ let Draw = React.createClass({
   },
 
   onResizeClick: function () {
-    React.render(<ResizePrompt onClick={this.handleResize}/>,
+    React.render(<ResizePrompt handleResize={this.handleResize}/>,
                  document.getElementById('modal-container'));
   },
 

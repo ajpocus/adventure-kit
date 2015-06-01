@@ -2,15 +2,11 @@ let React = require('react');
 let $ = require('jquery');
 let PIXI = require('pixi.js');
 
-import TiledSurface from '../mixins/tiled_surface';
+import Pixel from '../models/pixel';
 
 let DrawCanvas = React.createClass({
-  mixins: [TiledSurface],
-
   getInitialState: function () {
     return {
-      width: this.props.width,
-      height: this.props.height,
       isMouseDown: false
     };
   },
@@ -21,13 +17,24 @@ let DrawCanvas = React.createClass({
     };
   },
 
+  componentDidMount: function () {
+    let renderNode = $(React.findDOMNode(this));
+
+    this.bgCtx = renderNode.find("#bg-canvas")[0].getContext('2d');
+    this.drawCtx = renderNode.find("#draw-canvas")[0].getContext('2d');
+    this.overlayCtx = renderNode.find("#overlay-canvas")[0].getContext('2d');
+
+    this.setState({ grid: this.initTiles() });
+    this.initBackground();
+  },
+
   render: function () {
     return (
       <div id="render"
           onMouseMove={this.mouseMoved}
           onMouseOut={this.clearHighlight}
-          onMouseDown={this.paintPixel}
-          onContextMenu={this.paintPixel}
+          onMouseDown={this.fillPixel}
+          onContextMenu={this.fillPixel}
           onMouseUp={this.setMouseUp}>
         <canvas id="bg-canvas" className="draw" width={this.props.width}
                 height={this.props.height}></canvas>
@@ -39,14 +46,64 @@ let DrawCanvas = React.createClass({
     );
   },
 
-  componentDidMount: function () {
-    let renderNode = $(React.findDOMNode(this));
+  componentDidUpdate: function (prevProps, prevState) {
+    console.log('width', this.props.width, prevProps.width);
+    if (this.props.width !== prevProps.width ||
+        this.props.height !== prevProps.height) {
+      this.updateTiles();
+      this.initBackground();
+    }
+  },
 
-    this.bgCtx = renderNode.find("#bg-canvas")[0].getContext('2d');
-    this.drawCtx = renderNode.find("#draw-canvas")[0].getContext('2d');
-    this.overlayCtx = renderNode.find("#overlay-canvas")[0].getContext('2d');
+  initTiles: function () {
+    let numTilesH = this.props.width / this.props.tileSize;
+    let numTilesV = this.props.height / this.props.tileSize;
+    let grid = [];
 
-    this.initBackground();
+    for (let x = 0; x < numTilesH; x++) {
+      grid[x] = [];
+
+      for (let y = 0; y < numTilesV; y++) {
+        grid[x].push(new Pixel(x, y));
+      }
+    }
+
+    return grid;
+  },
+
+  updateTiles: function () {
+    let numTilesH = this.props.width / this.props.tileSize;
+    let numTilesV = this.props.height / this.props.tileSize;
+    let oldGrid = this.state.grid;
+    let newGrid = [];
+
+    for (let x = 0; x < numTilesH; x++) {
+      newGrid[x] = [];
+      for (let y = 0; y < numTilesV; y++) {
+        if (x < oldGrid.length && y < oldGrid[x].length) {
+          newGrid[x][y] = oldGrid[x][y];
+        } else {
+          newGrid[x].push(new Pixel(x, y));
+        }
+      }
+    }
+
+    console.log('new grid', newGrid);
+
+    this.setState({ grid: newGrid });
+  },
+
+  getTileCoordinates: function (ev) {
+    let elRect = ev.target.getBoundingClientRect();
+    let absX = ev.clientX;
+    let absY = ev.clientY;
+    let x = absX - elRect.left;
+    let y = absY - elRect.top;
+
+    let tileX = Math.floor(x / this.props.tileSize);
+    let tileY = Math.floor(y / this.props.tileSize);
+
+    return { x: tileX, y: tileY };
   },
 
   initBackground: function () {
@@ -86,7 +143,7 @@ let DrawCanvas = React.createClass({
     this.clearHighlight(null, currentPixel);
 
     if (this.state.isMouseDown) {
-      this.paintPixel(ev);
+      this.fillPixel(ev);
     }
   },
 
@@ -116,7 +173,7 @@ let DrawCanvas = React.createClass({
     this.setState({ grid: grid });
   },
 
-  paintPixel: function (ev) {
+  fillPixel: function (ev) {
     ev.preventDefault();
     this.setState({ isMouseDown: true });
     let grid = this.state.grid;

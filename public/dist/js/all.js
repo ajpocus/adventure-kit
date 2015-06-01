@@ -62915,7 +62915,8 @@ var Draw = React.createClass({
       primaryColor: '#000000',
       secondaryColor: '#ffffff',
       width: 512,
-      height: 512
+      height: 512,
+      tileSize: 32
     };
   },
 
@@ -62937,12 +62938,12 @@ var Draw = React.createClass({
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
         secondaryColor: this.state.secondaryColor,
         width: this.state.width,
-        height: this.state.height }),
+        height: this.state.height,
+        tileSize: this.state.tileSize }),
       React.createElement(
         'div',
         { className: 'manage-surface' },
-        React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick,
-          handleResize: this.handleResize })
+        React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick })
       )
     );
   },
@@ -62956,7 +62957,7 @@ var Draw = React.createClass({
   },
 
   onResizeClick: function onResizeClick() {
-    React.render(React.createElement(_resize_prompt2['default'], { onClick: this.handleResize }), document.getElementById('modal-container'));
+    React.render(React.createElement(_resize_prompt2['default'], { handleResize: this.handleResize }), document.getElementById('modal-container'));
   },
 
   handleResize: function handleResize(width, height) {
@@ -62976,9 +62977,9 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _mixinsTiled_surface = require('../mixins/tiled_surface');
+var _modelsPixel = require('../models/pixel');
 
-var _mixinsTiled_surface2 = _interopRequireDefault(_mixinsTiled_surface);
+var _modelsPixel2 = _interopRequireDefault(_modelsPixel);
 
 var React = require('react');
 var $ = require('jquery');
@@ -62987,12 +62988,8 @@ var PIXI = require('pixi.js');
 var DrawCanvas = React.createClass({
   displayName: 'DrawCanvas',
 
-  mixins: [_mixinsTiled_surface2['default']],
-
   getInitialState: function getInitialState() {
     return {
-      width: this.props.width,
-      height: this.props.height,
       isMouseDown: false
     };
   },
@@ -63003,14 +63000,25 @@ var DrawCanvas = React.createClass({
     };
   },
 
+  componentDidMount: function componentDidMount() {
+    var renderNode = $(React.findDOMNode(this));
+
+    this.bgCtx = renderNode.find('#bg-canvas')[0].getContext('2d');
+    this.drawCtx = renderNode.find('#draw-canvas')[0].getContext('2d');
+    this.overlayCtx = renderNode.find('#overlay-canvas')[0].getContext('2d');
+
+    this.setState({ grid: this.initTiles() });
+    this.initBackground();
+  },
+
   render: function render() {
     return React.createElement(
       'div',
       { id: 'render',
         onMouseMove: this.mouseMoved,
         onMouseOut: this.clearHighlight,
-        onMouseDown: this.paintPixel,
-        onContextMenu: this.paintPixel,
+        onMouseDown: this.fillPixel,
+        onContextMenu: this.fillPixel,
         onMouseUp: this.setMouseUp },
       React.createElement('canvas', { id: 'bg-canvas', className: 'draw', width: this.props.width,
         height: this.props.height }),
@@ -63021,14 +63029,63 @@ var DrawCanvas = React.createClass({
     );
   },
 
-  componentDidMount: function componentDidMount() {
-    var renderNode = $(React.findDOMNode(this));
+  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+    console.log('width', this.props.width, prevProps.width);
+    if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
+      this.updateTiles();
+      this.initBackground();
+    }
+  },
 
-    this.bgCtx = renderNode.find('#bg-canvas')[0].getContext('2d');
-    this.drawCtx = renderNode.find('#draw-canvas')[0].getContext('2d');
-    this.overlayCtx = renderNode.find('#overlay-canvas')[0].getContext('2d');
+  initTiles: function initTiles() {
+    var numTilesH = this.props.width / this.props.tileSize;
+    var numTilesV = this.props.height / this.props.tileSize;
+    var grid = [];
 
-    this.initBackground();
+    for (var x = 0; x < numTilesH; x++) {
+      grid[x] = [];
+
+      for (var y = 0; y < numTilesV; y++) {
+        grid[x].push(new _modelsPixel2['default'](x, y));
+      }
+    }
+
+    return grid;
+  },
+
+  updateTiles: function updateTiles() {
+    var numTilesH = this.props.width / this.props.tileSize;
+    var numTilesV = this.props.height / this.props.tileSize;
+    var oldGrid = this.state.grid;
+    var newGrid = [];
+
+    for (var x = 0; x < numTilesH; x++) {
+      newGrid[x] = [];
+      for (var y = 0; y < numTilesV; y++) {
+        if (x < oldGrid.length && y < oldGrid[x].length) {
+          newGrid[x][y] = oldGrid[x][y];
+        } else {
+          newGrid[x].push(new _modelsPixel2['default'](x, y));
+        }
+      }
+    }
+
+    console.log('new grid', newGrid);
+
+    this.setState({ grid: newGrid });
+  },
+
+  getTileCoordinates: function getTileCoordinates(ev) {
+    var elRect = ev.target.getBoundingClientRect();
+    var absX = ev.clientX;
+    var absY = ev.clientY;
+    var x = absX - elRect.left;
+    var y = absY - elRect.top;
+
+    var tileX = Math.floor(x / this.props.tileSize);
+    var tileY = Math.floor(y / this.props.tileSize);
+
+    return { x: tileX, y: tileY };
   },
 
   initBackground: function initBackground() {
@@ -63071,7 +63128,7 @@ var DrawCanvas = React.createClass({
     this.clearHighlight(null, currentPixel);
 
     if (this.state.isMouseDown) {
-      this.paintPixel(ev);
+      this.fillPixel(ev);
     }
   },
 
@@ -63100,7 +63157,7 @@ var DrawCanvas = React.createClass({
     this.setState({ grid: grid });
   },
 
-  paintPixel: function paintPixel(ev) {
+  fillPixel: function fillPixel(ev) {
     ev.preventDefault();
     this.setState({ isMouseDown: true });
     var grid = this.state.grid;
@@ -63136,7 +63193,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":430,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
+},{"../models/pixel":431,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63377,7 +63434,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":431,"jquery":99,"react":415}],422:[function(require,module,exports){
+},{"../mixins/transparency":430,"jquery":99,"react":415}],422:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63777,7 +63834,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":431,"./edit_palette":421,"./modal":426,"jquery":99,"react":415,"tinycolor2":416}],429:[function(require,module,exports){
+},{"../mixins/transparency":430,"./edit_palette":421,"./modal":426,"jquery":99,"react":415,"tinycolor2":416}],429:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63819,7 +63876,7 @@ var ResizePrompt = React.createClass({
             { className: "content" },
             React.createElement(
               "span",
-              { "class": "close", onClick: this.closePrompt },
+              { className: "close", onClick: this.closePrompt },
               "x"
             ),
             React.createElement(
@@ -63830,7 +63887,9 @@ var ResizePrompt = React.createClass({
                 { htmlFor: "width" },
                 "Width: "
               ),
-              React.createElement("input", { type: "number", value: this.state.width })
+              React.createElement("input", { type: "number",
+                value: this.state.width,
+                onChange: this.setWidth })
             ),
             React.createElement(
               "div",
@@ -63840,7 +63899,9 @@ var ResizePrompt = React.createClass({
                 { htmlFor: "height" },
                 "Height: "
               ),
-              React.createElement("input", { type: "number", value: this.state.height })
+              React.createElement("input", { type: "number",
+                value: this.state.height,
+                onChange: this.setHeight })
             ),
             React.createElement(
               "button",
@@ -63858,8 +63919,16 @@ var ResizePrompt = React.createClass({
     );
   },
 
+  setWidth: function setWidth(ev) {
+    this.setState({ width: ev.target.value });
+  },
+
+  setHeight: function setHeight(ev) {
+    this.setState({ height: ev.target.value });
+  },
+
   handleResize: function handleResize() {
-    this.props.handleResize();
+    this.props.handleResize(this.state.width, this.state.height);
     this.closePrompt();
   },
 
@@ -63878,92 +63947,6 @@ module.exports = exports["default"];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _modelsPixel = require('../models/pixel');
-
-var _modelsPixel2 = _interopRequireDefault(_modelsPixel);
-
-var TiledSurface = {
-  getInitialState: function getInitialState() {
-    return {
-      width: 512,
-      height: 512,
-      tileSize: 32,
-      grid: this.initTiles()
-    };
-  },
-
-  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
-      this.updateTiles();
-    }
-  },
-
-  initTiles: function initTiles() {
-    var numTilesH = this.state.width / this.state.tileSize;
-    var numTilesV = this.state.height / this.state.tileSize;
-    var grid = [];
-
-    for (var x = 0; x < numTilesH; x++) {
-      grid[x] = [];
-
-      for (var y = 0; y < numTilesV; y++) {
-        grid[x].push(new _modelsPixel2['default'](x, y));
-      }
-    }
-
-    return grid;
-  },
-
-  updateTiles: function updateTiles() {
-    var numTilesH = this.state.width / this.state.tileSize;
-    var numTilesV = this.state.height / this.state.tileSize;
-    var oldGrid = this.state.grid;
-    var newGrid = [];
-
-    for (var x = 0; x < numTilesH; x++) {
-      newGrid[x] = [];
-      for (var y = 0; y < numTilesV; y++) {
-        if (x < oldGrid.length && y < oldGrid[x].length) {
-          newGrid[x][y] = oldGrid[x][y];
-        } else {
-          newGrid[x].push(new _modelsPixel2['default'](x, y));
-        }
-      }
-    }
-
-    this.setState({ grid: newGrid });
-  },
-
-  getTileCoordinates: function getTileCoordinates(ev) {
-    var elRect = ev.target.getBoundingClientRect();
-    var absX = ev.clientX;
-    var absY = ev.clientY;
-    var x = absX - elRect.left;
-    var y = absY - elRect.top;
-
-    var tileX = Math.floor(x / this.state.tileSize);
-    var tileY = Math.floor(y / this.state.tileSize);
-
-    return { x: tileX, y: tileY };
-  },
-
-  componentDidMount: function componentDidMount() {
-    this.initTiles();
-  }
-};
-
-exports['default'] = TiledSurface;
-module.exports = exports['default'];
-
-},{"../models/pixel":432}],431:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
 var Transparency = {
   background: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==")'
 };
@@ -63971,7 +63954,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],432:[function(require,module,exports){
+},{}],431:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63992,7 +63975,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],433:[function(require,module,exports){
+},{}],432:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -64061,7 +64044,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":418,"./components/footer":422,"./components/header":423,"./components/map":425,"./components/music":427,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[433])
+},{"./components/draw":418,"./components/footer":422,"./components/header":423,"./components/map":425,"./components/music":427,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[432])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map
