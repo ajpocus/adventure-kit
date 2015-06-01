@@ -5,12 +5,15 @@ import PaletteManager from './palette_manager';
 import ColorPicker from './color_picker';
 import DrawSurface from './draw_surface';
 import ManageDrawList from './manage_draw_list';
+import ResizePrompt from './resize_prompt';
 
 let Draw = React.createClass({
   getInitialState: function () {
     return {
-      primaryColor: '#222222',
-      secondaryColor: '#ffffff'
+      primaryColor: '#000000',
+      secondaryColor: '#ffffff',
+      width: 512,
+      height: 512
     };
   },
 
@@ -28,10 +31,13 @@ let Draw = React.createClass({
         </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}
-                     secondaryColor={this.state.secondaryColor}/>
+                     secondaryColor={this.state.secondaryColor}
+                     width={this.state.width}
+                     height={this.state.height}/>
 
         <div className="manage-surface">
-          <ManageDrawList/>
+          <ManageDrawList onResizeClick={this.onResizeClick}
+                          handleResize={this.handleResize}/>
         </div>
       </div>
     );
@@ -43,6 +49,15 @@ let Draw = React.createClass({
 
   onSecondaryColorChange: function (color) {
     this.setState({ secondaryColor: color });
+  },
+
+  onResizeClick: function () {
+    React.render(<ResizePrompt onClick={this.handleResize}/>,
+                 document.getElementById('modal-container'));
+  },
+
+  handleResize: function (width, height) {
+    this.setState({ width: width, height: height });
   }
 });
 

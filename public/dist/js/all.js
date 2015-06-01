@@ -62901,6 +62901,10 @@ var _manage_draw_list = require('./manage_draw_list');
 
 var _manage_draw_list2 = _interopRequireDefault(_manage_draw_list);
 
+var _resize_prompt = require('./resize_prompt');
+
+var _resize_prompt2 = _interopRequireDefault(_resize_prompt);
+
 var React = require('react');
 
 var Draw = React.createClass({
@@ -62908,8 +62912,10 @@ var Draw = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      primaryColor: '#222222',
-      secondaryColor: '#ffffff'
+      primaryColor: '#000000',
+      secondaryColor: '#ffffff',
+      width: 512,
+      height: 512
     };
   },
 
@@ -62929,11 +62935,14 @@ var Draw = React.createClass({
           onSecondaryColorChange: this.onSecondaryColorChange })
       ),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
-        secondaryColor: this.state.secondaryColor }),
+        secondaryColor: this.state.secondaryColor,
+        width: this.state.width,
+        height: this.state.height }),
       React.createElement(
         'div',
         { className: 'manage-surface' },
-        React.createElement(_manage_draw_list2['default'], null)
+        React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick,
+          handleResize: this.handleResize })
       )
     );
   },
@@ -62944,13 +62953,21 @@ var Draw = React.createClass({
 
   onSecondaryColorChange: function onSecondaryColorChange(color) {
     this.setState({ secondaryColor: color });
+  },
+
+  onResizeClick: function onResizeClick() {
+    React.render(React.createElement(_resize_prompt2['default'], { onClick: this.handleResize }), document.getElementById('modal-container'));
+  },
+
+  handleResize: function handleResize(width, height) {
+    this.setState({ width: width, height: height });
   }
 });
 
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":420,"./manage_draw_list":424,"./palette_manager":428,"react":415}],419:[function(require,module,exports){
+},{"./color_picker":417,"./draw_surface":419,"./draw_tool_list":420,"./manage_draw_list":424,"./palette_manager":428,"./resize_prompt":429,"react":415}],419:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -62974,6 +62991,8 @@ var DrawCanvas = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
+      width: this.props.width,
+      height: this.props.height,
       isMouseDown: false
     };
   },
@@ -63117,7 +63136,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../mixins/tiled_surface":429,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
+},{"../mixins/tiled_surface":430,"jquery":99,"pixi.js":204,"react":415}],420:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63358,7 +63377,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":430,"jquery":99,"react":415}],422:[function(require,module,exports){
+},{"../mixins/transparency":431,"jquery":99,"react":415}],422:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63502,7 +63521,8 @@ var ManageDrawList = React.createClass({
         { className: 'tool', key: i },
         React.createElement(
           'button',
-          { className: 'btn' },
+          { className: 'btn',
+            onClick: this.handleClick.bind(this, tool.name) },
           React.createElement(
             'div',
             { className: 'img-container' },
@@ -63517,6 +63537,17 @@ var ManageDrawList = React.createClass({
       { className: 'manage-buttons' },
       toolList
     );
+  },
+
+  handleClick: function handleClick(name) {
+    switch (name) {
+      case 'Resize':
+        this.props.onResizeClick();
+        break;
+
+      default:
+        return true;
+    }
   }
 });
 
@@ -63746,7 +63777,102 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":430,"./edit_palette":421,"./modal":426,"jquery":99,"react":415,"tinycolor2":416}],429:[function(require,module,exports){
+},{"../mixins/transparency":431,"./edit_palette":421,"./modal":426,"jquery":99,"react":415,"tinycolor2":416}],429:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var React = require("react");
+
+var ResizePrompt = React.createClass({
+  displayName: "ResizePrompt",
+
+  getInitialState: function getInitialState() {
+    return {
+      width: 512,
+      height: 512
+    };
+  },
+
+  render: function render() {
+    return React.createElement(
+      "div",
+      { className: "resize-prompt modal" },
+      React.createElement(
+        "div",
+        { className: "modal-background" },
+        React.createElement(
+          "div",
+          { className: "modal-content" },
+          React.createElement(
+            "div",
+            { className: "header" },
+            React.createElement(
+              "h2",
+              null,
+              "Resize Canvas"
+            )
+          ),
+          React.createElement(
+            "div",
+            { className: "content" },
+            React.createElement(
+              "span",
+              { "class": "close", onClick: this.closePrompt },
+              "x"
+            ),
+            React.createElement(
+              "div",
+              { className: "field" },
+              React.createElement(
+                "label",
+                { htmlFor: "width" },
+                "Width: "
+              ),
+              React.createElement("input", { type: "number", value: this.state.width })
+            ),
+            React.createElement(
+              "div",
+              { className: "field" },
+              React.createElement(
+                "label",
+                { htmlFor: "height" },
+                "Height: "
+              ),
+              React.createElement("input", { type: "number", value: this.state.height })
+            ),
+            React.createElement(
+              "button",
+              { type: "button", onClick: this.closePrompt },
+              "Cancel"
+            ),
+            React.createElement(
+              "button",
+              { type: "submit", onClick: this.handleResize },
+              "Resize"
+            )
+          )
+        )
+      )
+    );
+  },
+
+  handleResize: function handleResize() {
+    this.props.handleResize();
+    this.closePrompt();
+  },
+
+  closePrompt: function closePrompt() {
+    var container = document.getElementById("modal-container");
+    React.unmountComponentAtNode(container);
+  }
+});
+
+exports["default"] = ResizePrompt;
+module.exports = exports["default"];
+
+},{"react":415}],430:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63760,23 +63886,24 @@ var _modelsPixel = require('../models/pixel');
 var _modelsPixel2 = _interopRequireDefault(_modelsPixel);
 
 var TiledSurface = {
-  getDefaultProps: function getDefaultProps() {
+  getInitialState: function getInitialState() {
     return {
       width: 512,
       height: 512,
-      tileSize: 32
-    };
-  },
-
-  getInitialState: function getInitialState() {
-    return {
+      tileSize: 32,
       grid: this.initTiles()
     };
   },
 
+  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+    if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
+      this.updateTiles();
+    }
+  },
+
   initTiles: function initTiles() {
-    var numTilesH = this.props.width / this.props.tileSize;
-    var numTilesV = this.props.height / this.props.tileSize;
+    var numTilesH = this.state.width / this.state.tileSize;
+    var numTilesV = this.state.height / this.state.tileSize;
     var grid = [];
 
     for (var x = 0; x < numTilesH; x++) {
@@ -63790,6 +63917,26 @@ var TiledSurface = {
     return grid;
   },
 
+  updateTiles: function updateTiles() {
+    var numTilesH = this.state.width / this.state.tileSize;
+    var numTilesV = this.state.height / this.state.tileSize;
+    var oldGrid = this.state.grid;
+    var newGrid = [];
+
+    for (var x = 0; x < numTilesH; x++) {
+      newGrid[x] = [];
+      for (var y = 0; y < numTilesV; y++) {
+        if (x < oldGrid.length && y < oldGrid[x].length) {
+          newGrid[x][y] = oldGrid[x][y];
+        } else {
+          newGrid[x].push(new _modelsPixel2['default'](x, y));
+        }
+      }
+    }
+
+    this.setState({ grid: newGrid });
+  },
+
   getTileCoordinates: function getTileCoordinates(ev) {
     var elRect = ev.target.getBoundingClientRect();
     var absX = ev.clientX;
@@ -63797,8 +63944,8 @@ var TiledSurface = {
     var x = absX - elRect.left;
     var y = absY - elRect.top;
 
-    var tileX = Math.floor(x / this.props.tileSize);
-    var tileY = Math.floor(y / this.props.tileSize);
+    var tileX = Math.floor(x / this.state.tileSize);
+    var tileY = Math.floor(y / this.state.tileSize);
 
     return { x: tileX, y: tileY };
   },
@@ -63811,7 +63958,7 @@ var TiledSurface = {
 exports['default'] = TiledSurface;
 module.exports = exports['default'];
 
-},{"../models/pixel":431}],430:[function(require,module,exports){
+},{"../models/pixel":432}],431:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63824,7 +63971,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],431:[function(require,module,exports){
+},{}],432:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63845,7 +63992,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],432:[function(require,module,exports){
+},{}],433:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -63914,7 +64061,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":418,"./components/footer":422,"./components/header":423,"./components/map":425,"./components/music":427,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[432])
+},{"./components/draw":418,"./components/footer":422,"./components/header":423,"./components/map":425,"./components/music":427,"babel/polyfill":91,"jquery":99,"react":415,"react-router":246}]},{},[433])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

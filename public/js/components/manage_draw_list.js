@@ -23,7 +23,8 @@ let ManageDrawList = React.createClass({
 
       toolList.push(
         <li className="tool" key={i}>
-          <button className="btn">
+          <button className="btn"
+                  onClick={this.handleClick.bind(this, tool.name)}>
             <div className="img-container">
               <img className="icon" src={tool.imgUrl}/>
             </div>
@@ -37,6 +38,17 @@ let ManageDrawList = React.createClass({
         {toolList}
       </ul>
     );
+  },
+
+  handleClick: function (name) {
+    switch (name) {
+      case 'Resize':
+        this.props.onResizeClick();
+        break;
+
+      default:
+        return true;
+    }
   }
 });
 

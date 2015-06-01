@@ -417,7 +417,7 @@ img.pixel {
   height: 12px;
 }
 
-.edit-palette .modal-background {
+.modal-background {
   position: absolute;
   top: 0;
   left: 0;
@@ -426,7 +426,7 @@ img.pixel {
   background: rgba(0, 0, 0, 0.4);
 }
 
-.edit-palette .modal-content {
+.modal-content {
   width: 550px;
   margin: 200px auto;
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -434,7 +434,7 @@ img.pixel {
   position: relative;
 }
 
-.edit-palette .close-modal {
+.close-modal {
   position: absolute;
   top: 12px;
   right: 12px;

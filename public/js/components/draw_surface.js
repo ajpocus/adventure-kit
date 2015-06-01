@@ -9,6 +9,8 @@ let DrawCanvas = React.createClass({
 
   getInitialState: function () {
     return {
+      width: this.props.width,
+      height: this.props.height,
       isMouseDown: false
     };
   },

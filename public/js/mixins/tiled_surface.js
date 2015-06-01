@@ -1,23 +1,25 @@
 import Pixel from '../models/pixel';
 
 let TiledSurface = {
-  getDefaultProps: function () {
+  getInitialState: function () {
     return {
       width: 512,
       height: 512,
-      tileSize: 32
-    };
-  },
-
-  getInitialState: function () {
-    return {
+      tileSize: 32,
       grid: this.initTiles()
     };
   },
 
+  componentDidUpdate: function (prevProps, prevState) {
+    if (this.props.width !== prevProps.width ||
+        this.props.height !== prevProps.height) {
+      this.updateTiles();
+    }
+  },
+
   initTiles: function () {
-    let numTilesH = this.props.width / this.props.tileSize;
-    let numTilesV = this.props.height / this.props.tileSize;
+    let numTilesH = this.state.width / this.state.tileSize;
+    let numTilesV = this.state.height / this.state.tileSize;
     let grid = [];
 
     for (let x = 0; x < numTilesH; x++) {
@@ -31,6 +33,26 @@ let TiledSurface = {
     return grid;
   },
 
+  updateTiles: function () {
+    let numTilesH = this.state.width / this.state.tileSize;
+    let numTilesV = this.state.height / this.state.tileSize;
+    let oldGrid = this.state.grid;
+    let newGrid = [];
+
+    for (let x = 0; x < numTilesH; x++) {
+      newGrid[x] = [];
+      for (let y = 0; y < numTilesV; y++) {
+        if (x < oldGrid.length && y < oldGrid[x].length) {
+          newGrid[x][y] = oldGrid[x][y];
+        } else {
+          newGrid[x].push(new Pixel(x, y));
+        }
+      }
+    }
+
+    this.setState({ grid: newGrid });
+  },
+
   getTileCoordinates: function (ev) {
     let elRect = ev.target.getBoundingClientRect();
     let absX = ev.clientX;
@@ -38,8 +60,8 @@ let TiledSurface = {
     let x = absX - elRect.left;
     let y = absY - elRect.top;
 
-    let tileX = Math.floor(x / this.props.tileSize);
-    let tileY = Math.floor(y / this.props.tileSize);
+    let tileX = Math.floor(x / this.state.tileSize);
+    let tileY = Math.floor(y / this.state.tileSize);
 
     return { x: tileX, y: tileY };
   },
