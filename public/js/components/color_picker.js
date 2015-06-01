@@ -1,22 +1,15 @@
 let React = require('react');
-let $ = require('jquery');
-window.$ = $;
+
+import DrawActions from '../actions/draw_actions';
 
 let ColorPicker = React.createClass({
-  getInitialState: function () {
-    return {
-      primaryColor: this.props.primaryColor,
-      secondaryColor: this.props.secondaryColor
-    };
-  },
-
   render: function () {
     return (
       <div className="color-picker">
         <input type="color" id="primary-color"
-               onChange={this.handlePrimaryColorChange}/>
+               onChange={this.onPrimaryColorChange}/>
         <input type="color" id="secondary-color"
-               onChange={this.handleSecondaryColorChange}/>
+               onChange={this.onSecondaryColorChange}/>
       </div>
     );
   },
@@ -31,14 +24,14 @@ let ColorPicker = React.createClass({
     document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
 
-  handlePrimaryColorChange: function (ev) {
+  onPrimaryColorChange: function (ev) {
     let color = ev.target.value;
-    this.props.onPrimaryColorChange(color);
+    DrawActions.setPrimaryColor(color);
   },
 
-  handleSecondaryColorChange: function (ev) {
+  onSecondaryColorChange: function (ev) {
     let color = ev.target.value;
-    this.props.onSecondaryColorChange(color);
+    DrawActions.setSecondaryColor(color);
   }
 });
 

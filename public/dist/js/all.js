@@ -63445,28 +63445,69 @@ else {
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _dispatcherApp_dispatcher = require('../dispatcher/app_dispatcher');
+
+var _dispatcherApp_dispatcher2 = _interopRequireDefault(_dispatcherApp_dispatcher);
+
+var _constantsDraw_constants = require('../constants/draw_constants');
+
+var _constantsDraw_constants2 = _interopRequireDefault(_constantsDraw_constants);
+
+var DrawActions = {
+  loadState: function loadState(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].LOAD_STATE,
+      data: data
+    });
+  },
+
+  setPrimaryColor: function setPrimaryColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_PRIMARY_COLOR,
+      data: data
+    });
+  },
+
+  setSecondaryColor: function setSecondaryColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_SECONDARY_COLOR,
+      data: data
+    });
+  }
+};
+
+exports['default'] = DrawActions;
+module.exports = exports['default'];
+
+},{"../constants/draw_constants":435,"../dispatcher/app_dispatcher":436}],422:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _actionsDraw_actions = require('../actions/draw_actions');
+
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
+
 var React = require('react');
-var $ = require('jquery');
-window.$ = $;
 
 var ColorPicker = React.createClass({
   displayName: 'ColorPicker',
-
-  getInitialState: function getInitialState() {
-    return {
-      primaryColor: this.props.primaryColor,
-      secondaryColor: this.props.secondaryColor
-    };
-  },
 
   render: function render() {
     return React.createElement(
       'div',
       { className: 'color-picker' },
       React.createElement('input', { type: 'color', id: 'primary-color',
-        onChange: this.handlePrimaryColorChange }),
+        onChange: this.onPrimaryColorChange }),
       React.createElement('input', { type: 'color', id: 'secondary-color',
-        onChange: this.handleSecondaryColorChange })
+        onChange: this.onSecondaryColorChange })
     );
   },
 
@@ -63480,21 +63521,21 @@ var ColorPicker = React.createClass({
     document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
 
-  handlePrimaryColorChange: function handlePrimaryColorChange(ev) {
+  onPrimaryColorChange: function onPrimaryColorChange(ev) {
     var color = ev.target.value;
-    this.props.onPrimaryColorChange(color);
+    _actionsDraw_actions2['default'].setPrimaryColor(color);
   },
 
-  handleSecondaryColorChange: function handleSecondaryColorChange(ev) {
+  onSecondaryColorChange: function onSecondaryColorChange(ev) {
     var color = ev.target.value;
-    this.props.onSecondaryColorChange(color);
+    _actionsDraw_actions2['default'].setSecondaryColor(color);
   }
 });
 
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"jquery":103,"react":419}],422:[function(require,module,exports){
+},{"../actions/draw_actions":421,"react":419}],423:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63585,7 +63626,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":438,"./color_picker":421,"./draw_surface":423,"./draw_tool_list":424,"./manage_draw_list":428,"./palette_manager":432,"./resize_prompt":433,"react":419}],423:[function(require,module,exports){
+},{"../stores/draw_store":439,"./color_picker":422,"./draw_surface":424,"./draw_tool_list":425,"./manage_draw_list":429,"./palette_manager":433,"./resize_prompt":434,"react":419}],424:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63810,7 +63851,7 @@ var DrawCanvas = React.createClass({
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../models/pixel":437,"jquery":103,"pixi.js":208,"react":419}],424:[function(require,module,exports){
+},{"../models/pixel":438,"jquery":103,"pixi.js":208,"react":419}],425:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -63882,7 +63923,7 @@ var DrawToolList = React.createClass({
 exports["default"] = DrawToolList;
 module.exports = exports["default"];
 
-},{"react":419}],425:[function(require,module,exports){
+},{"react":419}],426:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64051,7 +64092,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":436,"jquery":103,"react":419}],426:[function(require,module,exports){
+},{"../mixins/transparency":437,"jquery":103,"react":419}],427:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64093,7 +64134,7 @@ var Footer = React.createClass({
 exports["default"] = Footer;
 module.exports = exports["default"];
 
-},{"react":419}],427:[function(require,module,exports){
+},{"react":419}],428:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64162,7 +64203,7 @@ var Header = React.createClass({
 exports['default'] = Header;
 module.exports = exports['default'];
 
-},{"react":419,"react-router":250}],428:[function(require,module,exports){
+},{"react":419,"react-router":250}],429:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64228,7 +64269,7 @@ var ManageDrawList = React.createClass({
 exports['default'] = ManageDrawList;
 module.exports = exports['default'];
 
-},{"react":419}],429:[function(require,module,exports){
+},{"react":419}],430:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64255,7 +64296,7 @@ var MapController = React.createClass({
 exports["default"] = MapController;
 module.exports = exports["default"];
 
-},{"react":419}],430:[function(require,module,exports){
+},{"react":419}],431:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64283,7 +64324,7 @@ var Modal = React.createClass({
 exports['default'] = Modal;
 module.exports = exports['default'];
 
-},{"react":419}],431:[function(require,module,exports){
+},{"react":419}],432:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64310,7 +64351,7 @@ var Music = React.createClass({
 exports["default"] = Music;
 module.exports = exports["default"];
 
-},{"react":419}],432:[function(require,module,exports){
+},{"react":419}],433:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64451,7 +64492,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":436,"./edit_palette":425,"./modal":430,"jquery":103,"react":419,"tinycolor2":420}],433:[function(require,module,exports){
+},{"../mixins/transparency":437,"./edit_palette":426,"./modal":431,"jquery":103,"react":419,"tinycolor2":420}],434:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64558,7 +64599,7 @@ var ResizePrompt = React.createClass({
 exports["default"] = ResizePrompt;
 module.exports = exports["default"];
 
-},{"react":419}],434:[function(require,module,exports){
+},{"react":419}],435:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64566,16 +64607,16 @@ Object.defineProperty(exports, '__esModule', {
 });
 var keyMirror = require('react/lib/keyMirror');
 
-var DrawStoreConstants = keyMirror({
+var DrawConstants = keyMirror({
   LOAD_STATE: null,
   SET_PRIMARY_COLOR: null,
   SET_SECONDARY_COLOR: null
 });
 
-exports['default'] = DrawStoreConstants;
+exports['default'] = DrawConstants;
 module.exports = exports['default'];
 
-},{"react/lib/keyMirror":404}],435:[function(require,module,exports){
+},{"react/lib/keyMirror":404}],436:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64595,7 +64636,7 @@ AppDispatcher.handleAction = function (action) {
 exports['default'] = AppDispatcher;
 module.exports = exports['default'];
 
-},{"flux":100}],436:[function(require,module,exports){
+},{"flux":100}],437:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64608,7 +64649,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],437:[function(require,module,exports){
+},{}],438:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64629,7 +64670,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],438:[function(require,module,exports){
+},{}],439:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64642,9 +64683,9 @@ var _dispatcherApp_dispatcher = require('../dispatcher/app_dispatcher');
 
 var _dispatcherApp_dispatcher2 = _interopRequireDefault(_dispatcherApp_dispatcher);
 
-var _constantsDraw_store_constants = require('../constants/draw_store_constants');
+var _constantsDraw_constants = require('../constants/draw_constants');
 
-var _constantsDraw_store_constants2 = _interopRequireDefault(_constantsDraw_store_constants);
+var _constantsDraw_constants2 = _interopRequireDefault(_constantsDraw_constants);
 
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
@@ -64682,16 +64723,16 @@ var DrawStore = assign(EventEmitter.prototype, {
     var action = payload.action;
 
     switch (action.actionType) {
-      case _constantsDraw_store_constants2['default'].LOAD_STATE:
+      case _constantsDraw_constants2['default'].LOAD_STATE:
         loadState(action.data);
         break;
 
-      case _constantsDraw_store_constants2['default'].SET_PRIMARY_COLOR:
-        _state.primaryColor = action.color;
+      case _constantsDraw_constants2['default'].SET_PRIMARY_COLOR:
+        _state.primaryColor = action.data;
         break;
 
-      case _constantsDraw_store_constants2['default'].SET_SECONDARY_COLOR:
-        _state.secondaryColor = action.color;
+      case _constantsDraw_constants2['default'].SET_SECONDARY_COLOR:
+        _state.secondaryColor = action.data;
         break;
 
       default:
@@ -64706,7 +64747,7 @@ var DrawStore = assign(EventEmitter.prototype, {
 exports['default'] = DrawStore;
 module.exports = exports['default'];
 
-},{"../constants/draw_store_constants":434,"../dispatcher/app_dispatcher":435,"events":92,"object-assign":104}],439:[function(require,module,exports){
+},{"../constants/draw_constants":435,"../dispatcher/app_dispatcher":436,"events":92,"object-assign":104}],440:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -64775,7 +64816,7 @@ $(function () {
   });
 });
 
-},{"./components/draw_controller":422,"./components/footer":426,"./components/header":427,"./components/map":429,"./components/music":431,"babel/polyfill":91,"jquery":103,"react":419,"react-router":250}]},{},[439])
+},{"./components/draw_controller":423,"./components/footer":427,"./components/header":428,"./components/map":430,"./components/music":432,"babel/polyfill":91,"jquery":103,"react":419,"react-router":250}]},{},[440])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

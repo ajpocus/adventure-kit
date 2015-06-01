@@ -2,7 +2,7 @@ let EventEmitter = require('events').EventEmitter;
 let assign = require('object-assign');
 
 import AppDispatcher from '../dispatcher/app_dispatcher';
-import DrawStoreConstants from '../constants/draw_store_constants';
+import DrawConstants from '../constants/draw_constants';
 
 let _state = {
   primaryColor: '#000000',
@@ -37,16 +37,16 @@ let DrawStore = assign(EventEmitter.prototype, {
     let action = payload.action;
 
     switch (action.actionType) {
-      case DrawStoreConstants.LOAD_STATE:
+      case DrawConstants.LOAD_STATE:
         loadState(action.data);
         break;
 
-      case DrawStoreConstants.SET_PRIMARY_COLOR:
-        _state.primaryColor = action.color;
+      case DrawConstants.SET_PRIMARY_COLOR:
+        _state.primaryColor = action.data;
         break;
 
-      case DrawStoreConstants.SET_SECONDARY_COLOR:
-        _state.secondaryColor = action.color;
+      case DrawConstants.SET_SECONDARY_COLOR:
+        _state.secondaryColor = action.data;
         break;
 
       default:
