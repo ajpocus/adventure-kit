@@ -63208,6 +63208,12 @@ var $ = require('jquery');
 var EditPalette = React.createClass({
   displayName: 'EditPalette',
 
+  getInitialState: function getInitialState() {
+    return {
+      palette: this.props.palette
+    };
+  },
+
   render: function render() {
     var colorList = [];
     for (var i = 0; i < this.props.palette.length; i++) {

@@ -4,6 +4,12 @@ let $ = require('jquery');
 import Transparency from '../mixins/transparency';
 
 let EditPalette = React.createClass({
+  getInitialState: function () {
+    return {
+      palette: this.props.palette
+    };
+  },
+
   render: function () {
     let colorList = [];
     for (let i = 0; i < this.props.palette.length; i++) {
