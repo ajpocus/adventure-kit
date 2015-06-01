@@ -22,13 +22,13 @@ let ColorPicker = React.createClass({
   },
 
   componentDidMount: function () {
-    document.getElementById('primary-color').value = this.state.primaryColor;
-    document.getElementById('secondary-color').value = this.state.secondaryColor;
+    document.getElementById('primary-color').value = this.props.primaryColor;
+    document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
 
   componentDidUpdate: function () {
-    document.getElementById('primary-color').value = this.state.primaryColor;
-    document.getElementById('secondary-color').value = this.state.secondaryColor;
+    document.getElementById('primary-color').value = this.props.primaryColor;
+    document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
 
   handlePrimaryColorChange: function (ev) {

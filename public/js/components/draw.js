@@ -9,15 +9,8 @@ import ManageDrawList from './manage_draw_list';
 let Draw = React.createClass({
   getInitialState: function () {
     return {
-      primaryColor: '#000000',
-      secondaryColor: '#ffffff',
-      palettes: {
-        'Rainbow': [
-          '#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff',
-          '#ff00ff'
-        ]
-      },
-      activePalette: 'Rainbow'
+      primaryColor: '#222222',
+      secondaryColor: '#ffffff'
     };
   },
 
@@ -26,9 +19,7 @@ let Draw = React.createClass({
       <div id="draw">
         <div className="toolbar">
           <DrawToolList/>
-          <PaletteManager palettes={this.state.palettes}
-                          activePalette={this.state.activePalette}
-                          onPrimaryColorChange={this.onPrimaryColorChange}
+          <PaletteManager onPrimaryColorChange={this.onPrimaryColorChange}
                           onSecondaryColorChange={this.onSecondaryColorChange}/>
           <ColorPicker primaryColor={this.state.primaryColor}
                        secondaryColor={this.state.secondaryColor}

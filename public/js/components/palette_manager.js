@@ -9,8 +9,13 @@ import Modal from './modal';
 let PaletteManager = React.createClass({
   getInitialState: function () {
     return {
-      palettes: this.props.palettes,
-      activePalette: this.props.activePalette
+      palettes: {
+        'Rainbow': [
+          '#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff',
+          '#ff00ff'
+        ]
+      },
+      activePalette: 'Rainbow'
     };
   },
 
@@ -19,7 +24,7 @@ let PaletteManager = React.createClass({
     for (let paletteName in this.state.palettes) {
       if (this.state.palettes.hasOwnProperty(paletteName)) {
         paletteOptions.push(
-          <option value={paletteName}>{paletteName}</option>
+          <option value={paletteName} key={paletteName}>{paletteName}</option>
         );
       }
     }
@@ -41,7 +46,7 @@ let PaletteManager = React.createClass({
       );
     }
 
-    let paletteCopy = activePalette.splice(0);
+    let paletteCopy = activePalette.slice();
 
     return (
       <div className="palette-manager">

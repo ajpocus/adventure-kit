@@ -22,7 +22,7 @@ let ManageDrawList = React.createClass({
       let tool = this.props.tools[i];
 
       toolList.push(
-        <li className="tool">
+        <li className="tool" key={i}>
           <button className="btn">
             <div className="img-container">
               <img className="icon" src={tool.imgUrl}/>

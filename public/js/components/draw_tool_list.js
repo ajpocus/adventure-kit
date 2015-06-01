@@ -32,7 +32,7 @@ let DrawToolList = React.createClass({
       }
 
       toolList.push(
-        <li className="tool">
+        <li className="tool" key={tool.name}>
           <button className={className}
                   onClick={this.setActiveTool.bind(this, tool.name)}>
             <div className="img-container">

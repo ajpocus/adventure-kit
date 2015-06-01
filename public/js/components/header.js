@@ -20,7 +20,7 @@ let Header = React.createClass({
       }
 
       tabs.push(
-        <li className={className}>
+        <li className={className} key={tabName}>
           <Link to={tabName.toLowerCase()}
                 onClick={this.setActiveTab.bind(this, tabName)}>
             {tabName}

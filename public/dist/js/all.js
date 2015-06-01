@@ -62849,13 +62849,13 @@ var ColorPicker = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    document.getElementById('primary-color').value = this.state.primaryColor;
-    document.getElementById('secondary-color').value = this.state.secondaryColor;
+    document.getElementById('primary-color').value = this.props.primaryColor;
+    document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
 
   componentDidUpdate: function componentDidUpdate() {
-    document.getElementById('primary-color').value = this.state.primaryColor;
-    document.getElementById('secondary-color').value = this.state.secondaryColor;
+    document.getElementById('primary-color').value = this.props.primaryColor;
+    document.getElementById('secondary-color').value = this.props.secondaryColor;
   },
 
   handlePrimaryColorChange: function handlePrimaryColorChange(ev) {
@@ -62908,12 +62908,8 @@ var Draw = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      primaryColor: '#000000',
-      secondaryColor: '#ffffff',
-      palettes: {
-        'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#ff00ff']
-      },
-      activePalette: 'Rainbow'
+      primaryColor: '#222222',
+      secondaryColor: '#ffffff'
     };
   },
 
@@ -62925,9 +62921,7 @@ var Draw = React.createClass({
         'div',
         { className: 'toolbar' },
         React.createElement(_draw_tool_list2['default'], null),
-        React.createElement(_palette_manager2['default'], { palettes: this.state.palettes,
-          activePalette: this.state.activePalette,
-          onPrimaryColorChange: this.onPrimaryColorChange,
+        React.createElement(_palette_manager2['default'], { onPrimaryColorChange: this.onPrimaryColorChange,
           onSecondaryColorChange: this.onSecondaryColorChange }),
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
           secondaryColor: this.state.secondaryColor,
@@ -63163,7 +63157,7 @@ var DrawToolList = React.createClass({
 
       toolList.push(React.createElement(
         "li",
-        { className: "tool" },
+        { className: "tool", key: tool.name },
         React.createElement(
           "button",
           { className: className,
@@ -63431,7 +63425,7 @@ var Header = React.createClass({
 
       tabs.push(React.createElement(
         'li',
-        { className: className },
+        { className: className, key: tabName },
         React.createElement(
           Link,
           { to: tabName.toLowerCase(),
@@ -63499,7 +63493,7 @@ var ManageDrawList = React.createClass({
 
       toolList.push(React.createElement(
         'li',
-        { className: 'tool' },
+        { className: 'tool', key: i },
         React.createElement(
           'button',
           { className: 'btn' },
@@ -63635,8 +63629,10 @@ var PaletteManager = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      palettes: this.props.palettes,
-      activePalette: this.props.activePalette
+      palettes: {
+        'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#ff00ff']
+      },
+      activePalette: 'Rainbow'
     };
   },
 
@@ -63646,7 +63642,7 @@ var PaletteManager = React.createClass({
       if (this.state.palettes.hasOwnProperty(paletteName)) {
         paletteOptions.push(React.createElement(
           'option',
-          { value: paletteName },
+          { value: paletteName, key: paletteName },
           paletteName
         ));
       }
@@ -63667,7 +63663,7 @@ var PaletteManager = React.createClass({
         onClick: this.setPrimaryColor.bind(this, color) }));
     }
 
-    var paletteCopy = activePalette.splice(0);
+    var paletteCopy = activePalette.slice();
 
     return React.createElement(
       'div',
