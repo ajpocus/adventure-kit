@@ -12,7 +12,7 @@ function getAppState() {
   return DrawStore.getState();
 }
 
-let Draw = React.createClass({
+let DrawController = React.createClass({
   getInitialState: function () {
     return getAppState();
   },
@@ -54,4 +54,4 @@ let Draw = React.createClass({
   }
 });
 
-export default Draw;
+export default DrawController;

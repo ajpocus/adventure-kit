@@ -63476,6 +63476,13 @@ var DrawActions = {
       actionType: _constantsDraw_constants2['default'].SET_SECONDARY_COLOR,
       data: data
     });
+  },
+
+  newPalette: function newPalette(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].NEW_PALETTE,
+      data: data
+    });
   }
 };
 
@@ -63578,8 +63585,8 @@ function getAppState() {
   return _storesDraw_store2['default'].getState();
 }
 
-var Draw = React.createClass({
-  displayName: 'Draw',
+var DrawController = React.createClass({
+  displayName: 'DrawController',
 
   getInitialState: function getInitialState() {
     return getAppState();
@@ -63624,7 +63631,7 @@ var Draw = React.createClass({
   }
 });
 
-exports['default'] = Draw;
+exports['default'] = DrawController;
 module.exports = exports['default'];
 
 },{"../stores/draw_store":439,"./color_picker":422,"./draw_surface":424,"./draw_tool_list":425,"./manage_draw_list":429,"./palette_manager":433,"./resize_prompt":434,"react":419}],424:[function(require,module,exports){
@@ -64454,18 +64461,16 @@ var PaletteManager = React.createClass({
   },
 
   newPalette: function newPalette() {
-    var paletteName = prompt('New palette name');
-    if (paletteName.length === 0) {
+    var name = prompt('New palette name');
+    if (name.length === 0) {
       return;
     }
 
-    if (this.props.palettes[paletteName]) {
+    if (this.props.palettes[name]) {
       alert('That palette name is already taken.');
     }
 
-    var palettes = this.props.palettes;
-    palettes[paletteName] = {};
-    this.setState({ palettes: palettes });
+    _actionsDraw_actions2['default'].newPalette(name);
   },
 
   editPalette: function editPalette() {
@@ -64605,7 +64610,8 @@ var keyMirror = require('react/lib/keyMirror');
 var DrawConstants = keyMirror({
   LOAD_STATE: null,
   SET_PRIMARY_COLOR: null,
-  SET_SECONDARY_COLOR: null
+  SET_SECONDARY_COLOR: null,
+  NEW_PALETTE: null
 });
 
 exports['default'] = DrawConstants;
@@ -64694,7 +64700,8 @@ var _state = {
   palettes: {
     'Rainbow': ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8b00ff']
   },
-  activePalette: 'Rainbow'
+  activePalette: 'Rainbow',
+  isEditingPalette: false
 };
 
 function loadState(data) {
@@ -64734,6 +64741,10 @@ var DrawStore = assign(EventEmitter.prototype, {
         _state.secondaryColor = action.data;
         break;
 
+      case _constantsDraw_constants2['default'].NEW_PALETTE:
+        var name = action.data;
+        _state.palettes[name] = [];
+        _state.activePalette = name;
       default:
         return true;
     }

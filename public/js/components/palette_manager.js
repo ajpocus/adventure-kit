@@ -70,18 +70,16 @@ let PaletteManager = React.createClass({
   },
 
   newPalette: function () {
-    let paletteName = prompt("New palette name");
-    if (paletteName.length === 0) {
+    let name = prompt("New palette name");
+    if (name.length === 0) {
       return;
     }
 
-    if (this.props.palettes[paletteName]) {
+    if (this.props.palettes[name]) {
       alert("That palette name is already taken.");
     }
 
-    let palettes = this.props.palettes;
-    palettes[paletteName] = {};
-    this.setState({ palettes: palettes });
+    DrawActions.newPalette(name);
   },
 
   editPalette: function () {

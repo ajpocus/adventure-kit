@@ -21,6 +21,13 @@ let DrawActions = {
       actionType: DrawConstants.SET_SECONDARY_COLOR,
       data: data
     });
+  },
+
+  newPalette: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.NEW_PALETTE,
+      data: data
+    });
   }
 };
 

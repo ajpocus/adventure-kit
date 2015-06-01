@@ -16,7 +16,8 @@ let _state = {
       '#8b00ff'
     ]
   },
-  activePalette: 'Rainbow'
+  activePalette: 'Rainbow',
+  isEditingPalette: false
 };
 
 function loadState(data) {
@@ -56,6 +57,10 @@ let DrawStore = assign(EventEmitter.prototype, {
         _state.secondaryColor = action.data;
         break;
 
+      case DrawConstants.NEW_PALETTE:
+        let name = action.data;
+        _state.palettes[name] = [];
+        _state.activePalette = name;
       default:
         return true;
     }
