@@ -61,6 +61,8 @@ let DrawStore = assign(EventEmitter.prototype, {
         let name = action.data;
         _state.palettes[name] = [];
         _state.activePalette = name;
+        break;
+
       default:
         return true;
     }
