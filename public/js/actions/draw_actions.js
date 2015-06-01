@@ -28,7 +28,21 @@ let DrawActions = {
       actionType: DrawConstants.NEW_PALETTE,
       data: data
     });
-  }
+  },
+
+  editPalette: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.EDIT_PALETTE,
+      data: data
+    });
+  },
+
+  addPaletteColor: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.ADD_PALETTE_COLOR,
+      data: data
+    });
+  },
 };
 
 export default DrawActions;

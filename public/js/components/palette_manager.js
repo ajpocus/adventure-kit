@@ -35,8 +35,6 @@ let PaletteManager = React.createClass({
       );
     }
 
-    let paletteCopy = activePalette.slice();
-
     return (
       <div className="palette-manager">
         <h2>Palette</h2>
@@ -58,9 +56,8 @@ let PaletteManager = React.createClass({
           {paletteColors}
         </ul>
 
-        <Modal isOpen={this.props.isEditingPalette}>
-          <EditPalette palette={paletteCopy}/>
-        </Modal>
+        <EditPalette isOpen={this.props.isEditingPalette}
+                     palette={this.props.editPalette}/>
       </div>
     );
   },
@@ -84,18 +81,8 @@ let PaletteManager = React.createClass({
 
   editPalette: function () {
     let name = this.props.activePalette;
-    let palette = this.props.palettes[name].splice(0);
-
-    React.render(<EditPalette palette={palette} name={name}
-                  onPaletteChange={this.onPaletteChange}/>,
-                 document.getElementById('modal-container'));
-  },
-
-  onPaletteChange: function (palette) {
-    let name = this.props.activePalette;
-    let palettes = this.props.palettes;
-    palettes[name] = palette;
-    this.setState({ palettes: palettes });
+    let palette = this.props.palettes[name].slice(0);
+    DrawActions.editPalette(palette);
   }
 });
 

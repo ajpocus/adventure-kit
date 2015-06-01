@@ -1,16 +1,17 @@
 let React = require('react');
 let $ = require('jquery');
 
+import DrawActions from '../actions/draw_actions';
 import Transparency from '../mixins/transparency';
 
 let EditPalette = React.createClass({
-  getInitialState: function () {
-    return {
-      palette: this.props.palette
-    };
-  },
-
   render: function () {
+    let modalStyle = {};
+    if (!this.props.isOpen) {
+      modalStyle.display = 'none';
+      return (<div style={{display: 'none'}}></div>);
+    }
+
     let colorList = [];
     for (let i = 0; i < this.props.palette.length; i++) {
       let color = this.props.palette[i];
@@ -38,7 +39,7 @@ let EditPalette = React.createClass({
     );
 
     return (
-      <div className="edit-palette modal">
+      <div className="edit-palette modal" style={modalStyle}>
         <div className="modal-background">
           <div className="modal-content">
             <div className="header">
@@ -78,8 +79,8 @@ let EditPalette = React.createClass({
     document.getElementById('palette-color').value = this.props.activeColor;
   },
 
-  setActivePaletteColor: function (color) {
-    this.setState({ activePaletteColor: color });
+  addPaletteColor: function () {
+    DrawActions.addPaletteColor();
   },
 
   removePaletteColor: function (color) {
@@ -89,11 +90,8 @@ let EditPalette = React.createClass({
     this.setState({ palette: palette });
   },
 
-  addPaletteColor: function () {
-    let palette = this.state.palette;
-    let newColor = '#ffffff';
-    palette.push(newColor);
-    this.setState({ palette: palette, activePaletteColor: newColor });
+  setActivePaletteColor: function (color) {
+    this.setState({ activePaletteColor: color });
   },
 
   updatePaletteColor: function (ev) {
