@@ -63601,7 +63601,8 @@ var Draw = React.createClass({
         'div',
         { className: 'toolbar' },
         React.createElement(_draw_tool_list2['default'], null),
-        React.createElement(_palette_manager2['default'], null),
+        React.createElement(_palette_manager2['default'], { palettes: this.state.palettes,
+          activePalette: this.state.activePalette }),
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
           secondaryColor: this.state.secondaryColor })
       ),
@@ -63688,7 +63689,6 @@ var DrawCanvas = React.createClass({
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    console.log('width', this.props.width, prevProps.width);
     if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
       this.updateTiles();
       this.initBackground();
@@ -64360,6 +64360,10 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _actionsDraw_actions = require('../actions/draw_actions');
+
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
+
 var _edit_palette = require('./edit_palette');
 
 var _edit_palette2 = _interopRequireDefault(_edit_palette);
@@ -64379,19 +64383,10 @@ var $ = require('jquery');
 var PaletteManager = React.createClass({
   displayName: 'PaletteManager',
 
-  getInitialState: function getInitialState() {
-    return {
-      palettes: {
-        'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#ff00ff']
-      },
-      activePalette: 'Rainbow'
-    };
-  },
-
   render: function render() {
     var paletteOptions = [];
-    for (var paletteName in this.state.palettes) {
-      if (this.state.palettes.hasOwnProperty(paletteName)) {
+    for (var paletteName in this.props.palettes) {
+      if (this.props.palettes.hasOwnProperty(paletteName)) {
         paletteOptions.push(React.createElement(
           'option',
           { value: paletteName, key: paletteName },
@@ -64400,7 +64395,7 @@ var PaletteManager = React.createClass({
       }
     }
 
-    var activePalette = this.state.palettes[this.state.activePalette];
+    var activePalette = this.props.palettes[this.props.activePalette];
     var paletteColors = [];
     for (var i = 0; i < activePalette.length; i++) {
       var color = activePalette[i];
@@ -64433,7 +64428,7 @@ var PaletteManager = React.createClass({
       React.createElement(
         'select',
         { name: 'activePalette', className: 'palette-chooser',
-          value: this.state.activePalette },
+          value: this.props.activePalette },
         paletteOptions
       ),
       React.createElement(
@@ -64455,7 +64450,7 @@ var PaletteManager = React.createClass({
   },
 
   setPrimaryColor: function setPrimaryColor(color) {
-    this.props.onPrimaryColorChange(color);
+    _actionsDraw_actions2['default'].setPrimaryColor(color);
   },
 
   newPalette: function newPalette() {
@@ -64464,26 +64459,26 @@ var PaletteManager = React.createClass({
       return;
     }
 
-    if (this.state.palettes[paletteName]) {
+    if (this.props.palettes[paletteName]) {
       alert('That palette name is already taken.');
     }
 
-    var palettes = this.state.palettes;
+    var palettes = this.props.palettes;
     palettes[paletteName] = {};
     this.setState({ palettes: palettes });
   },
 
   editPalette: function editPalette() {
-    var name = this.state.activePalette;
-    var palette = this.state.palettes[name].splice(0);
+    var name = this.props.activePalette;
+    var palette = this.props.palettes[name].splice(0);
 
     React.render(React.createElement(_edit_palette2['default'], { palette: palette, name: name,
       onPaletteChange: this.onPaletteChange }), document.getElementById('modal-container'));
   },
 
   onPaletteChange: function onPaletteChange(palette) {
-    var name = this.state.activePalette;
-    var palettes = this.state.palettes;
+    var name = this.props.activePalette;
+    var palettes = this.props.palettes;
     palettes[name] = palette;
     this.setState({ palettes: palettes });
   }
@@ -64492,7 +64487,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":437,"./edit_palette":426,"./modal":431,"jquery":103,"react":419,"tinycolor2":420}],434:[function(require,module,exports){
+},{"../actions/draw_actions":421,"../mixins/transparency":437,"./edit_palette":426,"./modal":431,"jquery":103,"react":419,"tinycolor2":420}],434:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64695,7 +64690,11 @@ var _state = {
   secondaryColor: '#ffffff',
   width: 512,
   height: 512,
-  tileSize: 32
+  tileSize: 32,
+  palettes: {
+    'Rainbow': ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8b00ff']
+  },
+  activePalette: 'Rainbow'
 };
 
 function loadState(data) {

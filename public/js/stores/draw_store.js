@@ -9,7 +9,14 @@ let _state = {
   secondaryColor: '#ffffff',
   width: 512,
   height: 512,
-  tileSize: 32
+  tileSize: 32,
+  palettes: {
+    'Rainbow': [
+      '#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082',
+      '#8b00ff'
+    ]
+  },
+  activePalette: 'Rainbow'
 };
 
 function loadState(data) {

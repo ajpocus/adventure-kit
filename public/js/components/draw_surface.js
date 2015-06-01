@@ -47,7 +47,6 @@ let DrawCanvas = React.createClass({
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    console.log('width', this.props.width, prevProps.width);
     if (this.props.width !== prevProps.width ||
         this.props.height !== prevProps.height) {
       this.updateTiles();

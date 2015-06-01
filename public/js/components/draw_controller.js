@@ -30,7 +30,8 @@ let Draw = React.createClass({
       <div id="draw">
         <div className="toolbar">
           <DrawToolList/>
-          <PaletteManager/>
+          <PaletteManager palettes={this.state.palettes}
+                          activePalette={this.state.activePalette}/>
           <ColorPicker primaryColor={this.state.primaryColor}
                        secondaryColor={this.state.secondaryColor}/>
         </div>
