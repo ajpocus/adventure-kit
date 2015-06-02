@@ -84,6 +84,48 @@ let DrawActions = {
       actionType: DrawConstants.SET_ACTIVE_TOOL,
       data: data
     });
+  },
+
+  setDrawCanvases: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.SET_DRAW_CANVASES,
+      data: data
+    });
+  },
+
+  updateDrawCanvases: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.UPDATE_DRAW_CANVASES,
+      data: data
+    });
+  },
+
+  setDrawGrid: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.SET_DRAW_GRID,
+      data: data
+    });
+  },
+
+  setTileSize: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.SET_TILE_SIZE,
+      data: data
+    });
+  },
+
+  setMouseDown: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.SET_MOUSE_DOWN,
+      data: data
+    });
+  },
+
+  setMouseUp: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.SET_MOUSE_UP,
+      data: data
+    });
   }
 };
 

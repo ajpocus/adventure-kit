@@ -12,7 +12,13 @@ let DrawConstants = keyMirror({
   SET_ACTIVE_PALETTE_COLOR: null,
   SAVE_PALETTE: null,
   CLOSE_EDIT_PALETTE: null,
-  SET_ACTIVE_TOOL: null
+  SET_ACTIVE_TOOL: null,
+  SET_DRAW_CANVASES: null,
+  UPDATE_DRAW_CANVASES: null,
+  SET_DRAW_GRID: null,
+  SET_TILE_SIZE: null,
+  SET_MOUSE_DOWN: null,
+  SET_MOUSE_UP: null
 });
 
 export default DrawConstants;

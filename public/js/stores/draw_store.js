@@ -4,12 +4,19 @@ let assign = require('object-assign');
 import AppDispatcher from '../dispatcher/app_dispatcher';
 import DrawConstants from '../constants/draw_constants';
 
+let width = 32;
+let height = 32;
+let zoom = 0.8;
+let totalWidth = 1024;
+let totalHeight = 1024;
+let actualWidth = totalWidth * zoom;
+let actualHeight = totalHeight * zoom;
+let tileWidth = actualWidth / width;
+let tileHeight = actualHeight / height;
+
 let _state = {
   primaryColor: '#000000',
   secondaryColor: '#ffffff',
-  width: 512,
-  height: 512,
-  tileSize: 32,
   palettes: {
     'Rainbow': [
       '#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082',
@@ -19,7 +26,17 @@ let _state = {
   activePalette: 'Rainbow',
   isEditingPalette: false,
   editPalette: null,
-  activeTool: 'Pencil'
+  activeTool: 'Pencil',
+  isMouseDown: false,
+  width: width,
+  height: height,
+  totalWidth: totalWidth,
+  totalHeight: totalWidth,
+  zoom: zoom,
+  actualWidth: actualWidth,
+  actualHeight: actualHeight,
+  tileWidth: tileWidth,
+  tileHeight: tileHeight
 };
 
 function loadState(data) {
@@ -108,6 +125,39 @@ let DrawStore = assign(EventEmitter.prototype, {
 
       case DrawConstants.SET_ACTIVE_TOOL:
         _state.activeTool = action.data;
+        break;
+
+      case DrawConstants.SET_DRAW_CANVASES:
+        _state.canvases = action.data;
+        break;
+
+      case DrawConstants.UPDATE_DRAW_CANVASES:
+        let newCanvases = action.data;
+
+        for (let prop in newCanvases) {
+          if (newCanvases.hasOwnProperty(prop)) {
+            _state.canvases[prop] = newCanvases[prop];
+          }
+        }
+
+        break;
+
+      case DrawConstants.SET_DRAW_GRID:
+        console.log(action.data);
+        _state.drawGrid = action.data;
+        break;
+
+      case DrawConstants.SET_TILE_SIZE:
+        _state.tileWidth = action.data.width;
+        _state.tileHeight = action.data.height;
+        break;
+
+      case DrawConstants.SET_MOUSE_DOWN:
+        _state.isMouseDown = true;
+        break;
+
+      case DrawConstants.SET_MOUSE_UP:
+        _state.isMouseDown = false;
         break;
 
       default:

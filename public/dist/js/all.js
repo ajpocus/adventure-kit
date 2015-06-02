@@ -63539,6 +63539,48 @@ var DrawActions = {
       actionType: _constantsDraw_constants2['default'].SET_ACTIVE_TOOL,
       data: data
     });
+  },
+
+  setDrawCanvases: function setDrawCanvases(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_DRAW_CANVASES,
+      data: data
+    });
+  },
+
+  updateDrawCanvases: function updateDrawCanvases(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].UPDATE_DRAW_CANVASES,
+      data: data
+    });
+  },
+
+  setDrawGrid: function setDrawGrid(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_DRAW_GRID,
+      data: data
+    });
+  },
+
+  setTileSize: function setTileSize(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_TILE_SIZE,
+      data: data
+    });
+  },
+
+  setMouseDown: function setMouseDown(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_MOUSE_DOWN,
+      data: data
+    });
+  },
+
+  setMouseUp: function setMouseUp(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_MOUSE_UP,
+      data: data
+    });
   }
 };
 
@@ -63672,11 +63714,19 @@ var DrawController = React.createClass({
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
           secondaryColor: this.state.secondaryColor })
       ),
-      React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
+      React.createElement(_draw_surface2['default'], { canvases: this.state.canvases,
+        primaryColor: this.state.primaryColor,
         secondaryColor: this.state.secondaryColor,
         width: this.state.width,
         height: this.state.height,
-        tileSize: this.state.tileSize }),
+        totalWidth: this.state.totalWidth,
+        totalHeight: this.state.totalHeight,
+        actualWidth: this.state.actualWidth,
+        actualHeight: this.state.actualHeight,
+        tileWidth: this.state.tileWidth,
+        tileHeight: this.state.tileHeight,
+        drawGrid: this.state.drawGrid,
+        isMouseDown: this.state.isMouseDown }),
       React.createElement(
         'div',
         { className: 'manage-surface' },
@@ -63693,7 +63743,7 @@ var DrawController = React.createClass({
 exports['default'] = DrawController;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":439,"./color_picker":422,"./draw_surface":424,"./draw_tool_list":425,"./manage_draw_list":429,"./palette_manager":433,"./resize_prompt":434,"react":419}],424:[function(require,module,exports){
+},{"../stores/draw_store":438,"./color_picker":422,"./draw_surface":424,"./draw_tool_list":425,"./manage_draw_list":429,"./palette_manager":433,"./resize_prompt":434,"react":419}],424:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -63702,9 +63752,9 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _modelsPixel = require('../models/pixel');
+var _actionsDraw_actions = require('../actions/draw_actions');
 
-var _modelsPixel2 = _interopRequireDefault(_modelsPixel);
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
 
 var React = require('react');
 var $ = require('jquery');
@@ -63713,90 +63763,165 @@ var PIXI = require('pixi.js');
 var DrawCanvas = React.createClass({
   displayName: 'DrawCanvas',
 
-  getInitialState: function getInitialState() {
-    return {
-      isMouseDown: false
-    };
-  },
-
-  getDefaultProps: function getDefaultProps() {
-    return {
-      bgTileSize: 8
-    };
-  },
-
   componentDidMount: function componentDidMount() {
-    var renderNode = $(React.findDOMNode(this));
-
-    this.bgCtx = renderNode.find('#bg-canvas')[0].getContext('2d');
-    this.drawCtx = renderNode.find('#draw-canvas')[0].getContext('2d');
-    this.overlayCtx = renderNode.find('#overlay-canvas')[0].getContext('2d');
-
-    this.setState({ grid: this.initTiles() });
-    this.initBackground();
-  },
-
-  render: function render() {
-    return React.createElement(
-      'div',
-      { id: 'render',
-        onMouseMove: this.mouseMoved,
-        onMouseOut: this.clearHighlight,
-        onMouseDown: this.fillPixel,
-        onContextMenu: this.fillPixel,
-        onMouseUp: this.setMouseUp },
-      React.createElement('canvas', { id: 'bg-canvas', className: 'draw', width: this.props.width,
-        height: this.props.height }),
-      React.createElement('canvas', { id: 'draw-canvas', className: 'draw', width: this.props.width,
-        height: this.props.height }),
-      React.createElement('canvas', { id: 'overlay-canvas', className: 'draw', width: this.props.width,
-        height: this.props.height })
-    );
+    this.init();
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
     if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
-      this.updateTiles();
+      this.resizeDrawGrid();
       this.initBackground();
+
+      this.redrawCanvas();
+    } else if (this.props.drawGrid !== prevProps.drawGrid) {
+      this.redrawCanvas();
     }
   },
 
-  initTiles: function initTiles() {
-    var numTilesH = this.props.width / this.props.tileSize;
-    var numTilesV = this.props.height / this.props.tileSize;
-    var grid = [];
+  render: function render() {
+    var width = this.props.width;
+    var height = this.props.height;
 
-    for (var x = 0; x < numTilesH; x++) {
+    return React.createElement(
+      'div',
+      { id: 'render' },
+      React.createElement('canvas', { id: 'zoom-canvas',
+        className: 'draw',
+        ref: 'zoomCanvas',
+        width: this.props.totalWidth,
+        height: this.props.totalHeight }),
+      React.createElement('canvas', { id: 'bg-canvas',
+        className: 'draw',
+        ref: 'bgCanvas',
+        width: this.props.actualWidth,
+        height: this.props.actualHeight }),
+      React.createElement('canvas', { id: 'draw-canvas',
+        className: 'draw',
+        ref: 'drawCanvas',
+        onMouseDown: this.fillPixel,
+        onContextMenu: this.fillPixel,
+        onMouseUp: this.setMouseUp,
+        width: this.props.actualWidth,
+        height: this.props.actualHeight }),
+      React.createElement('canvas', { id: 'overlay-canvas',
+        className: 'draw',
+        ref: 'overlayCanvas',
+        onMouseMove: this.mouseMoved,
+        onMouseOut: this.clearHighlight,
+        width: this.props.actualWidth,
+        height: this.props.actualHeight })
+    );
+  },
+
+  init: function init() {
+    var tileWidth = this.props.actualWidth / this.props.width;
+    var tileHeight = this.props.actualHeight / this.props.height;
+    _actionsDraw_actions2['default'].setTileSize({ width: tileWidth, height: tileHeight });
+
+    // TODO: Fix prop updating so I don't have to merge these methods.
+    var zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
+    var bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
+    var drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
+    var overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
+    var canvases = {
+      zoomCtx: zoomCtx,
+      bgCtx: bgCtx,
+      drawCtx: drawCtx,
+      overlayCtx: overlayCtx
+    };
+
+    _actionsDraw_actions2['default'].setDrawCanvases(canvases);
+
+    // init drawGrid
+    var grid = [];
+    for (var x = 0; x < this.props.width; x++) {
       grid[x] = [];
 
-      for (var y = 0; y < numTilesV; y++) {
-        grid[x].push(new _modelsPixel2['default'](x, y));
+      for (var y = 0; y < this.props.height; y++) {
+        grid[x].push({
+          x: x,
+          y: y,
+          color: null,
+          isHighlighted: false
+        });
       }
     }
 
-    return grid;
+    _actionsDraw_actions2['default'].setDrawGrid(grid);
+
+    // init background
+    var numTilesH = this.props.actualWidth / this.props.bgTileSize;
+    var numTilesV = this.props.actualHeight / this.props.bgTileSize;
+    var bgTileSize = 8;
+    for (var i = 0; i < numTilesH; i++) {
+      for (var j = 0; j < numTilesV; j++) {
+        var x = i * bgTileSize;
+        var y = j * bgTileSize;
+
+        var fill = (i + j) % 2 == 0 ? '#999' : '#777';
+
+        bgCtx.fillStyle = fill;
+        bgCtx.fillRect(x, y, bgTileSize, bgTileSize);
+      }
+    }
+
+    _actionsDraw_actions2['default'].updateDrawCanvases({ bgCtx: bgCtx });
   },
 
-  updateTiles: function updateTiles() {
-    var numTilesH = this.props.width / this.props.tileSize;
-    var numTilesV = this.props.height / this.props.tileSize;
-    var oldGrid = this.state.grid;
+  resizeDrawGrid: function resizeDrawGrid() {
+    var oldGrid = this.props.grid;
     var newGrid = [];
 
-    for (var x = 0; x < numTilesH; x++) {
+    for (var x = 0; x < this.props.width; x++) {
       newGrid[x] = [];
-      for (var y = 0; y < numTilesV; y++) {
+      for (var y = 0; y < this.props.height; y++) {
         if (x < oldGrid.length && y < oldGrid[x].length) {
           newGrid[x][y] = oldGrid[x][y];
         } else {
-          newGrid[x].push(new _modelsPixel2['default'](x, y));
+          newGrid[x].push({
+            x: x,
+            y: y,
+            color: null,
+            isHighlighted: false
+          });
         }
       }
     }
 
-    console.log('new grid', newGrid);
+    var tileWidth = this.props.actualWidth / this.props.width;
+    var tileHeight = this.props.actualHeight / this.props.height;
 
-    this.setState({ grid: newGrid });
+    _actionsDraw_actions2['default'].setDrawGrid(newGrid);
+    _actionsDraw_actions2['default'].setTileSize({ width: tileWidth, height: tileHeight });
+  },
+
+  redrawCanvas: function redrawCanvas() {
+    var drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
+    var overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
+    drawCtx.fillStyle = 'rgba(0, 0, 0, 0)';
+    drawCtx.fillRect(0, 0, this.props.actualWidth, this.props.actualHeight);
+
+    var tileWidth = this.props.tileWidth;
+    var tileHeight = this.props.tileHeight;
+
+    for (var x = 0; x < this.props.width; x++) {
+      for (var y = 0; y < this.props.height; y++) {
+        var px = this.props.drawGrid[x][y];
+
+        var fillX = px.x * tileWidth;
+        var fillY = px.y * tileHeight;
+
+        if (px.color) {
+          drawCtx.fillStyle = px.color;
+          drawCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+        }
+
+        if (px.highlighted) {
+          overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+          overlayCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+        }
+      }
+    }
   },
 
   getTileCoordinates: function getTileCoordinates(ev) {
@@ -63806,27 +63931,10 @@ var DrawCanvas = React.createClass({
     var x = absX - elRect.left;
     var y = absY - elRect.top;
 
-    var tileX = Math.floor(x / this.props.tileSize);
-    var tileY = Math.floor(y / this.props.tileSize);
+    var tileX = Math.floor(x / this.props.tileWidth);
+    var tileY = Math.floor(y / this.props.tileHeight);
 
     return { x: tileX, y: tileY };
-  },
-
-  initBackground: function initBackground() {
-    var numTilesH = this.props.width / this.props.bgTileSize;
-    var numTilesV = this.props.height / this.props.bgTileSize;
-
-    for (var i = 0; i < numTilesH; i++) {
-      for (var j = 0; j < numTilesV; j++) {
-        var x = i * this.props.bgTileSize;
-        var y = j * this.props.bgTileSize;
-
-        var fill = (i + j) % 2 == 0 ? '#999' : '#777';
-
-        this.bgCtx.fillStyle = fill;
-        this.bgCtx.fillRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
-      }
-    }
   },
 
   mouseMoved: function mouseMoved(ev) {
@@ -63835,65 +63943,52 @@ var DrawCanvas = React.createClass({
     var x = _getTileCoordinates.x;
     var y = _getTileCoordinates.y;
 
-    var grid = this.state.grid;
-    var numPixels = grid.length;
-    var currentPixel = grid[x][y];
+    var grid = this.props.drawGrid;
 
-    if (!currentPixel.highlighted) {
-      var fillX = currentPixel.x * this.props.tileSize;
-      var fillY = currentPixel.y * this.props.tileSize;
+    grid[x][y].highlighted = true;
+    _actionsDraw_actions2['default'].setDrawGrid(grid);
 
-      this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      this.overlayCtx.fillRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
-      currentPixel.highlighted = true;
+    if (this.props.isMouseDown) {
+      this.fillPixel(ev);
     }
 
-    this.setState({ grid: grid });
     this.clearHighlight(null, currentPixel);
 
-    if (this.state.isMouseDown) {
+    if (this.props.isMouseDown) {
       this.fillPixel(ev);
     }
   },
 
   clearHighlight: function clearHighlight(ev, currentPixel) {
-    var numPixelsH = this.props.width / this.props.tileSize;
-    var numPixelsV = this.props.height / this.props.tileSize;
-    var grid = this.state.grid;
+    var grid = this.props.drawGrid;
 
-    for (var ix = 0; ix < numPixelsH; ix++) {
-      for (var iy = 0; iy < numPixelsV; iy++) {
-        var pixel = grid[ix][iy];
-        if (pixel === currentPixel) {
+    for (var x = 0; x < this.props.width; x++) {
+      for (var y = 0; y < this.props.height; y++) {
+        var px = grid[x][y];
+        if (px === currentPixel) {
           continue;
         }
 
-        if (pixel.highlighted) {
-          var fillX = pixel.x * this.props.tileSize;
-          var fillY = pixel.y * this.props.tileSize;
-
-          this.overlayCtx.clearRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
-          pixel.highlighted = false;
+        if (px.highlighted) {
+          px.highlighted = false;
         }
+
+        grid[x][y] = px;
+        _actionsDraw_actions2['default'].setGrid(grid);
       }
     }
-
-    this.setState({ grid: grid });
   },
 
   fillPixel: function fillPixel(ev) {
-    ev.preventDefault();
-    this.setState({ isMouseDown: true });
-    var grid = this.state.grid;
+    ev.preventDefault;
+
+    _actionsDraw_actions2['default'].setMouseDown();
+    var grid = this.props.drawGrid;
 
     var _getTileCoordinates2 = this.getTileCoordinates(ev);
 
     var x = _getTileCoordinates2.x;
     var y = _getTileCoordinates2.y;
-
-    var pixel = grid[x][y];
-    var fillX = x * this.props.tileSize;
-    var fillY = y * this.props.tileSize;
 
     var button = ev.which || ev.button;
     var color = this.props.primaryColor;
@@ -63902,22 +63997,19 @@ var DrawCanvas = React.createClass({
       color = this.props.secondaryColor;
     }
 
-    this.drawCtx.fillStyle = color;
-    this.drawCtx.clearRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
-    this.drawCtx.fillRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
-    pixel.color = color;
-    this.setState({ grid: grid });
+    grid[x][y].color = color;
+    _actionsDraw_actions2['default'].setGrid(grid);
   },
 
   setMouseUp: function setMouseUp() {
-    this.setState({ isMouseDown: false });
+    _actionsDraw_actions2['default'].setMouseUp();
   }
 });
 
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
-},{"../models/pixel":438,"jquery":103,"pixi.js":208,"react":419}],425:[function(require,module,exports){
+},{"../actions/draw_actions":421,"jquery":103,"pixi.js":208,"react":419}],425:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64657,7 +64749,13 @@ var DrawConstants = keyMirror({
   SET_ACTIVE_PALETTE_COLOR: null,
   SAVE_PALETTE: null,
   CLOSE_EDIT_PALETTE: null,
-  SET_ACTIVE_TOOL: null
+  SET_ACTIVE_TOOL: null,
+  SET_DRAW_CANVASES: null,
+  UPDATE_DRAW_CANVASES: null,
+  SET_DRAW_GRID: null,
+  SET_TILE_SIZE: null,
+  SET_MOUSE_DOWN: null,
+  SET_MOUSE_UP: null
 });
 
 exports['default'] = DrawConstants;
@@ -64697,27 +64795,6 @@ exports['default'] = Transparency;
 module.exports = exports['default'];
 
 },{}],438:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Pixel = function Pixel(x, y) {
-  _classCallCheck(this, Pixel);
-
-  this.x = x;
-  this.y = y;
-  this.highlighted = false;
-  this.color = null;
-};
-
-exports["default"] = Pixel;
-module.exports = exports["default"];
-
-},{}],439:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64737,19 +64814,36 @@ var _constantsDraw_constants2 = _interopRequireDefault(_constantsDraw_constants)
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
 
+var width = 32;
+var height = 32;
+var zoom = 0.8;
+var totalWidth = 1024;
+var totalHeight = 1024;
+var actualWidth = totalWidth * zoom;
+var actualHeight = totalHeight * zoom;
+var tileWidth = actualWidth / width;
+var tileHeight = actualHeight / height;
+
 var _state = {
   primaryColor: '#000000',
   secondaryColor: '#ffffff',
-  width: 512,
-  height: 512,
-  tileSize: 32,
   palettes: {
     'Rainbow': ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8b00ff']
   },
   activePalette: 'Rainbow',
   isEditingPalette: false,
   editPalette: null,
-  activeTool: 'Pencil'
+  activeTool: 'Pencil',
+  isMouseDown: false,
+  width: width,
+  height: height,
+  totalWidth: totalWidth,
+  totalHeight: totalWidth,
+  zoom: zoom,
+  actualWidth: actualWidth,
+  actualHeight: actualHeight,
+  tileWidth: tileWidth,
+  tileHeight: tileHeight
 };
 
 function loadState(data) {
@@ -64840,6 +64934,39 @@ var DrawStore = assign(EventEmitter.prototype, {
         _state.activeTool = action.data;
         break;
 
+      case _constantsDraw_constants2['default'].SET_DRAW_CANVASES:
+        _state.canvases = action.data;
+        break;
+
+      case _constantsDraw_constants2['default'].UPDATE_DRAW_CANVASES:
+        var newCanvases = action.data;
+
+        for (var prop in newCanvases) {
+          if (newCanvases.hasOwnProperty(prop)) {
+            _state.canvases[prop] = newCanvases[prop];
+          }
+        }
+
+        break;
+
+      case _constantsDraw_constants2['default'].SET_DRAW_GRID:
+        console.log(action.data);
+        _state.drawGrid = action.data;
+        break;
+
+      case _constantsDraw_constants2['default'].SET_TILE_SIZE:
+        _state.tileWidth = action.data.width;
+        _state.tileHeight = action.data.height;
+        break;
+
+      case _constantsDraw_constants2['default'].SET_MOUSE_DOWN:
+        _state.isMouseDown = true;
+        break;
+
+      case _constantsDraw_constants2['default'].SET_MOUSE_UP:
+        _state.isMouseDown = false;
+        break;
+
       default:
         return true;
     }
@@ -64852,7 +64979,7 @@ var DrawStore = assign(EventEmitter.prototype, {
 exports['default'] = DrawStore;
 module.exports = exports['default'];
 
-},{"../constants/draw_constants":435,"../dispatcher/app_dispatcher":436,"events":92,"object-assign":104}],440:[function(require,module,exports){
+},{"../constants/draw_constants":435,"../dispatcher/app_dispatcher":436,"events":92,"object-assign":104}],439:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -64921,7 +65048,7 @@ $(function () {
   });
 });
 
-},{"./components/draw_controller":423,"./components/footer":427,"./components/header":428,"./components/map":430,"./components/music":432,"babel/polyfill":91,"jquery":103,"react":419,"react-router":250}]},{},[440])
+},{"./components/draw_controller":423,"./components/footer":427,"./components/header":428,"./components/map":430,"./components/music":432,"babel/polyfill":91,"jquery":103,"react":419,"react-router":250}]},{},[439])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

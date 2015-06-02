@@ -39,11 +39,19 @@ let DrawController = React.createClass({
                        secondaryColor={this.state.secondaryColor}/>
         </div>
 
-        <DrawSurface primaryColor={this.state.primaryColor}
+        <DrawSurface canvases={this.state.canvases}
+                     primaryColor={this.state.primaryColor}
                      secondaryColor={this.state.secondaryColor}
                      width={this.state.width}
                      height={this.state.height}
-                     tileSize={this.state.tileSize}/>
+                     totalWidth={this.state.totalWidth}
+                     totalHeight={this.state.totalHeight}
+                     actualWidth={this.state.actualWidth}
+                     actualHeight={this.state.actualHeight}
+                     tileWidth={this.state.tileWidth}
+                     tileHeight={this.state.tileHeight}
+                     drawGrid={this.state.drawGrid}
+                     isMouseDown={this.state.isMouseDown}/>
 
         <div className="manage-surface">
           <ManageDrawList onResizeClick={this.onResizeClick}/>
