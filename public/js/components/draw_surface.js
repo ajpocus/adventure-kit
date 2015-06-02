@@ -5,7 +5,10 @@ let PIXI = require('pixi.js');
 import DrawActions from '../actions/draw_actions';
 
 let DrawCanvas = React.createClass({
-  componentWillMount: function () {
+  componentDidMount: function () {
+    let tileWidth = this.props.actualWidth / this.props.width;
+    let tileHeight = this.props.actualHeight / this.props.height;
+
     // init drawGrid
     let grid = [];
     for (let x = 0; x < this.props.width; x++) {
@@ -22,11 +25,6 @@ let DrawCanvas = React.createClass({
     }
 
     DrawActions.setDrawGrid(grid);
-  },
-
-  componentDidMount: function () {
-    let tileWidth = this.props.actualWidth / this.props.width;
-    let tileHeight = this.props.actualHeight / this.props.height;
 
     // TODO: Fix prop updating so I don't have to merge these methods.
     let zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
@@ -58,7 +56,7 @@ let DrawCanvas = React.createClass({
 
     DrawActions.setTileSize({width: tileWidth, height: tileHeight });
     DrawActions.setDrawCanvases(canvases);
-    DrawActions.updateDrawCanvases({ bgCtx: bgCtx });
+    console.log(this.props.drawGrid);
   },
 
   componentDidUpdate: function (prevProps, prevState) {

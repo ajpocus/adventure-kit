@@ -143,9 +143,7 @@ let DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case DrawConstants.SET_DRAW_GRID:
-        console.log(action.data);
         _state.drawGrid = action.data;
-        console.log(_state);
         break;
 
       case DrawConstants.SET_TILE_SIZE:

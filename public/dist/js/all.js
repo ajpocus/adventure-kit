@@ -63763,7 +63763,10 @@ var PIXI = require('pixi.js');
 var DrawCanvas = React.createClass({
   displayName: 'DrawCanvas',
 
-  componentWillMount: function componentWillMount() {
+  componentDidMount: function componentDidMount() {
+    var tileWidth = this.props.actualWidth / this.props.width;
+    var tileHeight = this.props.actualHeight / this.props.height;
+
     // init drawGrid
     var grid = [];
     for (var x = 0; x < this.props.width; x++) {
@@ -63780,11 +63783,6 @@ var DrawCanvas = React.createClass({
     }
 
     _actionsDraw_actions2['default'].setDrawGrid(grid);
-  },
-
-  componentDidMount: function componentDidMount() {
-    var tileWidth = this.props.actualWidth / this.props.width;
-    var tileHeight = this.props.actualHeight / this.props.height;
 
     // TODO: Fix prop updating so I don't have to merge these methods.
     var zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
@@ -63816,7 +63814,7 @@ var DrawCanvas = React.createClass({
 
     _actionsDraw_actions2['default'].setTileSize({ width: tileWidth, height: tileHeight });
     _actionsDraw_actions2['default'].setDrawCanvases(canvases);
-    _actionsDraw_actions2['default'].updateDrawCanvases({ bgCtx: bgCtx });
+    console.log(this.props.drawGrid);
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
@@ -64947,9 +64945,7 @@ var DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case _constantsDraw_constants2['default'].SET_DRAW_GRID:
-        console.log(action.data);
         _state.drawGrid = action.data;
-        console.log(_state);
         break;
 
       case _constantsDraw_constants2['default'].SET_TILE_SIZE:
