@@ -33,7 +33,8 @@ let DrawController = React.createClass({
           <PaletteManager palettes={this.state.palettes}
                           activePalette={this.state.activePalette}
                           editPalette={this.state.editPalette}
-                          isEditingPalette={this.state.isEditingPalette}/>
+                          isEditingPalette={this.state.isEditingPalette}
+                          activePaletteColor={this.state.activePaletteColor}/>
           <ColorPicker primaryColor={this.state.primaryColor}
                        secondaryColor={this.state.secondaryColor}/>
         </div>

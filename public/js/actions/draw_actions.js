@@ -43,6 +43,41 @@ let DrawActions = {
       data: data
     });
   },
+
+  removePaletteColor: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.REMOVE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  updatePaletteColor: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.UPDATE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  setActivePaletteColor: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.SET_ACTIVE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  savePalette: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.SAVE_PALETTE,
+      data: data
+    });
+  },
+
+  closeEditPalette: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.CLOSE_EDIT_PALETTE,
+      data: data
+    });
+  }
 };
 
 export default DrawActions;

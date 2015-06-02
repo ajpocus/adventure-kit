@@ -55,8 +55,8 @@ let EditPalette = React.createClass({
 
               <div className="sidebar">
                 <input type="color" id="palette-color"
-                       onChange={this.updatePaletteColor}/>
-                <button className="add btn">Add color</button>
+                       onChange={this.updatePaletteColor}
+                       ref="activePaletteColor"/>
               </div>
             </div>
 
@@ -76,7 +76,12 @@ let EditPalette = React.createClass({
   },
 
   componentDidUpdate: function () {
-    document.getElementById('palette-color').value = this.props.activeColor;
+    // Kludgy as fuck. Fix this, maybe with better modal handling.
+    if (!this.props.isOpen) {
+      return;
+    }
+
+    this.refs.activePaletteColor.getDOMNode().value = this.props.activePaletteColor;
   },
 
   addPaletteColor: function () {
@@ -84,32 +89,24 @@ let EditPalette = React.createClass({
   },
 
   removePaletteColor: function (color) {
-    let palette = this.state.palette;
-    let idx = palette.indexOf(color);
-    palette.splice(idx, 1);
-    this.setState({ palette: palette });
+    DrawActions.removePaletteColor(color);
   },
 
   setActivePaletteColor: function (color) {
-    this.setState({ activePaletteColor: color });
+    DrawActions.setActivePaletteColor(color);
   },
 
   updatePaletteColor: function (ev) {
-    let color = ev.target.value;
-    let palette = this.state.palette;
-    let idx = palette.indexOf(this.state.activePaletteColor);
-    palette[idx] = color;
-    this.setState({ palette: palette, activePaletteColor: color });
+    DrawActions.updatePaletteColor(ev.target.value);
   },
 
   savePalette: function () {
-    this.props.onPaletteChange(this.state.palette);
+    DrawActions.savePalette();
     this.closeEdit();
   },
 
   closeEdit: function () {
-    let container = document.getElementById('modal-container');
-    React.unmountComponentAtNode(container);
+    DrawActions.closeEditPalette();
   }
 });
 

@@ -57,7 +57,8 @@ let PaletteManager = React.createClass({
         </ul>
 
         <EditPalette isOpen={this.props.isEditingPalette}
-                     palette={this.props.editPalette}/>
+                     palette={this.props.editPalette}
+                     activePaletteColor={this.props.activePaletteColor}/>
       </div>
     );
   },

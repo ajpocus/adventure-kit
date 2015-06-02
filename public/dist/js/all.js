@@ -63497,7 +63497,43 @@ var DrawActions = {
       actionType: _constantsDraw_constants2['default'].ADD_PALETTE_COLOR,
       data: data
     });
-  } };
+  },
+
+  removePaletteColor: function removePaletteColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].REMOVE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  updatePaletteColor: function updatePaletteColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].UPDATE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  setActivePaletteColor: function setActivePaletteColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_ACTIVE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  savePalette: function savePalette(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SAVE_PALETTE,
+      data: data
+    });
+  },
+
+  closeEditPalette: function closeEditPalette(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].CLOSE_EDIT_PALETTE,
+      data: data
+    });
+  }
+};
 
 exports['default'] = DrawActions;
 module.exports = exports['default'];
@@ -63624,7 +63660,8 @@ var DrawController = React.createClass({
         React.createElement(_palette_manager2['default'], { palettes: this.state.palettes,
           activePalette: this.state.activePalette,
           editPalette: this.state.editPalette,
-          isEditingPalette: this.state.isEditingPalette }),
+          isEditingPalette: this.state.isEditingPalette,
+          activePaletteColor: this.state.activePaletteColor }),
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
           secondaryColor: this.state.secondaryColor })
       ),
@@ -64047,12 +64084,8 @@ var EditPalette = React.createClass({
               'div',
               { className: 'sidebar' },
               React.createElement('input', { type: 'color', id: 'palette-color',
-                onChange: this.updatePaletteColor }),
-              React.createElement(
-                'button',
-                { className: 'add btn' },
-                'Add color'
-              )
+                onChange: this.updatePaletteColor,
+                ref: 'activePaletteColor' })
             )
           ),
           React.createElement(
@@ -64075,7 +64108,12 @@ var EditPalette = React.createClass({
   },
 
   componentDidUpdate: function componentDidUpdate() {
-    document.getElementById('palette-color').value = this.props.activeColor;
+    // Kludgy as fuck. Fix this, maybe with better modal handling.
+    if (!this.props.isOpen) {
+      return;
+    }
+
+    this.refs.activePaletteColor.getDOMNode().value = this.props.activePaletteColor;
   },
 
   addPaletteColor: function addPaletteColor() {
@@ -64083,32 +64121,24 @@ var EditPalette = React.createClass({
   },
 
   removePaletteColor: function removePaletteColor(color) {
-    var palette = this.state.palette;
-    var idx = palette.indexOf(color);
-    palette.splice(idx, 1);
-    this.setState({ palette: palette });
+    _actionsDraw_actions2['default'].removePaletteColor(color);
   },
 
   setActivePaletteColor: function setActivePaletteColor(color) {
-    this.setState({ activePaletteColor: color });
+    _actionsDraw_actions2['default'].setActivePaletteColor(color);
   },
 
   updatePaletteColor: function updatePaletteColor(ev) {
-    var color = ev.target.value;
-    var palette = this.state.palette;
-    var idx = palette.indexOf(this.state.activePaletteColor);
-    palette[idx] = color;
-    this.setState({ palette: palette, activePaletteColor: color });
+    _actionsDraw_actions2['default'].updatePaletteColor(ev.target.value);
   },
 
   savePalette: function savePalette() {
-    this.props.onPaletteChange(this.state.palette);
+    _actionsDraw_actions2['default'].savePalette();
     this.closeEdit();
   },
 
   closeEdit: function closeEdit() {
-    var container = document.getElementById('modal-container');
-    React.unmountComponentAtNode(container);
+    _actionsDraw_actions2['default'].closeEditPalette();
   }
 });
 
@@ -64459,7 +64489,8 @@ var PaletteManager = React.createClass({
         paletteColors
       ),
       React.createElement(_edit_palette2['default'], { isOpen: this.props.isEditingPalette,
-        palette: this.props.editPalette })
+        palette: this.props.editPalette,
+        activePaletteColor: this.props.activePaletteColor })
     );
   },
 
@@ -64611,7 +64642,12 @@ var DrawConstants = keyMirror({
   SET_SECONDARY_COLOR: null,
   NEW_PALETTE: null,
   EDIT_PALETTE: null,
-  ADD_PALETTE_COLOR: null
+  ADD_PALETTE_COLOR: null,
+  REMOVE_PALETTE_COLOR: null,
+  UPDATE_PALETTE_COLOR: null,
+  SET_ACTIVE_PALETTE_COLOR: null,
+  SAVE_PALETTE: null,
+  CLOSE_EDIT_PALETTE: null
 });
 
 exports['default'] = DrawConstants;
@@ -64757,6 +64793,36 @@ var DrawStore = assign(EventEmitter.prototype, {
         var newColor = '#ffffff';
         _state.editPalette.push(newColor);
         _state.activePaletteColor = newColor;
+        break;
+
+      case _constantsDraw_constants2['default'].REMOVE_PALETTE_COLOR:
+        var palette = _state.editPalette;
+        var color = action.data;
+        var idx = palette.indexOf(color);
+        palette.splice(idx, 1);
+        _state.editPalette = palette;
+        break;
+
+      case _constantsDraw_constants2['default'].UPDATE_PALETTE_COLOR:
+        var color = action.data;
+        var palette = _state.editPalette;
+        var idx = palette.indexOf(_state.activePaletteColor);
+        palette[idx] = color;
+        _state.editPalette = palette;
+        _state.activePaletteColor = color;
+        break;
+
+      case _constantsDraw_constants2['default'].SET_ACTIVE_PALETTE_COLOR:
+        _state.activePaletteColor = action.data;
+        break;
+
+      case _constantsDraw_constants2['default'].SAVE_PALETTE:
+        _state.palettes[_state.activePalette] = _state.editPalette;
+        _state.activeColor = _state.palettes[_state.activePalette].first;
+        break;
+
+      case _constantsDraw_constants2['default'].CLOSE_EDIT_PALETTE:
+        _state.isEditingPalette = false;
         break;
 
       default:
