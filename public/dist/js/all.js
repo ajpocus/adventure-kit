@@ -63532,6 +63532,13 @@ var DrawActions = {
       actionType: _constantsDraw_constants2['default'].CLOSE_EDIT_PALETTE,
       data: data
     });
+  },
+
+  setActiveTool: function setActiveTool(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_constants2['default'].SET_ACTIVE_TOOL,
+      data: data
+    });
   }
 };
 
@@ -63656,7 +63663,7 @@ var DrawController = React.createClass({
       React.createElement(
         'div',
         { className: 'toolbar' },
-        React.createElement(_draw_tool_list2['default'], null),
+        React.createElement(_draw_tool_list2['default'], { activeTool: this.state.activeTool }),
         React.createElement(_palette_manager2['default'], { palettes: this.state.palettes,
           activePalette: this.state.activePalette,
           editPalette: this.state.editPalette,
@@ -63911,31 +63918,32 @@ exports['default'] = DrawCanvas;
 module.exports = exports['default'];
 
 },{"../models/pixel":438,"jquery":103,"pixi.js":208,"react":419}],425:[function(require,module,exports){
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var React = require("react");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _actionsDraw_actions = require('../actions/draw_actions');
+
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
+
+var React = require('react');
 
 var DrawToolList = React.createClass({
-  displayName: "DrawToolList",
+  displayName: 'DrawToolList',
 
   getDefaultProps: function getDefaultProps() {
     return {
       tools: [{
-        name: "Pencil",
-        imgUrl: "/img/icons/glyphicons-31-pencil.png"
+        name: 'Pencil',
+        imgUrl: '/img/icons/glyphicons-31-pencil.png'
       }, {
-        name: "Bucket",
-        imgUrl: "/img/icons/glyphicons-481-bucket.png"
+        name: 'Bucket',
+        imgUrl: '/img/icons/glyphicons-481-bucket.png'
       }]
-    };
-  },
-
-  getInitialState: function getInitialState() {
-    return {
-      activeTool: "Pencil"
     };
   },
 
@@ -63943,46 +63951,46 @@ var DrawToolList = React.createClass({
     var toolList = [];
     for (var i = 0; i < this.props.tools.length; i++) {
       var tool = this.props.tools[i];
-      var className = "btn";
-      if (tool.name === this.state.activeTool) {
-        className += " active";
+      var className = 'btn';
+      if (tool.name === this.props.activeTool) {
+        className += ' active';
       }
 
       toolList.push(React.createElement(
-        "li",
-        { className: "tool", key: tool.name },
+        'li',
+        { className: 'tool', key: tool.name },
         React.createElement(
-          "button",
+          'button',
           { className: className,
             onClick: this.setActiveTool.bind(this, tool.name) },
           React.createElement(
-            "div",
-            { className: "img-container" },
-            React.createElement("img", { className: "icon", src: tool.imgUrl })
+            'div',
+            { className: 'img-container' },
+            React.createElement('img', { className: 'icon', src: tool.imgUrl })
           )
         )
       ));
     }
 
     return React.createElement(
-      "div",
-      { className: "draw-tools" },
+      'div',
+      { className: 'draw-tools' },
       React.createElement(
-        "ul",
-        { className: "tool-list" },
+        'ul',
+        { className: 'tool-list' },
         toolList
       )
     );
   },
 
   setActiveTool: function setActiveTool(name) {
-    this.setState({ activeTool: name });
+    _actionsDraw_actions2['default'].setActiveTool(name);
   } });
 
-exports["default"] = DrawToolList;
-module.exports = exports["default"];
+exports['default'] = DrawToolList;
+module.exports = exports['default'];
 
-},{"react":419}],426:[function(require,module,exports){
+},{"../actions/draw_actions":421,"react":419}],426:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64023,6 +64031,7 @@ var EditPalette = React.createClass({
       colorList.push(React.createElement(
         'li',
         { className: 'color',
+          key: i,
           onClick: this.setActivePaletteColor.bind(this, color) },
         React.createElement(
           'span',
@@ -64108,7 +64117,7 @@ var EditPalette = React.createClass({
   },
 
   componentDidUpdate: function componentDidUpdate() {
-    // Kludgy as fuck. Fix this, maybe with better modal handling.
+    // Need better modal handling...
     if (!this.props.isOpen) {
       return;
     }
@@ -64647,7 +64656,8 @@ var DrawConstants = keyMirror({
   UPDATE_PALETTE_COLOR: null,
   SET_ACTIVE_PALETTE_COLOR: null,
   SAVE_PALETTE: null,
-  CLOSE_EDIT_PALETTE: null
+  CLOSE_EDIT_PALETTE: null,
+  SET_ACTIVE_TOOL: null
 });
 
 exports['default'] = DrawConstants;
@@ -64738,7 +64748,8 @@ var _state = {
   },
   activePalette: 'Rainbow',
   isEditingPalette: false,
-  editPalette: null
+  editPalette: null,
+  activeTool: 'Pencil'
 };
 
 function loadState(data) {
@@ -64823,6 +64834,10 @@ var DrawStore = assign(EventEmitter.prototype, {
 
       case _constantsDraw_constants2['default'].CLOSE_EDIT_PALETTE:
         _state.isEditingPalette = false;
+        break;
+
+      case _constantsDraw_constants2['default'].SET_ACTIVE_TOOL:
+        _state.activeTool = action.data;
         break;
 
       default:

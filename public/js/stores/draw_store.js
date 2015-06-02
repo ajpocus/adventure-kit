@@ -18,7 +18,8 @@ let _state = {
   },
   activePalette: 'Rainbow',
   isEditingPalette: false,
-  editPalette: null
+  editPalette: null,
+  activeTool: 'Pencil'
 };
 
 function loadState(data) {
@@ -103,6 +104,10 @@ let DrawStore = assign(EventEmitter.prototype, {
 
       case DrawConstants.CLOSE_EDIT_PALETTE:
         _state.isEditingPalette = false;
+        break;
+
+      case DrawConstants.SET_ACTIVE_TOOL:
+        _state.activeTool = action.data;
         break;
 
       default:

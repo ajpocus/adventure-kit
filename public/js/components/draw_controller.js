@@ -29,7 +29,7 @@ let DrawController = React.createClass({
     return (
       <div id="draw">
         <div className="toolbar">
-          <DrawToolList/>
+          <DrawToolList activeTool={this.state.activeTool}/>
           <PaletteManager palettes={this.state.palettes}
                           activePalette={this.state.activePalette}
                           editPalette={this.state.editPalette}

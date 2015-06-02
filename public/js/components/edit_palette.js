@@ -22,6 +22,7 @@ let EditPalette = React.createClass({
 
       colorList.push(
         <li className="color"
+            key={i}
             onClick={this.setActivePaletteColor.bind(this, color)}>
           <span className="remove"
                 onClick={this.removePaletteColor.bind(this, color)}>
@@ -76,7 +77,7 @@ let EditPalette = React.createClass({
   },
 
   componentDidUpdate: function () {
-    // Kludgy as fuck. Fix this, maybe with better modal handling.
+    // Need better modal handling...
     if (!this.props.isOpen) {
       return;
     }

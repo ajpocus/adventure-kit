@@ -77,6 +77,13 @@ let DrawActions = {
       actionType: DrawConstants.CLOSE_EDIT_PALETTE,
       data: data
     });
+  },
+
+  setActiveTool: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawConstants.SET_ACTIVE_TOOL,
+      data: data
+    });
   }
 };
 
