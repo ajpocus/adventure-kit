@@ -5,8 +5,60 @@ let PIXI = require('pixi.js');
 import DrawActions from '../actions/draw_actions';
 
 let DrawCanvas = React.createClass({
+  componentWillMount: function () {
+    // init drawGrid
+    let grid = [];
+    for (let x = 0; x < this.props.width; x++) {
+      grid[x] = [];
+
+      for (let y = 0; y < this.props.height; y++) {
+        grid[x].push({
+          x: x,
+          y: y,
+          color: null,
+          isHighlighted: false
+        });
+      }
+    }
+
+    DrawActions.setDrawGrid(grid);
+  },
+
   componentDidMount: function () {
-    this.init();
+    let tileWidth = this.props.actualWidth / this.props.width;
+    let tileHeight = this.props.actualHeight / this.props.height;
+
+    // TODO: Fix prop updating so I don't have to merge these methods.
+    let zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
+    let bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
+    let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
+    let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
+    let canvases = {
+      zoomCtx: zoomCtx,
+      bgCtx: bgCtx,
+      drawCtx: drawCtx,
+      overlayCtx: overlayCtx
+    };
+
+    // init background
+    let numTilesH = this.props.actualWidth / this.props.bgTileSize;
+    let numTilesV = this.props.actualHeight / this.props.bgTileSize;
+    let bgTileSize = 8;
+    for (let i = 0; i < numTilesH; i++) {
+      for (let j = 0; j < numTilesV; j++) {
+        let x = i * bgTileSize;
+        let y = j * bgTileSize;
+
+        let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
+
+        bgCtx.fillStyle = fill;
+        bgCtx.fillRect(x, y, bgTileSize, bgTileSize);
+      }
+    }
+
+    DrawActions.setTileSize({width: tileWidth, height: tileHeight });
+    DrawActions.setDrawCanvases(canvases);
+    DrawActions.updateDrawCanvases({ bgCtx: bgCtx });
   },
 
   componentDidUpdate: function (prevProps, prevState) {
@@ -58,61 +110,6 @@ let DrawCanvas = React.createClass({
         </canvas>
       </div>
     );
-  },
-
-  init: function () {
-    let tileWidth = this.props.actualWidth / this.props.width;
-    let tileHeight = this.props.actualHeight / this.props.height;
-    DrawActions.setTileSize({width: tileWidth, height: tileHeight });
-
-    // TODO: Fix prop updating so I don't have to merge these methods.
-    let zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
-    let bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
-    let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
-    let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
-    let canvases = {
-      zoomCtx: zoomCtx,
-      bgCtx: bgCtx,
-      drawCtx: drawCtx,
-      overlayCtx: overlayCtx
-    };
-
-    DrawActions.setDrawCanvases(canvases);
-
-    // init drawGrid
-    let grid = [];
-    for (let x = 0; x < this.props.width; x++) {
-      grid[x] = [];
-
-      for (let y = 0; y < this.props.height; y++) {
-        grid[x].push({
-          x: x,
-          y: y,
-          color: null,
-          isHighlighted: false
-        });
-      }
-    }
-
-    DrawActions.setDrawGrid(grid);
-
-    // init background
-    let numTilesH = this.props.actualWidth / this.props.bgTileSize;
-    let numTilesV = this.props.actualHeight / this.props.bgTileSize;
-    let bgTileSize = 8;
-    for (let i = 0; i < numTilesH; i++) {
-      for (let j = 0; j < numTilesV; j++) {
-        let x = i * bgTileSize;
-        let y = j * bgTileSize;
-
-        let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
-
-        bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, bgTileSize, bgTileSize);
-      }
-    }
-
-    DrawActions.updateDrawCanvases({ bgCtx: bgCtx });
   },
 
   resizeDrawGrid: function () {

@@ -63763,8 +63763,60 @@ var PIXI = require('pixi.js');
 var DrawCanvas = React.createClass({
   displayName: 'DrawCanvas',
 
+  componentWillMount: function componentWillMount() {
+    // init drawGrid
+    var grid = [];
+    for (var x = 0; x < this.props.width; x++) {
+      grid[x] = [];
+
+      for (var y = 0; y < this.props.height; y++) {
+        grid[x].push({
+          x: x,
+          y: y,
+          color: null,
+          isHighlighted: false
+        });
+      }
+    }
+
+    _actionsDraw_actions2['default'].setDrawGrid(grid);
+  },
+
   componentDidMount: function componentDidMount() {
-    this.init();
+    var tileWidth = this.props.actualWidth / this.props.width;
+    var tileHeight = this.props.actualHeight / this.props.height;
+
+    // TODO: Fix prop updating so I don't have to merge these methods.
+    var zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
+    var bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
+    var drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
+    var overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
+    var canvases = {
+      zoomCtx: zoomCtx,
+      bgCtx: bgCtx,
+      drawCtx: drawCtx,
+      overlayCtx: overlayCtx
+    };
+
+    // init background
+    var numTilesH = this.props.actualWidth / this.props.bgTileSize;
+    var numTilesV = this.props.actualHeight / this.props.bgTileSize;
+    var bgTileSize = 8;
+    for (var i = 0; i < numTilesH; i++) {
+      for (var j = 0; j < numTilesV; j++) {
+        var x = i * bgTileSize;
+        var y = j * bgTileSize;
+
+        var fill = (i + j) % 2 == 0 ? '#999' : '#777';
+
+        bgCtx.fillStyle = fill;
+        bgCtx.fillRect(x, y, bgTileSize, bgTileSize);
+      }
+    }
+
+    _actionsDraw_actions2['default'].setTileSize({ width: tileWidth, height: tileHeight });
+    _actionsDraw_actions2['default'].setDrawCanvases(canvases);
+    _actionsDraw_actions2['default'].updateDrawCanvases({ bgCtx: bgCtx });
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
@@ -63811,61 +63863,6 @@ var DrawCanvas = React.createClass({
         width: this.props.actualWidth,
         height: this.props.actualHeight })
     );
-  },
-
-  init: function init() {
-    var tileWidth = this.props.actualWidth / this.props.width;
-    var tileHeight = this.props.actualHeight / this.props.height;
-    _actionsDraw_actions2['default'].setTileSize({ width: tileWidth, height: tileHeight });
-
-    // TODO: Fix prop updating so I don't have to merge these methods.
-    var zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
-    var bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
-    var drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
-    var overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
-    var canvases = {
-      zoomCtx: zoomCtx,
-      bgCtx: bgCtx,
-      drawCtx: drawCtx,
-      overlayCtx: overlayCtx
-    };
-
-    _actionsDraw_actions2['default'].setDrawCanvases(canvases);
-
-    // init drawGrid
-    var grid = [];
-    for (var x = 0; x < this.props.width; x++) {
-      grid[x] = [];
-
-      for (var y = 0; y < this.props.height; y++) {
-        grid[x].push({
-          x: x,
-          y: y,
-          color: null,
-          isHighlighted: false
-        });
-      }
-    }
-
-    _actionsDraw_actions2['default'].setDrawGrid(grid);
-
-    // init background
-    var numTilesH = this.props.actualWidth / this.props.bgTileSize;
-    var numTilesV = this.props.actualHeight / this.props.bgTileSize;
-    var bgTileSize = 8;
-    for (var i = 0; i < numTilesH; i++) {
-      for (var j = 0; j < numTilesV; j++) {
-        var x = i * bgTileSize;
-        var y = j * bgTileSize;
-
-        var fill = (i + j) % 2 == 0 ? '#999' : '#777';
-
-        bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, bgTileSize, bgTileSize);
-      }
-    }
-
-    _actionsDraw_actions2['default'].updateDrawCanvases({ bgCtx: bgCtx });
   },
 
   resizeDrawGrid: function resizeDrawGrid() {
@@ -64952,6 +64949,7 @@ var DrawStore = assign(EventEmitter.prototype, {
       case _constantsDraw_constants2['default'].SET_DRAW_GRID:
         console.log(action.data);
         _state.drawGrid = action.data;
+        console.log(_state);
         break;
 
       case _constantsDraw_constants2['default'].SET_TILE_SIZE:
