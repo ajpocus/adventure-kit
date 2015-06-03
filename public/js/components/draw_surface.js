@@ -39,9 +39,19 @@ let DrawCanvas = React.createClass({
   },
 
   render: function () {
+    let surfaceStyle = {
+      width: this.state.actualWidth,
+      height: this.state.actualHeight
+    };
+
     return (
       <div id="render"
-           onWheel={this.onZoom}>
+           onWheel={this.onZoom}
+           onMouseDown={this.fillPixel}
+           onContextMenu={this.fillPixel}
+           onMouseUp={this.setMouseUp}
+           onMouseMove={this.handleMouseMove}
+           onMouseOut={this.clearHighlight}>
         <canvas id="zoom-canvas"
                 className="draw"
                 ref="zoomCanvas"
@@ -49,31 +59,29 @@ let DrawCanvas = React.createClass({
                 height={this.props.totalHeight}>
         </canvas>
 
-        <canvas id="bg-canvas"
-                className="draw surface"
-                ref="bgCanvas"
-                width={this.state.actualWidth}
-                height={this.state.actualHeight}>
-        </canvas>
+        <div className="surface-container"
+             style={surfaceStyle}>
+          <canvas id="bg-canvas"
+                  className="draw surface"
+                  ref="bgCanvas"
+                  width={this.state.actualWidth}
+                  height={this.state.actualHeight}>
+          </canvas>
 
-        <canvas id="draw-canvas"
-                className="draw surface"
-                ref="drawCanvas"
-                width={this.state.actualWidth}
-                height={this.state.actualHeight}>
-        </canvas>
+          <canvas id="draw-canvas"
+                  className="draw surface"
+                  ref="drawCanvas"
+                  width={this.state.actualWidth}
+                  height={this.state.actualHeight}>
+          </canvas>
 
-        <canvas id="overlay-canvas"
-                className="draw surface"
-                ref="overlayCanvas"
-                width={this.state.actualWidth}
-                height={this.state.actualHeight}
-                onMouseMove={this.mouseMoved}
-                onMouseOut={this.clearHighlight}
-                onMouseDown={this.fillPixel}
-                onContextMenu={this.fillPixel}
-                onMouseUp={this.setMouseUp}>
-        </canvas>
+          <canvas id="overlay-canvas"
+                  className="draw surface"
+                  ref="overlayCanvas"
+                  width={this.state.actualWidth}
+                  height={this.state.actualHeight}>
+          </canvas>
+        </div>
       </div>
     );
   },
@@ -82,6 +90,7 @@ let DrawCanvas = React.createClass({
     if (this.state.width !== prevState.width ||
         this.state.height !== prevState.height) {
       this.updatePosition();
+      this.redrawTiles();
     }
   },
 
@@ -146,10 +155,12 @@ let DrawCanvas = React.createClass({
   },
 
   updatePosition: function () {
-    let canvases = $('#render canvas.draw.surface');
-    canvases.css({
-      top: (this.props.totalHeight - this.state.actualHeight) / 2,
-      left: (this.props.totalWidth - this.state.actualWidth) / 2
+    let top = (this.props.totalHeight - this.state.actualHeight) / 2;
+    let left = (this.props.totalWidth - this.state.actualWidth) / 2;
+
+    $('#render .surface-container').css({
+      top: top,
+      left: left
     });
   },
 
@@ -186,15 +197,21 @@ let DrawCanvas = React.createClass({
     }
   },
 
-  mouseMoved: function (ev) {
+  handleMouseMove: function (ev) {
+    console.log("MOUSE MOVED");
+    ev.preventDefault();
     let { x, y } = this.getTileCoordinates(ev);
     let grid = this.state.grid;
     grid[x][y].highlighted = true;
     this.setState({ grid: grid });
 
+    let tileWidth = this.state.tileWidth;
+    let tileHeight = this.state.tileHeight;
+    let fillX = x * tileWidth;
+    let fillY = y * tileHeight;
     this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    this.overlayCtx.fillRect(x, y, tileWidth, tileHeight);
-    this.clearHighlight(x, y);
+    this.overlayCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+    this.clearHighlight(ev, x, y);
 
     if (this.state.isMouseDown) {
       this.fillPixel(ev);
@@ -202,7 +219,9 @@ let DrawCanvas = React.createClass({
 
   },
 
-  clearHighlight: function (x, y) {
+  clearHighlight: function (ev, x, y) {
+    console.log("CLEAR");
+    ev.preventDefault();
     let grid = this.state.grid;
 
     for (let ix = 0; ix < this.state.width; ix++) {
@@ -224,6 +243,7 @@ let DrawCanvas = React.createClass({
   },
 
   fillPixel: function (ev) {
+    console.log("FILL");
     ev.preventDefault();
     this.setState({ isMouseDown: true });
     let grid = this.state.grid;
@@ -236,11 +256,19 @@ let DrawCanvas = React.createClass({
       color = this.props.secondaryColor;
     }
 
+    let tileWidth = this.state.tileWidth;
+    let tileHeight = this.state.tileHeight;
+    let fillX = x * tileWidth;
+    let fillY = y * tileHeight;
+    this.drawCtx.fillStyle = color;
+    this.drawCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+
     grid[x][y].color = color;
     this.setState({ grid: grid });
   },
 
   setMouseUp: function () {
+    console.log("MOUSEUP");
     this.setState({ isMouseDown: false });
   },
 

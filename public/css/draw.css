@@ -68,7 +68,7 @@
   margin: 2px;
 }
 
-#draw #render {
+#render {
   position: relative;
   align-self: flex-end;
   width: 1024px;
@@ -77,11 +77,32 @@
   overflow: hidden;
 }
 
-#draw #render canvas.draw {
+#render canvas.draw {
   position: absolute;
   top: 0;
   left: 0;
   cursor: crosshair;
+}
+
+#zoom-canvas {
+  z-index: 0;
+}
+
+#bg-canvas {
+  z-index: 10;
+}
+
+#draw-canvas {
+  z-index: 20;
+}
+
+#overlay-canvas {
+  z-index: 30;
+}
+
+#render .surface-container {
+  z-index: 100;
+  position: relative;
 }
 
 #draw .palette-manager .icon {
