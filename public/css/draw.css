@@ -74,6 +74,7 @@
   width: 1024px;
   height: 1024px;
   margin: 8px 16px;
+  overflow: hidden;
 }
 
 #draw #render canvas.draw {

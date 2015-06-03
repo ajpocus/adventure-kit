@@ -63005,7 +63005,10 @@ var DrawCanvas = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      isMouseDown: false
+      isMouseDown: false,
+      zoom: this.props.zoom,
+      actualWidth: this.props.actualWidth,
+      actualHeight: this.props.actualHeight
     };
   },
 
@@ -63031,23 +63034,24 @@ var DrawCanvas = React.createClass({
   render: function render() {
     return React.createElement(
       'div',
-      { id: 'render' },
+      { id: 'render',
+        onWheel: this.onZoom },
       React.createElement('canvas', { id: 'zoom-canvas',
         className: 'draw',
         width: this.props.totalWidth,
         height: this.props.totalHeight }),
       React.createElement('canvas', { id: 'bg-canvas',
         className: 'draw surface',
-        width: this.props.actualWidth,
-        height: this.props.actualHeight }),
+        width: this.state.actualWidth,
+        height: this.state.actualHeight }),
       React.createElement('canvas', { id: 'draw-canvas',
         className: 'draw surface',
-        width: this.props.actualWidth,
-        height: this.props.actualHeight }),
+        width: this.state.actualWidth,
+        height: this.state.actualHeight }),
       React.createElement('canvas', { id: 'overlay-canvas',
         className: 'draw surface',
-        width: this.props.actualWidth,
-        height: this.props.actualHeight,
+        width: this.state.actualWidth,
+        height: this.state.actualHeight,
         onMouseMove: this.mouseMoved,
         onMouseOut: this.clearHighlight,
         onMouseDown: this.fillPixel,
@@ -63099,8 +63103,8 @@ var DrawCanvas = React.createClass({
   updatePosition: function updatePosition() {
     var canvases = $('#render canvas.draw.surface');
     canvases.css({
-      top: (this.props.totalHeight - this.props.actualHeight) / 2,
-      left: (this.props.totalWidth - this.props.actualWidth) / 2
+      top: (this.props.totalHeight - this.state.actualHeight) / 2,
+      left: (this.props.totalWidth - this.state.actualWidth) / 2
     });
   },
 
@@ -63114,7 +63118,6 @@ var DrawCanvas = React.createClass({
     var tileX = Math.floor(x / this.props.tileWidth);
     var tileY = Math.floor(y / this.props.tileHeight);
 
-    console.log(tileX, tileY);
     return { x: tileX, y: tileY };
   },
 
@@ -63122,8 +63125,8 @@ var DrawCanvas = React.createClass({
     this.zoomCtx.fillStyle = '#484848';
     this.zoomCtx.fillRect(0, 0, this.props.totalWidth, this.props.totalHeight);
 
-    var numTilesH = this.props.actualWidth / this.props.bgTileSize;
-    var numTilesV = this.props.actualHeight / this.props.bgTileSize;
+    var numTilesH = this.state.actualWidth / this.props.bgTileSize;
+    var numTilesV = this.state.actualHeight / this.props.bgTileSize;
 
     for (var i = 0; i < numTilesH; i++) {
       for (var j = 0; j < numTilesV; j++) {
@@ -63218,6 +63221,29 @@ var DrawCanvas = React.createClass({
 
   setMouseUp: function setMouseUp() {
     this.setState({ isMouseDown: false });
+  },
+
+  onZoom: function onZoom(ev) {
+    ev.preventDefault();
+    var delta = 0;
+    if (ev.deltaY > 0) {
+      delta = -0.1;
+    } else if (ev.deltaY < 0) {
+      delta = 0.1;
+    } else {
+      return;
+    }
+
+    var newZoom = this.state.zoom + delta;
+    var actualWidth = this.props.totalWidth * newZoom;
+    var actualHeight = this.props.totalHeight * newZoom;
+
+    this.setState({
+      zoom: newZoom,
+      actualWidth: actualWidth,
+      actualHeight: actualHeight
+    });
+    this.updatePosition();
   }
 });
 
