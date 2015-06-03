@@ -2,23 +2,34 @@ let React = require('react');
 let tinycolor = require('tinycolor2');
 let $ = require('jquery');
 
-import DrawActions from '../actions/draw_actions';
 import EditPalette from './edit_palette';
 import Transparency from '../mixins/transparency';
 import Modal from './modal';
 
 let PaletteManager = React.createClass({
+  getInitialState: function () {
+    return {
+      palettes: {
+        'Rainbow': [
+          '#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff',
+          '#ff00ff'
+        ]
+      },
+      activePalette: 'Rainbow'
+    };
+  },
+
   render: function () {
     let paletteOptions = [];
-    for (let paletteName in this.props.palettes) {
-      if (this.props.palettes.hasOwnProperty(paletteName)) {
+    for (let paletteName in this.state.palettes) {
+      if (this.state.palettes.hasOwnProperty(paletteName)) {
         paletteOptions.push(
           <option value={paletteName} key={paletteName}>{paletteName}</option>
         );
       }
     }
 
-    let activePalette = this.props.palettes[this.props.activePalette];
+    let activePalette = this.state.palettes[this.state.activePalette];
     let paletteColors = [];
     for (let i = 0; i < activePalette.length; i++) {
       let color = activePalette[i];
@@ -35,6 +46,8 @@ let PaletteManager = React.createClass({
       );
     }
 
+    let paletteCopy = activePalette.slice();
+
     return (
       <div className="palette-manager">
         <h2>Palette</h2>
@@ -44,7 +57,7 @@ let PaletteManager = React.createClass({
         </button>
 
         <select name="activePalette" className="palette-chooser"
-                value={this.props.activePalette}>
+                value={this.state.activePalette}>
           {paletteOptions}
         </select>
 
@@ -56,34 +69,46 @@ let PaletteManager = React.createClass({
           {paletteColors}
         </ul>
 
-        <EditPalette isOpen={this.props.isEditingPalette}
-                     palette={this.props.editPalette}
-                     activePaletteColor={this.props.activePaletteColor}/>
+        <Modal isOpen={this.props.isEditingPalette}>
+          <EditPalette palette={paletteCopy}/>
+        </Modal>
       </div>
     );
   },
 
   setPrimaryColor: function (color) {
-    DrawActions.setPrimaryColor(color);
+    this.props.onPrimaryColorChange(color);
   },
 
   newPalette: function () {
-    let name = prompt("New palette name");
-    if (name.length === 0) {
+    let paletteName = prompt("New palette name");
+    if (paletteName.length === 0) {
       return;
     }
 
-    if (this.props.palettes[name]) {
+    if (this.state.palettes[paletteName]) {
       alert("That palette name is already taken.");
     }
 
-    DrawActions.newPalette(name);
+    let palettes = this.state.palettes;
+    palettes[paletteName] = {};
+    this.setState({ palettes: palettes });
   },
 
   editPalette: function () {
-    let name = this.props.activePalette;
-    let palette = this.props.palettes[name].slice(0);
-    DrawActions.editPalette(palette);
+    let name = this.state.activePalette;
+    let palette = this.state.palettes[name].splice(0);
+
+    React.render(<EditPalette palette={palette} name={name}
+                  onPaletteChange={this.onPaletteChange}/>,
+                 document.getElementById('modal-container'));
+  },
+
+  onPaletteChange: function (palette) {
+    let name = this.state.activePalette;
+    let palettes = this.state.palettes;
+    palettes[name] = palette;
+    this.setState({ palettes: palettes });
   }
 });
 

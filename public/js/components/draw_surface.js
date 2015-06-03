@@ -2,168 +2,95 @@ let React = require('react');
 let $ = require('jquery');
 let PIXI = require('pixi.js');
 
-import DrawActions from '../actions/draw_actions';
+import Pixel from '../models/pixel';
 
 let DrawCanvas = React.createClass({
-  componentDidMount: function () {
-    let tileWidth = this.props.actualWidth / this.props.width;
-    let tileHeight = this.props.actualHeight / this.props.height;
-
-    // init drawGrid
-    let grid = [];
-    for (let x = 0; x < this.props.width; x++) {
-      grid[x] = [];
-
-      for (let y = 0; y < this.props.height; y++) {
-        grid[x].push({
-          x: x,
-          y: y,
-          color: null,
-          isHighlighted: false
-        });
-      }
-    }
-
-    DrawActions.setDrawGrid(grid);
-
-    // TODO: Fix prop updating so I don't have to merge these methods.
-    let zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
-    let bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
-    let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
-    let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
-    let canvases = {
-      zoomCtx: zoomCtx,
-      bgCtx: bgCtx,
-      drawCtx: drawCtx,
-      overlayCtx: overlayCtx
+  getInitialState: function () {
+    return {
+      isMouseDown: false
     };
-
-    // init background
-    let numTilesH = this.props.actualWidth / this.props.bgTileSize;
-    let numTilesV = this.props.actualHeight / this.props.bgTileSize;
-    let bgTileSize = 8;
-    for (let i = 0; i < numTilesH; i++) {
-      for (let j = 0; j < numTilesV; j++) {
-        let x = i * bgTileSize;
-        let y = j * bgTileSize;
-
-        let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
-
-        bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, bgTileSize, bgTileSize);
-      }
-    }
-
-    DrawActions.setTileSize({width: tileWidth, height: tileHeight });
-    DrawActions.setDrawCanvases(canvases);
-    console.log(this.props.drawGrid);
   },
 
-  componentDidUpdate: function (prevProps, prevState) {
-    if (this.props.width !== prevProps.width ||
-        this.props.height !== prevProps.height) {
-      this.resizeDrawGrid();
-      this.initBackground();
+  getDefaultProps: function () {
+    return {
+      bgTileSize: 8
+    };
+  },
 
-      this.redrawCanvas();
-    } else if (this.props.drawGrid !== prevProps.drawGrid) {
-      this.redrawCanvas();
-    }
+  componentDidMount: function () {
+    let renderNode = $(React.findDOMNode(this));
+
+    this.bgCtx = renderNode.find("#bg-canvas")[0].getContext('2d');
+    this.drawCtx = renderNode.find("#draw-canvas")[0].getContext('2d');
+    this.overlayCtx = renderNode.find("#overlay-canvas")[0].getContext('2d');
+
+    this.setState({ grid: this.initTiles() });
+    this.initBackground();
   },
 
   render: function () {
-    let width = this.props.width;
-    let height = this.props.height;
-
     return (
-      <div id="render">
-        <canvas id="zoom-canvas"
-                className="draw"
-                ref="zoomCanvas"
-                width={this.props.totalWidth}
-                height={this.props.totalHeight}>
-        </canvas>
-        <canvas id="bg-canvas"
-                className="draw"
-                ref="bgCanvas"
-                width={this.props.actualWidth}
-                height={this.props.actualHeight}>
-        </canvas>
-        <canvas id="draw-canvas"
-                className="draw"
-                ref="drawCanvas"
-                onMouseDown={this.fillPixel}
-                onContextMenu={this.fillPixel}
-                onMouseUp={this.setMouseUp}
-                width={this.props.actualWidth}
-                height={this.props.actualHeight}>
-        </canvas>
-        <canvas id="overlay-canvas"
-                className="draw"
-                ref="overlayCanvas"
-                onMouseMove={this.mouseMoved}
-                onMouseOut={this.clearHighlight}
-                width={this.props.actualWidth}
-                height={this.props.actualHeight}>
-        </canvas>
+      <div id="render"
+          onMouseMove={this.mouseMoved}
+          onMouseOut={this.clearHighlight}
+          onMouseDown={this.fillPixel}
+          onContextMenu={this.fillPixel}
+          onMouseUp={this.setMouseUp}>
+        <canvas id="bg-canvas" className="draw" width={this.props.width}
+                height={this.props.height}></canvas>
+        <canvas id="draw-canvas" className="draw" width={this.props.width}
+                height={this.props.height}></canvas>
+        <canvas id="overlay-canvas" className="draw" width={this.props.width}
+                height={this.props.height}></canvas>
       </div>
     );
   },
 
-  resizeDrawGrid: function () {
-    let oldGrid = this.props.grid;
+  componentDidUpdate: function (prevProps, prevState) {
+    console.log('width', this.props.width, prevProps.width);
+    if (this.props.width !== prevProps.width ||
+        this.props.height !== prevProps.height) {
+      this.updateTiles();
+      this.initBackground();
+    }
+  },
+
+  initTiles: function () {
+    let numTilesH = this.props.width / this.props.tileSize;
+    let numTilesV = this.props.height / this.props.tileSize;
+    let grid = [];
+
+    for (let x = 0; x < numTilesH; x++) {
+      grid[x] = [];
+
+      for (let y = 0; y < numTilesV; y++) {
+        grid[x].push(new Pixel(x, y));
+      }
+    }
+
+    return grid;
+  },
+
+  updateTiles: function () {
+    let numTilesH = this.props.width / this.props.tileSize;
+    let numTilesV = this.props.height / this.props.tileSize;
+    let oldGrid = this.state.grid;
     let newGrid = [];
 
-    for (let x = 0; x < this.props.width; x++) {
+    for (let x = 0; x < numTilesH; x++) {
       newGrid[x] = [];
-      for (let y = 0; y < this.props.height; y++) {
+      for (let y = 0; y < numTilesV; y++) {
         if (x < oldGrid.length && y < oldGrid[x].length) {
           newGrid[x][y] = oldGrid[x][y];
         } else {
-          newGrid[x].push({
-            x: x,
-            y: y,
-            color: null,
-            isHighlighted: false
-          });
+          newGrid[x].push(new Pixel(x, y));
         }
       }
     }
 
-    let tileWidth = this.props.actualWidth / this.props.width;
-    let tileHeight = this.props.actualHeight / this.props.height;
+    console.log('new grid', newGrid);
 
-    DrawActions.setDrawGrid(newGrid);
-    DrawActions.setTileSize({ width: tileWidth, height: tileHeight });
-  },
-
-  redrawCanvas: function () {
-    let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
-    let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
-    drawCtx.fillStyle = 'rgba(0, 0, 0, 0)';
-    drawCtx.fillRect(0, 0, this.props.actualWidth, this.props.actualHeight);
-
-    let tileWidth = this.props.tileWidth;
-    let tileHeight = this.props.tileHeight;
-
-    for (let x = 0; x < this.props.width; x++) {
-      for (let y = 0; y < this.props.height; y++) {
-        let px = this.props.drawGrid[x][y];
-
-        let fillX = px.x * tileWidth;
-        let fillY = px.y * tileHeight;
-
-        if (px.color) {
-          drawCtx.fillStyle = px.color;
-          drawCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
-        }
-
-        if (px.highlighted) {
-          overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)"
-          overlayCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
-        }
-      }
-    }
+    this.setState({ grid: newGrid });
   },
 
   getTileCoordinates: function (ev) {
@@ -173,57 +100,88 @@ let DrawCanvas = React.createClass({
     let x = absX - elRect.left;
     let y = absY - elRect.top;
 
-    let tileX = Math.floor(x / this.props.tileWidth);
-    let tileY = Math.floor(y / this.props.tileHeight);
+    let tileX = Math.floor(x / this.props.tileSize);
+    let tileY = Math.floor(y / this.props.tileSize);
 
     return { x: tileX, y: tileY };
   },
 
+  initBackground: function () {
+    let numTilesH = this.props.width / this.props.bgTileSize;
+    let numTilesV = this.props.height / this.props.bgTileSize;
+
+    for (let i = 0; i < numTilesH; i++) {
+      for (let j = 0; j < numTilesV; j++) {
+        let x = i * this.props.bgTileSize;
+        let y = j * this.props.bgTileSize;
+
+        let fill = ((i + j) % 2 == 0) ? "#999" : "#777";
+
+        this.bgCtx.fillStyle = fill;
+        this.bgCtx.fillRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
+      }
+    }
+  },
+
   mouseMoved: function (ev) {
     let { x, y } = this.getTileCoordinates(ev);
-    let grid = this.props.drawGrid;
+    let grid = this.state.grid;
+    let numPixels = grid.length;
+    let currentPixel = grid[x][y];
 
-    grid[x][y].highlighted = true;
-    DrawActions.setDrawGrid(grid);
+    if (!currentPixel.highlighted) {
+      let fillX = currentPixel.x * this.props.tileSize;
+      let fillY = currentPixel.y * this.props.tileSize;
 
-    if (this.props.isMouseDown) {
-      this.fillPixel(ev);
+      this.overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)"
+      this.overlayCtx.fillRect(fillX, fillY, this.props.tileSize,
+                               this.props.tileSize);
+      currentPixel.highlighted = true;
     }
 
+    this.setState({ grid: grid });
     this.clearHighlight(null, currentPixel);
 
-    if (this.props.isMouseDown) {
+    if (this.state.isMouseDown) {
       this.fillPixel(ev);
     }
   },
 
   clearHighlight: function (ev, currentPixel) {
-    let grid = this.props.drawGrid;
+    let numPixelsH = this.props.width / this.props.tileSize;
+    let numPixelsV = this.props.height / this.props.tileSize;
+    let grid = this.state.grid;
 
-    for (let x = 0; x < this.props.width; x++) {
-      for (let y = 0; y < this.props.height; y++) {
-        let px = grid[x][y];
-        if (px === currentPixel) {
+    for (let ix = 0; ix < numPixelsH; ix++) {
+      for (let iy = 0; iy < numPixelsV; iy++) {
+        let pixel = grid[ix][iy];
+        if (pixel === currentPixel) {
           continue;
         }
 
-        if (px.highlighted) {
-          px.highlighted = false;
-        }
+        if (pixel.highlighted) {
+          let fillX = pixel.x * this.props.tileSize;
+          let fillY = pixel.y * this.props.tileSize;
 
-        grid[x][y] = px;
-        DrawActions.setGrid(grid);
+          this.overlayCtx.clearRect(fillX, fillY, this.props.tileSize,
+                                    this.props.tileSize);
+          pixel.highlighted = false;
+        }
       }
     }
+
+    this.setState({ grid: grid });
   },
 
   fillPixel: function (ev) {
-    ev.preventDefault
-
-    DrawActions.setMouseDown();
-    let grid = this.props.drawGrid;
+    ev.preventDefault();
+    this.setState({ isMouseDown: true });
+    let grid = this.state.grid;
 
     let { x, y } = this.getTileCoordinates(ev);
+    let pixel = grid[x][y];
+    let fillX = x * this.props.tileSize;
+    let fillY = y * this.props.tileSize;
 
     let button = ev.which || ev.button;
     let color = this.props.primaryColor;
@@ -232,12 +190,17 @@ let DrawCanvas = React.createClass({
       color = this.props.secondaryColor;
     }
 
-    grid[x][y].color = color;
-    DrawActions.setGrid(grid);
+    this.drawCtx.fillStyle = color;
+    this.drawCtx.clearRect(fillX, fillY, this.props.tileSize,
+                           this.props.tileSize);
+    this.drawCtx.fillRect(fillX, fillY, this.props.tileSize,
+                          this.props.tileSize);
+    pixel.color = color;
+    this.setState({ grid: grid });
   },
 
   setMouseUp: function () {
-    DrawActions.setMouseUp();
+    this.setState({ isMouseDown: false });
   }
 });
 

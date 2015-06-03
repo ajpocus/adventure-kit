@@ -1,17 +1,16 @@
 let React = require('react');
 let $ = require('jquery');
 
-import DrawActions from '../actions/draw_actions';
 import Transparency from '../mixins/transparency';
 
 let EditPalette = React.createClass({
-  render: function () {
-    let modalStyle = {};
-    if (!this.props.isOpen) {
-      modalStyle.display = 'none';
-      return (<div style={{display: 'none'}}></div>);
-    }
+  getInitialState: function () {
+    return {
+      palette: this.props.palette
+    };
+  },
 
+  render: function () {
     let colorList = [];
     for (let i = 0; i < this.props.palette.length; i++) {
       let color = this.props.palette[i];
@@ -22,7 +21,6 @@ let EditPalette = React.createClass({
 
       colorList.push(
         <li className="color"
-            key={i}
             onClick={this.setActivePaletteColor.bind(this, color)}>
           <span className="remove"
                 onClick={this.removePaletteColor.bind(this, color)}>
@@ -40,7 +38,7 @@ let EditPalette = React.createClass({
     );
 
     return (
-      <div className="edit-palette modal" style={modalStyle}>
+      <div className="edit-palette modal">
         <div className="modal-background">
           <div className="modal-content">
             <div className="header">
@@ -56,8 +54,8 @@ let EditPalette = React.createClass({
 
               <div className="sidebar">
                 <input type="color" id="palette-color"
-                       onChange={this.updatePaletteColor}
-                       ref="activePaletteColor"/>
+                       onChange={this.updatePaletteColor}/>
+                <button className="add btn">Add color</button>
               </div>
             </div>
 
@@ -77,37 +75,43 @@ let EditPalette = React.createClass({
   },
 
   componentDidUpdate: function () {
-    // Need better modal handling...
-    if (!this.props.isOpen) {
-      return;
-    }
-
-    this.refs.activePaletteColor.getDOMNode().value = this.props.activePaletteColor;
-  },
-
-  addPaletteColor: function () {
-    DrawActions.addPaletteColor();
-  },
-
-  removePaletteColor: function (color) {
-    DrawActions.removePaletteColor(color);
+    document.getElementById('palette-color').value = this.props.activeColor;
   },
 
   setActivePaletteColor: function (color) {
-    DrawActions.setActivePaletteColor(color);
+    this.setState({ activePaletteColor: color });
+  },
+
+  removePaletteColor: function (color) {
+    let palette = this.state.palette;
+    let idx = palette.indexOf(color);
+    palette.splice(idx, 1);
+    this.setState({ palette: palette });
+  },
+
+  addPaletteColor: function () {
+    let palette = this.state.palette;
+    let newColor = '#ffffff';
+    palette.push(newColor);
+    this.setState({ palette: palette, activePaletteColor: newColor });
   },
 
   updatePaletteColor: function (ev) {
-    DrawActions.updatePaletteColor(ev.target.value);
+    let color = ev.target.value;
+    let palette = this.state.palette;
+    let idx = palette.indexOf(this.state.activePaletteColor);
+    palette[idx] = color;
+    this.setState({ palette: palette, activePaletteColor: color });
   },
 
   savePalette: function () {
-    DrawActions.savePalette();
+    this.props.onPaletteChange(this.state.palette);
     this.closeEdit();
   },
 
   closeEdit: function () {
-    DrawActions.closeEditPalette();
+    let container = document.getElementById('modal-container');
+    React.unmountComponentAtNode(container);
   }
 });
 

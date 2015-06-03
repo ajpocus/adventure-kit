@@ -1,5 +1,3 @@
-'use strict';
-
 require('babel/polyfill');
 
 let $ = require('jquery');
@@ -12,7 +10,7 @@ let RouteHandler = Router.RouteHandler;
 
 import Header from './components/header';
 import Footer from './components/footer';
-import DrawController from './components/draw_controller';
+import Draw from './components/draw';
 import Map from './components/map';
 import Music from './components/music';
 
@@ -37,10 +35,10 @@ $(function () {
 
   let routes = (
     <Route name="app" path="/" handler={App}>
-      <Route name="draw" handler={DrawController}/>
+      <Route name="draw" handler={Draw}/>
       <Route name="map" handler={Map}/>
       <Route name="music" handler={Music}/>
-      <DefaultRoute handler={DrawController}/>
+      <DefaultRoute handler={Draw}/>
     </Route>
   );
 
