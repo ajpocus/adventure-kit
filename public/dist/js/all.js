@@ -63008,7 +63008,10 @@ var DrawCanvas = React.createClass({
       isMouseDown: false,
       zoom: this.props.zoom,
       actualWidth: this.props.actualWidth,
-      actualHeight: this.props.actualHeight
+      actualHeight: this.props.actualHeight,
+      tileWidth: this.props.tileWidth,
+      tileHeight: this.props.tileHeight,
+      grid: this.initTiles()
     };
   },
 
@@ -63028,7 +63031,7 @@ var DrawCanvas = React.createClass({
 
     this.setState({ grid: this.initTiles() });
     this.updatePosition();
-    this.initBackground();
+    this.drawBackground();
   },
 
   render: function render() {
@@ -63062,9 +63065,35 @@ var DrawCanvas = React.createClass({
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
     if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
-      this.updateTiles();
       this.updatePosition();
-      this.initBackground();
+    }
+
+    this.drawTiles();
+  },
+
+  drawTiles: function drawTiles() {
+    console.log('DRAWING');
+    this.drawBackground();
+    var tileWidth = this.state.tileWidth;
+    var tileHeight = this.state.tileHeight;
+
+    for (var x = 0; x < this.props.width; x++) {
+      for (var y = 0; y < this.props.height; y++) {
+        var px = this.state.grid[x][y];
+        if (px.color) {
+          var fillX = px.x * tileWidth;
+          var fillY = px.y * tileHeight;
+          this.drawCtx.fillStyle = px.color;
+          this.drawCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+        }
+
+        if (px.highlighted) {
+          var fillX = px.x * tileWidth;
+          var fillY = px.y * tileHeight;
+          this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          this.overlayCtx.drawRect(fillX, fillY, tileWidth, tileHeight);
+        }
+      }
     }
   },
 
@@ -63115,13 +63144,13 @@ var DrawCanvas = React.createClass({
     var x = absX - elRect.left;
     var y = absY - elRect.top;
 
-    var tileX = Math.floor(x / this.props.tileWidth);
-    var tileY = Math.floor(y / this.props.tileHeight);
+    var tileX = Math.floor(x / this.state.tileWidth);
+    var tileY = Math.floor(y / this.state.tileHeight);
 
     return { x: tileX, y: tileY };
   },
 
-  initBackground: function initBackground() {
+  drawBackground: function drawBackground() {
     this.zoomCtx.fillStyle = '#484848';
     this.zoomCtx.fillRect(0, 0, this.props.totalWidth, this.props.totalHeight);
 
@@ -63148,47 +63177,12 @@ var DrawCanvas = React.createClass({
     var y = _getTileCoordinates.y;
 
     var grid = this.state.grid;
-    var numPixels = grid.length;
-    var currentPixel = grid[x][y];
-
-    if (!currentPixel.highlighted) {
-      var fillX = currentPixel.x * this.props.tileWidth;
-      var fillY = currentPixel.y * this.props.tileHeight;
-
-      this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      this.overlayCtx.fillRect(fillX, fillY, this.props.tileWidth, this.props.tileHeight);
-      currentPixel.highlighted = true;
-    }
-
+    grid[x][y].highlighted = true;
     this.setState({ grid: grid });
-    this.clearHighlight(null, currentPixel);
-
+    this.drawTiles();
     if (this.state.isMouseDown) {
       this.fillPixel(ev);
     }
-  },
-
-  clearHighlight: function clearHighlight(ev, currentPixel) {
-    var grid = this.state.grid;
-
-    for (var ix = 0; ix < this.props.width; ix++) {
-      for (var iy = 0; iy < this.props.height; iy++) {
-        var pixel = grid[ix][iy];
-        if (pixel === currentPixel) {
-          continue;
-        }
-
-        if (pixel.highlighted) {
-          var fillX = pixel.x * this.props.tileWidth;
-          var fillY = pixel.y * this.props.tileHeight;
-
-          this.overlayCtx.clearRect(fillX, fillY, this.props.tileWidth, this.props.tileHeight);
-          pixel.highlighted = false;
-        }
-      }
-    }
-
-    this.setState({ grid: grid });
   },
 
   fillPixel: function fillPixel(ev) {
@@ -63201,10 +63195,6 @@ var DrawCanvas = React.createClass({
     var x = _getTileCoordinates2.x;
     var y = _getTileCoordinates2.y;
 
-    var pixel = grid[x][y];
-    var fillX = x * this.props.tileWidth;
-    var fillY = y * this.props.tileHeight;
-
     var button = ev.which || ev.button;
     var color = this.props.primaryColor;
 
@@ -63212,10 +63202,7 @@ var DrawCanvas = React.createClass({
       color = this.props.secondaryColor;
     }
 
-    this.drawCtx.fillStyle = color;
-    this.drawCtx.clearRect(fillX, fillY, this.props.tileWidth, this.props.tileHeight);
-    this.drawCtx.fillRect(fillX, fillY, this.props.tileWidth, this.props.tileHeight);
-    pixel.color = color;
+    grid[x][y].color = color;
     this.setState({ grid: grid });
   },
 
