@@ -3,8 +3,8 @@ let React = require('react');
 let ResizePrompt = React.createClass({
   getInitialState: function () {
     return {
-      width: 512,
-      height: 512
+      width: this.props.width,
+      height: this.props.height
     };
   },
 

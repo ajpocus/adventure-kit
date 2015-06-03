@@ -62970,7 +62970,9 @@ var Draw = React.createClass({
   },
 
   onResizeClick: function onResizeClick() {
-    React.render(React.createElement(_resize_prompt2['default'], { handleResize: this.handleResize }), document.getElementById('modal-container'));
+    React.render(React.createElement(_resize_prompt2['default'], { width: this.state.width,
+      height: this.state.height,
+      handleResize: this.handleResize }), document.getElementById('modal-container'));
   },
 
   handleResize: function handleResize(width, height) {
@@ -63016,11 +63018,13 @@ var DrawCanvas = React.createClass({
   componentDidMount: function componentDidMount() {
     var renderNode = $(React.findDOMNode(this));
 
+    this.zoomCtx = renderNode.find('#zoom-canvas')[0].getContext('2d');
     this.bgCtx = renderNode.find('#bg-canvas')[0].getContext('2d');
     this.drawCtx = renderNode.find('#draw-canvas')[0].getContext('2d');
     this.overlayCtx = renderNode.find('#overlay-canvas')[0].getContext('2d');
 
     this.setState({ grid: this.initTiles() });
+    this.updatePosition();
     this.initBackground();
   },
 
@@ -63033,15 +63037,15 @@ var DrawCanvas = React.createClass({
         width: this.props.totalWidth,
         height: this.props.totalHeight }),
       React.createElement('canvas', { id: 'bg-canvas',
-        className: 'draw',
+        className: 'draw surface',
         width: this.props.actualWidth,
         height: this.props.actualHeight }),
       React.createElement('canvas', { id: 'draw-canvas',
-        className: 'draw',
+        className: 'draw surface',
         width: this.props.actualWidth,
         height: this.props.actualHeight }),
       React.createElement('canvas', { id: 'overlay-canvas',
-        className: 'draw',
+        className: 'draw surface',
         width: this.props.actualWidth,
         height: this.props.actualHeight,
         onMouseMove: this.mouseMoved,
@@ -63055,6 +63059,7 @@ var DrawCanvas = React.createClass({
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
     if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
       this.updateTiles();
+      this.updatePosition();
       this.initBackground();
     }
   },
@@ -63091,6 +63096,14 @@ var DrawCanvas = React.createClass({
     this.setState({ grid: newGrid });
   },
 
+  updatePosition: function updatePosition() {
+    var canvases = $('#render canvas.draw.surface');
+    canvases.css({
+      top: (this.props.totalHeight - this.props.actualHeight) / 2,
+      left: (this.props.totalWidth - this.props.actualWidth) / 2
+    });
+  },
+
   getTileCoordinates: function getTileCoordinates(ev) {
     var elRect = ev.target.getBoundingClientRect();
     var absX = ev.clientX;
@@ -63106,6 +63119,9 @@ var DrawCanvas = React.createClass({
   },
 
   initBackground: function initBackground() {
+    this.zoomCtx.fillStyle = '#484848';
+    this.zoomCtx.fillRect(0, 0, this.props.totalWidth, this.props.totalHeight);
+
     var numTilesH = this.props.actualWidth / this.props.bgTileSize;
     var numTilesV = this.props.actualHeight / this.props.bgTileSize;
 
@@ -63866,8 +63882,8 @@ var ResizePrompt = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      width: 512,
-      height: 512
+      width: this.props.width,
+      height: this.props.height
     };
   },
 

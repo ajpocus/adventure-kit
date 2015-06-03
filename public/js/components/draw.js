@@ -66,7 +66,9 @@ let Draw = React.createClass({
   },
 
   onResizeClick: function () {
-    React.render(<ResizePrompt handleResize={this.handleResize}/>,
+    React.render(<ResizePrompt width={this.state.width}
+                               height={this.state.height}
+                               handleResize={this.handleResize}/>,
                  document.getElementById('modal-container'));
   },
 

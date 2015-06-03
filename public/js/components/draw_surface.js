@@ -20,11 +20,13 @@ let DrawCanvas = React.createClass({
   componentDidMount: function () {
     let renderNode = $(React.findDOMNode(this));
 
-    this.bgCtx = renderNode.find("#bg-canvas")[0].getContext('2d');
-    this.drawCtx = renderNode.find("#draw-canvas")[0].getContext('2d');
-    this.overlayCtx = renderNode.find("#overlay-canvas")[0].getContext('2d');
+    this.zoomCtx = renderNode.find('#zoom-canvas')[0].getContext('2d');
+    this.bgCtx = renderNode.find('#bg-canvas')[0].getContext('2d');
+    this.drawCtx = renderNode.find('#draw-canvas')[0].getContext('2d');
+    this.overlayCtx = renderNode.find('#overlay-canvas')[0].getContext('2d');
 
     this.setState({ grid: this.initTiles() });
+    this.updatePosition();
     this.initBackground();
   },
 
@@ -38,19 +40,19 @@ let DrawCanvas = React.createClass({
         </canvas>
 
         <canvas id="bg-canvas"
-                className="draw"
+                className="draw surface"
                 width={this.props.actualWidth}
                 height={this.props.actualHeight}>
         </canvas>
 
         <canvas id="draw-canvas"
-                className="draw"
+                className="draw surface"
                 width={this.props.actualWidth}
                 height={this.props.actualHeight}>
         </canvas>
 
         <canvas id="overlay-canvas"
-                className="draw"
+                className="draw surface"
                 width={this.props.actualWidth}
                 height={this.props.actualHeight}
                 onMouseMove={this.mouseMoved}
@@ -67,6 +69,7 @@ let DrawCanvas = React.createClass({
     if (this.props.width !== prevProps.width ||
         this.props.height !== prevProps.height) {
       this.updateTiles();
+      this.updatePosition();
       this.initBackground();
     }
   },
@@ -103,6 +106,14 @@ let DrawCanvas = React.createClass({
     this.setState({ grid: newGrid });
   },
 
+  updatePosition: function () {
+    let canvases = $('#render canvas.draw.surface');
+    canvases.css({
+      top: (this.props.totalHeight - this.props.actualHeight) / 2,
+      left: (this.props.totalWidth - this.props.actualWidth) / 2
+    });
+  },
+
   getTileCoordinates: function (ev) {
     let elRect = ev.target.getBoundingClientRect();
     let absX = ev.clientX;
@@ -118,6 +129,9 @@ let DrawCanvas = React.createClass({
   },
 
   initBackground: function () {
+    this.zoomCtx.fillStyle = '#484848';
+    this.zoomCtx.fillRect(0, 0, this.props.totalWidth, this.props.totalHeight);
+
     let numTilesH = this.props.actualWidth / this.props.bgTileSize;
     let numTilesV = this.props.actualHeight / this.props.bgTileSize;
 
