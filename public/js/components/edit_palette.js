@@ -92,7 +92,7 @@ let EditPalette = React.createClass({
 
   addPaletteColor: function () {
     let palette = this.state.palette;
-    let newColor = 0xffffff;
+    let newColor = '#ffffff';
     palette.push(newColor);
     this.setState({ palette: palette, activePaletteColor: newColor });
   },

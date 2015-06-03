@@ -77,11 +77,14 @@
   overflow: hidden;
 }
 
-#render canvas.draw {
-  position: absolute;
-  top: 0;
-  left: 0;
-  cursor: crosshair;
+#render .background {
+  width: 1024px;
+  height: 1024px;
+  background: #b7b7b7;
+}
+
+#render .surface {
+  position: relative;
 }
 
 #zoom-canvas {

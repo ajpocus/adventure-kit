@@ -1,8 +1,8 @@
 let React = require('react');
 let $ = require('jquery');
-let PIXI = require('pixi.js');
 
 import Pixel from '../models/pixel';
+import Transparency from '../mixins/transparency';
 
 let DrawCanvas = React.createClass({
   getInitialState: function () {
@@ -24,40 +24,20 @@ let DrawCanvas = React.createClass({
     };
   },
 
-  componentWillMount: function () {
-    let stage = new PIXI.Stage(0xbbbbbb);
-    let renderer = PIXI.autoDetectRenderer(this.props.totalWidth,
-                                           this.props.totalHeight);
-
-    let bgGfx = new PIXI.Graphics();
-    let drawGfx = new PIXI.Graphics();
-    let overlayGfx = new PIXI.Graphics();
-
-    bgGfx.width = this.state.actualWidth;
-    bgGfx.height = this.state.actualHeight;
-    drawGfx.width = this.state.actualWidth;
-    drawGfx.height = this.state.actualHeight;
-    overlayGfx.width = this.state.actualWidth;
-    overlayGfx.height = this.state.actualHeight;
-
-    stage.addChild(bgGfx);
-    stage.addChild(drawGfx);
-    stage.addChild(overlayGfx);
+  componentDidMount: function () {
+    let bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
+    let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
+    let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
 
     this.setState({
-      stage: stage,
-      renderer: renderer,
-      bgGfx: bgGfx,
-      drawGfx: drawGfx,
-      overlayGfx: overlayGfx,
+      bgCtx: bgCtx,
+      drawCtx: drawCtx,
+      overlayCtx: overlayCtx,
       grid: this.initTiles()
     });
-  },
 
-  componentDidMount: function () {
-    $('#render').append(this.state.renderer.view);
     this.updatePosition();
-    this.drawBackground();
+    this.drawBackground(bgCtx);
   },
 
   render: function () {
@@ -66,15 +46,36 @@ let DrawCanvas = React.createClass({
       height: this.state.actualHeight
     };
 
-    this.state.renderer.render(this.state.stage);
-
     return (
-      <div id="render"
-           onMouseMove={this.handleMouseMove}
-           onMouseOut={this.clearHighlight}
-           onMouseDown={this.fillPixel}
-           onContextMenu={this.fillPixel}
-           onMouseUp={this.setMouseUp}>
+      <div id="render">
+        <div className="background">
+          <div className="surface"
+               style={surfaceStyle}
+               onMouseMove={this.handleMouseMove}
+               onMouseOut={this.clearHighlight}
+               onMouseDown={this.fillPixel}
+               onContextMenu={this.fillPixel}
+               onMouseUp={this.setMouseUp}>
+            <canvas id="bg-canvas"
+                    className="draw"
+                    ref="bgCanvas"
+                    width={this.state.actualWidth}
+                    height={this.state.actualHeight}>
+            </canvas>
+            <canvas id="draw-canvas"
+                    className="draw"
+                    ref="drawCanvas"
+                    width={this.state.actualWidth}
+                    height={this.state.actualHeight}>
+            </canvas>
+            <canvas id="overlay-canvas"
+                    className="draw"
+                    ref="overlayCanvas"
+                    width={this.state.actualWidth}
+                    height={this.state.actualHeight}>
+            </canvas>
+          </div>
+        </div>
       </div>
     );
   },
@@ -92,11 +93,11 @@ let DrawCanvas = React.createClass({
     this.drawBackground();
     let tileWidth = this.state.tileWidth;
     let tileHeight = this.state.tileHeight;
-    let overlayGfx = this.state.overlayGfx;
-    let drawGfx = this.state.drawGfx;
+    let overlayCtx = this.state.overlayCtx;
+    let drawCtx = this.state.drawCtx;
 
-    overlayGfx.beginFill(0x000000, 0);
-    overlayGfx.drawRect(0, 0, overlayGfx.width, overlayGfx.height);
+    overlayCtx.fillStyle
+    overlayCtx.drawRect(0, 0, overlayCtx.width, overlayCtx.height);
 
     for (let x = 0; x < this.state.width; x++) {
       for (let y = 0; y < this.state.height; y++) {
@@ -104,22 +105,22 @@ let DrawCanvas = React.createClass({
         if (px.color) {
           let fillX = px.x * tileWidth;
           let fillY = px.y * tileHeight;
-          drawGfx.beginFill(px.color);
-          drawGfx.drawRect(fillX, fillY, tileWidth, tileHeight);
+          drawCtx.beginFill(px.color);
+          drawCtx.drawRect(fillX, fillY, tileWidth, tileHeight);
         }
 
         if (px.highlighted) {
           let fillX = px.x * tileWidth;
           let fillY = px.y * tileHeight;
-          overlayGfx.beginFill(0xffffff, 0.4);
-          overlayGfx.drawRect(0, 0, tileWidth, tileHeight);
+          overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          overlayCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
         }
       }
     }
 
     this.setState({
-      overlayGfx: overlayGfx,
-      drawGfx: drawGfx
+      overlayCtx: overlayCtx,
+      drawCtx: drawCtx
     });
   },
 
@@ -156,21 +157,12 @@ let DrawCanvas = React.createClass({
   },
 
   updatePosition: function () {
-    let x = (this.props.totalWidth - this.state.actualWidth) / 2;
-    let y = (this.props.totalHeight - this.state.actualHeight) / 2;
+    let left = (this.props.totalWidth - this.state.actualWidth) / 2;
+    let top = (this.props.totalHeight - this.state.actualHeight) / 2;
 
-    let bgGfx = this.state.bgGfx;
-    let drawGfx = this.state.drawGfx;
-    let overlayGfx = this.state.overlayGfx;
-
-    bgGfx.position.set(x, y);
-    drawGfx.position.set(x, y);
-    overlayGfx.position.set(x, y);
-
-    this.setState({
-      bgGfx: bgGfx,
-      drawGfx: drawGfx,
-      overlayGfx: overlayGfx
+    $('#render .surface').css({
+      top: top,
+      left: left
     });
   },
 
@@ -187,10 +179,22 @@ let DrawCanvas = React.createClass({
     return { x: tileX, y: tileY };
   },
 
-  drawBackground: function () {
+  getFillParams(x, y) {
+    let tileWidth = this.state.tileWidth;
+    let tileHeight = this.state.tileHeight;
+    let fillX = x * tileWidth;
+    let fillY = y * tileHeight;
+    return {
+      x: fillX,
+      y: fillY,
+      width: tileWidth,
+      height: tileHeight
+    };
+  },
+
+  drawBackground: function (bgCtx) {
     let numTilesH = this.state.actualWidth / this.props.bgTileSize;
     let numTilesV = this.state.actualHeight / this.props.bgTileSize;
-    let bgGfx = this.state.bgGfx;
 
     for (let i = 0; i < numTilesH; i++) {
       for (let j = 0; j < numTilesV; j++) {
@@ -198,30 +202,31 @@ let DrawCanvas = React.createClass({
         let y = j * this.props.bgTileSize;
 
         let fill = ((i + j) % 2 == 0) ? 0x999999 : 0x777777;
-
-        bgGfx.beginFill(fill);
-        bgGfx.drawRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
+        let tileSize = this.props.bgTileSize;
+        bgCtx.fillStyle = fill;
+        bgCtx.fillRect(x, y, tileSize, tileSize);
       }
     }
+
+    this.setState({ bgCtx: bgCtx });
   },
 
   handleMouseMove: function (ev) {
     console.log("MOUSE MOVED");
     ev.preventDefault();
-    let { x, y } = this.getTileCoordinates(ev);
+    let { tx, ty } = this.getTileCoordinates(ev);
     let grid = this.state.grid;
-    grid[x][y].highlighted = true;
+    grid[tx][ty].highlighted = true;
 
+    let overlayCtx = this.state.overlayCtx;
+    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    let {x, y, width, height} = this.getFillParams(tx, ty);
+    overlayCtx.fillRect(x, y, width, height)
 
-    let overlayGfx = this.state.overlayGfx;
-    let tileWidth = this.state.tileWidth;
-    let tileHeight = this.state.tileHeight;
-    let fillX = x * tileWidth;
-    let fillY = y * tileHeight;
-    overlayGfx.beginFill(0xffffff, 0.4);
-    overlayGfx.drawRect(fillX, fillY, tileWidth, tileHeight);
-
-    this.setState({ overlayGfx: overlayGfx, grid: grid });
+    this.setState({
+      overlayCtx: overlayCtx,
+      grid: grid
+    });
     this.clearHighlight(ev, x, y);
 
     if (this.state.isMouseDown) {
@@ -229,31 +234,30 @@ let DrawCanvas = React.createClass({
     }
   },
 
-  clearHighlight: function (ev, x, y) {
+  clearHighlight: function (ev, tx, ty) {
     console.log("CLEAR");
     ev.preventDefault();
     let grid = this.state.grid;
-    let overlayGfx = this.state.overlayGfx;
+    let overlayCtx = this.state.overlayCtx;
 
     for (let ix = 0; ix < this.state.width; ix++) {
       for (let iy = 0; iy < this.state.height; iy++) {
-        if (x === ix && y === iy) {
+        if (tx === ix && ty === iy) {
           continue;
         }
 
         grid[ix][iy].highlighted = false;
-        let tileWidth = this.state.tileWidth;
-        let tileHeight = this.state.tileHeight;
-        let fillX = ix * tileWidth;
-        let fillY = iy * tileHeight;
-        overlayGfx.beginFill(0xffffff, 0.4);
-        overlayGfx.drawRect(fillX, fillY, tileWidth, tileHeight);
       }
     }
 
+    overlayCtx.clearRect(0, 0, this.state.actualWidth, this.state.actualHeight);
+    let {x, y, width, height} = this.getFillParams(tx, ty);
+    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    overlayCtx.fillRect(x, y, width, height);
+
     this.setState({
       grid: grid,
-      overlayGfx: overlayGfx
+      overlayCtx: overlayCtx
     });
   },
 
@@ -262,8 +266,8 @@ let DrawCanvas = React.createClass({
     ev.preventDefault();
     this.setState({ isMouseDown: true });
     let grid = this.state.grid;
-    let drawGfx = this.state.drawGfx;
-    let { x, y } = this.getTileCoordinates(ev);
+    let drawCtx = this.state.drawCtx;
+    let { tx, ty } = this.getTileCoordinates(ev);
 
     let button = ev.which || ev.button;
     let color = this.props.primaryColor;
@@ -272,17 +276,14 @@ let DrawCanvas = React.createClass({
       color = this.props.secondaryColor;
     }
 
-    let tileWidth = this.state.tileWidth;
-    let tileHeight = this.state.tileHeight;
-    let fillX = x * tileWidth;
-    let fillY = y * tileHeight;
-    drawGfx.beginFill(color);
-    drawGfx.drawRect(fillX, fillY, tileWidth, tileHeight);
+    let {x, y, width, height} = this.getFillParams(tx, ty);
+    drawCtx.fillStyle = color;
+    drawCtx.fillRect(x, x, width, height);
 
     grid[x][y].color = color;
     this.setState({
       grid: grid,
-      drawGfx: drawGfx
+      drawCtx: drawCtx
     });
   },
 
