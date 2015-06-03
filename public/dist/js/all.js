@@ -63007,6 +63007,8 @@ var DrawCanvas = React.createClass({
     return {
       isMouseDown: false,
       zoom: this.props.zoom,
+      width: this.props.width,
+      height: this.props.height,
       actualWidth: this.props.actualWidth,
       actualHeight: this.props.actualHeight,
       tileWidth: this.props.tileWidth,
@@ -63024,10 +63026,10 @@ var DrawCanvas = React.createClass({
   componentDidMount: function componentDidMount() {
     var renderNode = $(React.findDOMNode(this));
 
-    this.zoomCtx = renderNode.find('#zoom-canvas')[0].getContext('2d');
-    this.bgCtx = renderNode.find('#bg-canvas')[0].getContext('2d');
-    this.drawCtx = renderNode.find('#draw-canvas')[0].getContext('2d');
-    this.overlayCtx = renderNode.find('#overlay-canvas')[0].getContext('2d');
+    this.zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
+    this.bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
+    this.drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
+    this.overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
 
     this.setState({ grid: this.initTiles() });
     this.updatePosition();
@@ -63041,18 +63043,22 @@ var DrawCanvas = React.createClass({
         onWheel: this.onZoom },
       React.createElement('canvas', { id: 'zoom-canvas',
         className: 'draw',
+        ref: 'zoomCanvas',
         width: this.props.totalWidth,
         height: this.props.totalHeight }),
       React.createElement('canvas', { id: 'bg-canvas',
         className: 'draw surface',
+        ref: 'bgCanvas',
         width: this.state.actualWidth,
         height: this.state.actualHeight }),
       React.createElement('canvas', { id: 'draw-canvas',
         className: 'draw surface',
+        ref: 'drawCanvas',
         width: this.state.actualWidth,
         height: this.state.actualHeight }),
       React.createElement('canvas', { id: 'overlay-canvas',
         className: 'draw surface',
+        ref: 'overlayCanvas',
         width: this.state.actualWidth,
         height: this.state.actualHeight,
         onMouseMove: this.mouseMoved,
@@ -63064,7 +63070,7 @@ var DrawCanvas = React.createClass({
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
+    if (this.state.width !== prevState.width || this.state.height !== prevState.height) {
       this.updatePosition();
     }
 
@@ -63077,8 +63083,9 @@ var DrawCanvas = React.createClass({
     var tileWidth = this.state.tileWidth;
     var tileHeight = this.state.tileHeight;
 
-    for (var x = 0; x < this.props.width; x++) {
-      for (var y = 0; y < this.props.height; y++) {
+    this.overlayCtx.clearRect(0, 0, this.state.actualWidth, this.state.actualHeight);
+    for (var x = 0; x < this.state.width; x++) {
+      for (var y = 0; y < this.state.height; y++) {
         var px = this.state.grid[x][y];
         if (px.color) {
           var fillX = px.x * tileWidth;
@@ -63090,8 +63097,8 @@ var DrawCanvas = React.createClass({
         if (px.highlighted) {
           var fillX = px.x * tileWidth;
           var fillY = px.y * tileHeight;
-          this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-          this.overlayCtx.drawRect(fillX, fillY, tileWidth, tileHeight);
+          this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          this.overlayCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
         }
       }
     }
@@ -63115,9 +63122,9 @@ var DrawCanvas = React.createClass({
     var oldGrid = this.state.grid;
     var newGrid = [];
 
-    for (var x = 0; x < this.props.width; x++) {
+    for (var x = 0; x < this.state.width; x++) {
       newGrid[x] = [];
-      for (var y = 0; y < this.props.height; y++) {
+      for (var y = 0; y < this.state.height; y++) {
         if (x < oldGrid.length && y < oldGrid[x].length) {
           newGrid[x][y] = oldGrid[x][y];
         } else {
@@ -63179,10 +63186,30 @@ var DrawCanvas = React.createClass({
     var grid = this.state.grid;
     grid[x][y].highlighted = true;
     this.setState({ grid: grid });
-    this.drawTiles();
+    this.clearHighlight(x, y);
+
     if (this.state.isMouseDown) {
       this.fillPixel(ev);
     }
+
+    this.drawTiles();
+  },
+
+  clearHighlight: function clearHighlight(x, y) {
+    var grid = this.state.grid;
+
+    for (var ix = 0; ix < this.state.width; ix++) {
+      for (var iy = 0; iy < this.state.height; iy++) {
+        if (x === ix && y === iy) {
+          continue;
+        }
+
+        grid[ix][iy].highlighted = false;
+      }
+    }
+
+    this.setState({ grid: grid });
+    this.drawTiles();
   },
 
   fillPixel: function fillPixel(ev) {
