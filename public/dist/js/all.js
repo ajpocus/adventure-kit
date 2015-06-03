@@ -63073,11 +63073,9 @@ var DrawCanvas = React.createClass({
     if (this.state.width !== prevState.width || this.state.height !== prevState.height) {
       this.updatePosition();
     }
-
-    this.drawTiles();
   },
 
-  drawTiles: function drawTiles() {
+  redrawTiles: function redrawTiles() {
     console.log('DRAWING');
     this.drawBackground();
     var tileWidth = this.state.tileWidth;
@@ -63186,13 +63184,14 @@ var DrawCanvas = React.createClass({
     var grid = this.state.grid;
     grid[x][y].highlighted = true;
     this.setState({ grid: grid });
+
+    this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    this.overlayCtx.fillRect(x, y, tileWidth, tileHeight);
     this.clearHighlight(x, y);
 
     if (this.state.isMouseDown) {
       this.fillPixel(ev);
     }
-
-    this.drawTiles();
   },
 
   clearHighlight: function clearHighlight(x, y) {
@@ -63205,11 +63204,14 @@ var DrawCanvas = React.createClass({
         }
 
         grid[ix][iy].highlighted = false;
+        var fillX = ix * this.state.tileWidth;
+        var fillY = iy * this.state.tileHeight;
+        this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        this.overlayCtx.fillRect(fillX, fillY, this.state.tileWidth, this.state.tileHeight);
       }
     }
 
     this.setState({ grid: grid });
-    this.drawTiles();
   },
 
   fillPixel: function fillPixel(ev) {
@@ -63373,6 +63375,7 @@ var EditPalette = React.createClass({
       colorList.push(React.createElement(
         'li',
         { className: 'color',
+          key: i,
           onClick: this.setActivePaletteColor.bind(this, color) },
         React.createElement(
           'span',
@@ -63386,7 +63389,7 @@ var EditPalette = React.createClass({
 
     colorList.push(React.createElement(
       'li',
-      { className: 'new color', onClick: this.addPaletteColor },
+      { className: 'new color', key: 'new', onClick: this.addPaletteColor },
       React.createElement(
         'div',
         { className: 'swatch' },

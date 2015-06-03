@@ -21,6 +21,7 @@ let EditPalette = React.createClass({
 
       colorList.push(
         <li className="color"
+            key={i}
             onClick={this.setActivePaletteColor.bind(this, color)}>
           <span className="remove"
                 onClick={this.removePaletteColor.bind(this, color)}>
@@ -32,7 +33,7 @@ let EditPalette = React.createClass({
     }
 
     colorList.push(
-      <li className="new color" onClick={this.addPaletteColor}>
+      <li className="new color" key="new" onClick={this.addPaletteColor}>
         <div className="swatch">+</div>
       </li>
     );

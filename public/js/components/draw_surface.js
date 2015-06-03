@@ -83,11 +83,9 @@ let DrawCanvas = React.createClass({
         this.state.height !== prevState.height) {
       this.updatePosition();
     }
-
-    this.drawTiles();
   },
 
-  drawTiles: function () {
+  redrawTiles: function () {
     console.log("DRAWING");
     this.drawBackground();
     let tileWidth = this.state.tileWidth;
@@ -193,13 +191,15 @@ let DrawCanvas = React.createClass({
     let grid = this.state.grid;
     grid[x][y].highlighted = true;
     this.setState({ grid: grid });
+
+    this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    this.overlayCtx.fillRect(x, y, tileWidth, tileHeight);
     this.clearHighlight(x, y);
 
     if (this.state.isMouseDown) {
       this.fillPixel(ev);
     }
 
-    this.drawTiles();
   },
 
   clearHighlight: function (x, y) {
@@ -212,11 +212,15 @@ let DrawCanvas = React.createClass({
         }
 
         grid[ix][iy].highlighted = false;
+        let fillX = ix * this.state.tileWidth;
+        let fillY = iy * this.state.tileHeight;
+        this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        this.overlayCtx.fillRect(fillX, fillY, this.state.tileWidth,
+                                 this.state.tileHeight);
       }
     }
 
     this.setState({ grid: grid });
-    this.drawTiles();
   },
 
   fillPixel: function (ev) {
