@@ -30,24 +30,40 @@ let DrawCanvas = React.createClass({
 
   render: function () {
     return (
-      <div id="render"
-          onMouseMove={this.mouseMoved}
-          onMouseOut={this.clearHighlight}
-          onMouseDown={this.fillPixel}
-          onContextMenu={this.fillPixel}
-          onMouseUp={this.setMouseUp}>
-        <canvas id="bg-canvas" className="draw" width={this.props.width}
-                height={this.props.height}></canvas>
-        <canvas id="draw-canvas" className="draw" width={this.props.width}
-                height={this.props.height}></canvas>
-        <canvas id="overlay-canvas" className="draw" width={this.props.width}
-                height={this.props.height}></canvas>
+      <div id="render">
+        <canvas id="zoom-canvas"
+                className="draw"
+                width={this.props.totalWidth}
+                height={this.props.totalHeight}>
+        </canvas>
+
+        <canvas id="bg-canvas"
+                className="draw"
+                width={this.props.actualWidth}
+                height={this.props.actualHeight}>
+        </canvas>
+
+        <canvas id="draw-canvas"
+                className="draw"
+                width={this.props.actualWidth}
+                height={this.props.actualHeight}>
+        </canvas>
+
+        <canvas id="overlay-canvas"
+                className="draw"
+                width={this.props.actualWidth}
+                height={this.props.actualHeight}
+                onMouseMove={this.mouseMoved}
+                onMouseOut={this.clearHighlight}
+                onMouseDown={this.fillPixel}
+                onContextMenu={this.fillPixel}
+                onMouseUp={this.setMouseUp}>
+        </canvas>
       </div>
     );
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    console.log('width', this.props.width, prevProps.width);
     if (this.props.width !== prevProps.width ||
         this.props.height !== prevProps.height) {
       this.updateTiles();
@@ -56,14 +72,12 @@ let DrawCanvas = React.createClass({
   },
 
   initTiles: function () {
-    let numTilesH = this.props.width / this.props.tileSize;
-    let numTilesV = this.props.height / this.props.tileSize;
     let grid = [];
 
-    for (let x = 0; x < numTilesH; x++) {
+    for (let x = 0; x < this.props.width; x++) {
       grid[x] = [];
 
-      for (let y = 0; y < numTilesV; y++) {
+      for (let y = 0; y < this.props.height; y++) {
         grid[x].push(new Pixel(x, y));
       }
     }
@@ -72,14 +86,12 @@ let DrawCanvas = React.createClass({
   },
 
   updateTiles: function () {
-    let numTilesH = this.props.width / this.props.tileSize;
-    let numTilesV = this.props.height / this.props.tileSize;
     let oldGrid = this.state.grid;
     let newGrid = [];
 
-    for (let x = 0; x < numTilesH; x++) {
+    for (let x = 0; x < this.props.width; x++) {
       newGrid[x] = [];
-      for (let y = 0; y < numTilesV; y++) {
+      for (let y = 0; y < this.props.height; y++) {
         if (x < oldGrid.length && y < oldGrid[x].length) {
           newGrid[x][y] = oldGrid[x][y];
         } else {
@@ -87,8 +99,6 @@ let DrawCanvas = React.createClass({
         }
       }
     }
-
-    console.log('new grid', newGrid);
 
     this.setState({ grid: newGrid });
   },
@@ -100,15 +110,16 @@ let DrawCanvas = React.createClass({
     let x = absX - elRect.left;
     let y = absY - elRect.top;
 
-    let tileX = Math.floor(x / this.props.tileSize);
-    let tileY = Math.floor(y / this.props.tileSize);
+    let tileX = Math.floor(x / this.props.tileWidth);
+    let tileY = Math.floor(y / this.props.tileHeight);
 
+    console.log(tileX, tileY);
     return { x: tileX, y: tileY };
   },
 
   initBackground: function () {
-    let numTilesH = this.props.width / this.props.bgTileSize;
-    let numTilesV = this.props.height / this.props.bgTileSize;
+    let numTilesH = this.props.actualWidth / this.props.bgTileSize;
+    let numTilesV = this.props.actualHeight / this.props.bgTileSize;
 
     for (let i = 0; i < numTilesH; i++) {
       for (let j = 0; j < numTilesV; j++) {
@@ -130,12 +141,12 @@ let DrawCanvas = React.createClass({
     let currentPixel = grid[x][y];
 
     if (!currentPixel.highlighted) {
-      let fillX = currentPixel.x * this.props.tileSize;
-      let fillY = currentPixel.y * this.props.tileSize;
+      let fillX = currentPixel.x * this.props.tileWidth;
+      let fillY = currentPixel.y * this.props.tileHeight;
 
       this.overlayCtx.fillStyle = "rgba(255, 255, 255, 0.2)"
-      this.overlayCtx.fillRect(fillX, fillY, this.props.tileSize,
-                               this.props.tileSize);
+      this.overlayCtx.fillRect(fillX, fillY, this.props.tileWidth,
+                               this.props.tileHeight);
       currentPixel.highlighted = true;
     }
 
@@ -148,23 +159,21 @@ let DrawCanvas = React.createClass({
   },
 
   clearHighlight: function (ev, currentPixel) {
-    let numPixelsH = this.props.width / this.props.tileSize;
-    let numPixelsV = this.props.height / this.props.tileSize;
     let grid = this.state.grid;
 
-    for (let ix = 0; ix < numPixelsH; ix++) {
-      for (let iy = 0; iy < numPixelsV; iy++) {
+    for (let ix = 0; ix < this.props.width; ix++) {
+      for (let iy = 0; iy < this.props.height; iy++) {
         let pixel = grid[ix][iy];
         if (pixel === currentPixel) {
           continue;
         }
 
         if (pixel.highlighted) {
-          let fillX = pixel.x * this.props.tileSize;
-          let fillY = pixel.y * this.props.tileSize;
+          let fillX = pixel.x * this.props.tileWidth;
+          let fillY = pixel.y * this.props.tileHeight;
 
-          this.overlayCtx.clearRect(fillX, fillY, this.props.tileSize,
-                                    this.props.tileSize);
+          this.overlayCtx.clearRect(fillX, fillY, this.props.tileWidth,
+                                    this.props.tileHeight);
           pixel.highlighted = false;
         }
       }
@@ -180,8 +189,8 @@ let DrawCanvas = React.createClass({
 
     let { x, y } = this.getTileCoordinates(ev);
     let pixel = grid[x][y];
-    let fillX = x * this.props.tileSize;
-    let fillY = y * this.props.tileSize;
+    let fillX = x * this.props.tileWidth;
+    let fillY = y * this.props.tileHeight;
 
     let button = ev.which || ev.button;
     let color = this.props.primaryColor;
@@ -191,10 +200,10 @@ let DrawCanvas = React.createClass({
     }
 
     this.drawCtx.fillStyle = color;
-    this.drawCtx.clearRect(fillX, fillY, this.props.tileSize,
-                           this.props.tileSize);
-    this.drawCtx.fillRect(fillX, fillY, this.props.tileSize,
-                          this.props.tileSize);
+    this.drawCtx.clearRect(fillX, fillY, this.props.tileWidth,
+                           this.props.tileHeight);
+    this.drawCtx.fillRect(fillX, fillY, this.props.tileWidth,
+                          this.props.tileHeight);
     pixel.color = color;
     this.setState({ grid: grid });
   },

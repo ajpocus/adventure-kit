@@ -12,13 +12,20 @@ let Draw = React.createClass({
     return {
       primaryColor: '#000000',
       secondaryColor: '#ffffff',
-      width: 512,
-      height: 512,
-      tileSize: 32
+      width: 32,
+      height: 32,
+      totalWidth: 1024,
+      totalHeight: 1024,
+      zoom: 0.8
     };
   },
 
   render: function () {
+    let actualWidth = this.state.totalWidth * this.state.zoom;
+    let actualHeight = this.state.totalHeight * this.state.zoom;
+    let tileWidth = actualWidth / this.state.width;
+    let tileHeight = actualHeight / this.state.height;
+
     return (
       <div id="draw">
         <div className="toolbar">
@@ -35,7 +42,13 @@ let Draw = React.createClass({
                      secondaryColor={this.state.secondaryColor}
                      width={this.state.width}
                      height={this.state.height}
-                     tileSize={this.state.tileSize}/>
+                     totalWidth={this.state.totalWidth}
+                     totalHeight={this.state.totalHeight}
+                     zoom={this.state.zoom}
+                     actualWidth={actualWidth}
+                     actualHeight={actualHeight}
+                     tileWidth={tileWidth}
+                     tileHeight={tileHeight}/>
 
         <div className="manage-surface">
           <ManageDrawList onResizeClick={this.onResizeClick}/>

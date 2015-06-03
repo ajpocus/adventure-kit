@@ -12,7 +12,9 @@ let Modal = React.createClass({
     }
 
     return (
-      <div className="modal" style={modalStyle}></div>
+      <div className="modal" style={modalStyle}>
+        {this.props.children}
+      </div>
     );
   }
 });

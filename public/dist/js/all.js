@@ -62914,13 +62914,20 @@ var Draw = React.createClass({
     return {
       primaryColor: '#000000',
       secondaryColor: '#ffffff',
-      width: 512,
-      height: 512,
-      tileSize: 32
+      width: 32,
+      height: 32,
+      totalWidth: 1024,
+      totalHeight: 1024,
+      zoom: 0.8
     };
   },
 
   render: function render() {
+    var actualWidth = this.state.totalWidth * this.state.zoom;
+    var actualHeight = this.state.totalHeight * this.state.zoom;
+    var tileWidth = actualWidth / this.state.width;
+    var tileHeight = actualHeight / this.state.height;
+
     return React.createElement(
       'div',
       { id: 'draw' },
@@ -62939,7 +62946,13 @@ var Draw = React.createClass({
         secondaryColor: this.state.secondaryColor,
         width: this.state.width,
         height: this.state.height,
-        tileSize: this.state.tileSize }),
+        totalWidth: this.state.totalWidth,
+        totalHeight: this.state.totalHeight,
+        zoom: this.state.zoom,
+        actualWidth: actualWidth,
+        actualHeight: actualHeight,
+        tileWidth: tileWidth,
+        tileHeight: tileHeight }),
       React.createElement(
         'div',
         { className: 'manage-surface' },
@@ -63014,23 +63027,32 @@ var DrawCanvas = React.createClass({
   render: function render() {
     return React.createElement(
       'div',
-      { id: 'render',
+      { id: 'render' },
+      React.createElement('canvas', { id: 'zoom-canvas',
+        className: 'draw',
+        width: this.props.totalWidth,
+        height: this.props.totalHeight }),
+      React.createElement('canvas', { id: 'bg-canvas',
+        className: 'draw',
+        width: this.props.actualWidth,
+        height: this.props.actualHeight }),
+      React.createElement('canvas', { id: 'draw-canvas',
+        className: 'draw',
+        width: this.props.actualWidth,
+        height: this.props.actualHeight }),
+      React.createElement('canvas', { id: 'overlay-canvas',
+        className: 'draw',
+        width: this.props.actualWidth,
+        height: this.props.actualHeight,
         onMouseMove: this.mouseMoved,
         onMouseOut: this.clearHighlight,
         onMouseDown: this.fillPixel,
         onContextMenu: this.fillPixel,
-        onMouseUp: this.setMouseUp },
-      React.createElement('canvas', { id: 'bg-canvas', className: 'draw', width: this.props.width,
-        height: this.props.height }),
-      React.createElement('canvas', { id: 'draw-canvas', className: 'draw', width: this.props.width,
-        height: this.props.height }),
-      React.createElement('canvas', { id: 'overlay-canvas', className: 'draw', width: this.props.width,
-        height: this.props.height })
+        onMouseUp: this.setMouseUp })
     );
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    console.log('width', this.props.width, prevProps.width);
     if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
       this.updateTiles();
       this.initBackground();
@@ -63038,14 +63060,12 @@ var DrawCanvas = React.createClass({
   },
 
   initTiles: function initTiles() {
-    var numTilesH = this.props.width / this.props.tileSize;
-    var numTilesV = this.props.height / this.props.tileSize;
     var grid = [];
 
-    for (var x = 0; x < numTilesH; x++) {
+    for (var x = 0; x < this.props.width; x++) {
       grid[x] = [];
 
-      for (var y = 0; y < numTilesV; y++) {
+      for (var y = 0; y < this.props.height; y++) {
         grid[x].push(new _modelsPixel2['default'](x, y));
       }
     }
@@ -63054,14 +63074,12 @@ var DrawCanvas = React.createClass({
   },
 
   updateTiles: function updateTiles() {
-    var numTilesH = this.props.width / this.props.tileSize;
-    var numTilesV = this.props.height / this.props.tileSize;
     var oldGrid = this.state.grid;
     var newGrid = [];
 
-    for (var x = 0; x < numTilesH; x++) {
+    for (var x = 0; x < this.props.width; x++) {
       newGrid[x] = [];
-      for (var y = 0; y < numTilesV; y++) {
+      for (var y = 0; y < this.props.height; y++) {
         if (x < oldGrid.length && y < oldGrid[x].length) {
           newGrid[x][y] = oldGrid[x][y];
         } else {
@@ -63069,8 +63087,6 @@ var DrawCanvas = React.createClass({
         }
       }
     }
-
-    console.log('new grid', newGrid);
 
     this.setState({ grid: newGrid });
   },
@@ -63082,15 +63098,16 @@ var DrawCanvas = React.createClass({
     var x = absX - elRect.left;
     var y = absY - elRect.top;
 
-    var tileX = Math.floor(x / this.props.tileSize);
-    var tileY = Math.floor(y / this.props.tileSize);
+    var tileX = Math.floor(x / this.props.tileWidth);
+    var tileY = Math.floor(y / this.props.tileHeight);
 
+    console.log(tileX, tileY);
     return { x: tileX, y: tileY };
   },
 
   initBackground: function initBackground() {
-    var numTilesH = this.props.width / this.props.bgTileSize;
-    var numTilesV = this.props.height / this.props.bgTileSize;
+    var numTilesH = this.props.actualWidth / this.props.bgTileSize;
+    var numTilesV = this.props.actualHeight / this.props.bgTileSize;
 
     for (var i = 0; i < numTilesH; i++) {
       for (var j = 0; j < numTilesV; j++) {
@@ -63116,11 +63133,11 @@ var DrawCanvas = React.createClass({
     var currentPixel = grid[x][y];
 
     if (!currentPixel.highlighted) {
-      var fillX = currentPixel.x * this.props.tileSize;
-      var fillY = currentPixel.y * this.props.tileSize;
+      var fillX = currentPixel.x * this.props.tileWidth;
+      var fillY = currentPixel.y * this.props.tileHeight;
 
       this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      this.overlayCtx.fillRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
+      this.overlayCtx.fillRect(fillX, fillY, this.props.tileWidth, this.props.tileHeight);
       currentPixel.highlighted = true;
     }
 
@@ -63133,22 +63150,20 @@ var DrawCanvas = React.createClass({
   },
 
   clearHighlight: function clearHighlight(ev, currentPixel) {
-    var numPixelsH = this.props.width / this.props.tileSize;
-    var numPixelsV = this.props.height / this.props.tileSize;
     var grid = this.state.grid;
 
-    for (var ix = 0; ix < numPixelsH; ix++) {
-      for (var iy = 0; iy < numPixelsV; iy++) {
+    for (var ix = 0; ix < this.props.width; ix++) {
+      for (var iy = 0; iy < this.props.height; iy++) {
         var pixel = grid[ix][iy];
         if (pixel === currentPixel) {
           continue;
         }
 
         if (pixel.highlighted) {
-          var fillX = pixel.x * this.props.tileSize;
-          var fillY = pixel.y * this.props.tileSize;
+          var fillX = pixel.x * this.props.tileWidth;
+          var fillY = pixel.y * this.props.tileHeight;
 
-          this.overlayCtx.clearRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
+          this.overlayCtx.clearRect(fillX, fillY, this.props.tileWidth, this.props.tileHeight);
           pixel.highlighted = false;
         }
       }
@@ -63168,8 +63183,8 @@ var DrawCanvas = React.createClass({
     var y = _getTileCoordinates2.y;
 
     var pixel = grid[x][y];
-    var fillX = x * this.props.tileSize;
-    var fillY = y * this.props.tileSize;
+    var fillX = x * this.props.tileWidth;
+    var fillY = y * this.props.tileHeight;
 
     var button = ev.which || ev.button;
     var color = this.props.primaryColor;
@@ -63179,8 +63194,8 @@ var DrawCanvas = React.createClass({
     }
 
     this.drawCtx.fillStyle = color;
-    this.drawCtx.clearRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
-    this.drawCtx.fillRect(fillX, fillY, this.props.tileSize, this.props.tileSize);
+    this.drawCtx.clearRect(fillX, fillY, this.props.tileWidth, this.props.tileHeight);
+    this.drawCtx.fillRect(fillX, fillY, this.props.tileWidth, this.props.tileHeight);
     pixel.color = color;
     this.setState({ grid: grid });
   },
@@ -63659,7 +63674,11 @@ var Modal = React.createClass({
       modalStyle.display = 'none';
     }
 
-    return React.createElement('div', { className: 'modal', style: modalStyle });
+    return React.createElement(
+      'div',
+      { className: 'modal', style: modalStyle },
+      this.props.children
+    );
   }
 });
 
