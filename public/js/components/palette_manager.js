@@ -11,8 +11,8 @@ let PaletteManager = React.createClass({
     return {
       palettes: {
         'Rainbow': [
-          '#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff',
-          '#ff00ff'
+          0xff0000, 0xffaa00, 0xffff00, 0x00ff00, 0x0000ff, 0x7900ff,
+          0xff00ff
         ]
       },
       activePalette: 'Rainbow'

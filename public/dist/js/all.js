@@ -62912,8 +62912,8 @@ var Draw = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      primaryColor: '#000000',
-      secondaryColor: '#ffffff',
+      primaryColor: 0,
+      secondaryColor: 16777215,
       width: 32,
       height: 32,
       totalWidth: 1024,
@@ -63012,8 +63012,7 @@ var DrawCanvas = React.createClass({
       actualWidth: this.props.actualWidth,
       actualHeight: this.props.actualHeight,
       tileWidth: this.props.tileWidth,
-      tileHeight: this.props.tileHeight,
-      grid: this.initTiles()
+      tileHeight: this.props.tileHeight
     };
   },
 
@@ -63023,15 +63022,37 @@ var DrawCanvas = React.createClass({
     };
   },
 
+  componentWillMount: function componentWillMount() {
+    var stage = new PIXI.Stage(12303291);
+    var renderer = PIXI.autoDetectRenderer(this.props.totalWidth, this.props.totalHeight);
+
+    var bgGfx = new PIXI.Graphics();
+    var drawGfx = new PIXI.Graphics();
+    var overlayGfx = new PIXI.Graphics();
+
+    bgGfx.width = this.state.actualWidth;
+    bgGfx.height = this.state.actualHeight;
+    drawGfx.width = this.state.actualWidth;
+    drawGfx.height = this.state.actualHeight;
+    overlayGfx.width = this.state.actualWidth;
+    overlayGfx.height = this.state.actualHeight;
+
+    stage.addChild(bgGfx);
+    stage.addChild(drawGfx);
+    stage.addChild(overlayGfx);
+
+    this.setState({
+      stage: stage,
+      renderer: renderer,
+      bgGfx: bgGfx,
+      drawGfx: drawGfx,
+      overlayGfx: overlayGfx,
+      grid: this.initTiles()
+    });
+  },
+
   componentDidMount: function componentDidMount() {
-    var renderNode = $(React.findDOMNode(this));
-
-    this.zoomCtx = this.refs.zoomCanvas.getDOMNode().getContext('2d');
-    this.bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
-    this.drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
-    this.overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
-
-    this.setState({ grid: this.initTiles() });
+    $('#render').append(this.state.renderer.view);
     this.updatePosition();
     this.drawBackground();
   },
@@ -63042,41 +63063,14 @@ var DrawCanvas = React.createClass({
       height: this.state.actualHeight
     };
 
-    return React.createElement(
-      'div',
-      { id: 'render',
-        onWheel: this.onZoom,
-        onMouseDown: this.fillPixel,
-        onContextMenu: this.fillPixel,
-        onMouseUp: this.setMouseUp,
-        onMouseMove: this.handleMouseMove,
-        onMouseOut: this.clearHighlight },
-      React.createElement('canvas', { id: 'zoom-canvas',
-        className: 'draw',
-        ref: 'zoomCanvas',
-        width: this.props.totalWidth,
-        height: this.props.totalHeight }),
-      React.createElement(
-        'div',
-        { className: 'surface-container',
-          style: surfaceStyle },
-        React.createElement('canvas', { id: 'bg-canvas',
-          className: 'draw surface',
-          ref: 'bgCanvas',
-          width: this.state.actualWidth,
-          height: this.state.actualHeight }),
-        React.createElement('canvas', { id: 'draw-canvas',
-          className: 'draw surface',
-          ref: 'drawCanvas',
-          width: this.state.actualWidth,
-          height: this.state.actualHeight }),
-        React.createElement('canvas', { id: 'overlay-canvas',
-          className: 'draw surface',
-          ref: 'overlayCanvas',
-          width: this.state.actualWidth,
-          height: this.state.actualHeight })
-      )
-    );
+    this.state.renderer.render(this.state.stage);
+
+    return React.createElement('div', { id: 'render',
+      onMouseMove: this.handleMouseMove,
+      onMouseOut: this.clearHighlight,
+      onMouseDown: this.fillPixel,
+      onContextMenu: this.fillPixel,
+      onMouseUp: this.setMouseUp });
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
@@ -63091,26 +63085,35 @@ var DrawCanvas = React.createClass({
     this.drawBackground();
     var tileWidth = this.state.tileWidth;
     var tileHeight = this.state.tileHeight;
+    var overlayGfx = this.state.overlayGfx;
+    var drawGfx = this.state.drawGfx;
 
-    this.overlayCtx.clearRect(0, 0, this.state.actualWidth, this.state.actualHeight);
+    overlayGfx.beginFill(0, 0);
+    overlayGfx.drawRect(0, 0, overlayGfx.width, overlayGfx.height);
+
     for (var x = 0; x < this.state.width; x++) {
       for (var y = 0; y < this.state.height; y++) {
         var px = this.state.grid[x][y];
         if (px.color) {
           var fillX = px.x * tileWidth;
           var fillY = px.y * tileHeight;
-          this.drawCtx.fillStyle = px.color;
-          this.drawCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+          drawGfx.beginFill(px.color);
+          drawGfx.drawRect(fillX, fillY, tileWidth, tileHeight);
         }
 
         if (px.highlighted) {
           var fillX = px.x * tileWidth;
           var fillY = px.y * tileHeight;
-          this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-          this.overlayCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+          overlayGfx.beginFill(16777215, 0.4);
+          overlayGfx.drawRect(0, 0, tileWidth, tileHeight);
         }
       }
     }
+
+    this.setState({
+      overlayGfx: overlayGfx,
+      drawGfx: drawGfx
+    });
   },
 
   initTiles: function initTiles() {
@@ -63146,12 +63149,21 @@ var DrawCanvas = React.createClass({
   },
 
   updatePosition: function updatePosition() {
-    var top = (this.props.totalHeight - this.state.actualHeight) / 2;
-    var left = (this.props.totalWidth - this.state.actualWidth) / 2;
+    var x = (this.props.totalWidth - this.state.actualWidth) / 2;
+    var y = (this.props.totalHeight - this.state.actualHeight) / 2;
 
-    $('#render .surface-container').css({
-      top: top,
-      left: left
+    var bgGfx = this.state.bgGfx;
+    var drawGfx = this.state.drawGfx;
+    var overlayGfx = this.state.overlayGfx;
+
+    bgGfx.position.set(x, y);
+    drawGfx.position.set(x, y);
+    overlayGfx.position.set(x, y);
+
+    this.setState({
+      bgGfx: bgGfx,
+      drawGfx: drawGfx,
+      overlayGfx: overlayGfx
     });
   },
 
@@ -63169,21 +63181,19 @@ var DrawCanvas = React.createClass({
   },
 
   drawBackground: function drawBackground() {
-    this.zoomCtx.fillStyle = '#484848';
-    this.zoomCtx.fillRect(0, 0, this.props.totalWidth, this.props.totalHeight);
-
     var numTilesH = this.state.actualWidth / this.props.bgTileSize;
     var numTilesV = this.state.actualHeight / this.props.bgTileSize;
+    var bgGfx = this.state.bgGfx;
 
     for (var i = 0; i < numTilesH; i++) {
       for (var j = 0; j < numTilesV; j++) {
         var x = i * this.props.bgTileSize;
         var y = j * this.props.bgTileSize;
 
-        var fill = (i + j) % 2 == 0 ? '#999' : '#777';
+        var fill = (i + j) % 2 == 0 ? 10066329 : 7829367;
 
-        this.bgCtx.fillStyle = fill;
-        this.bgCtx.fillRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
+        bgGfx.beginFill(fill);
+        bgGfx.drawRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
       }
     }
   },
@@ -63199,14 +63209,16 @@ var DrawCanvas = React.createClass({
 
     var grid = this.state.grid;
     grid[x][y].highlighted = true;
-    this.setState({ grid: grid });
 
+    var overlayGfx = this.state.overlayGfx;
     var tileWidth = this.state.tileWidth;
     var tileHeight = this.state.tileHeight;
     var fillX = x * tileWidth;
     var fillY = y * tileHeight;
-    this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    this.overlayCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+    overlayGfx.beginFill(16777215, 0.4);
+    overlayGfx.drawRect(fillX, fillY, tileWidth, tileHeight);
+
+    this.setState({ overlayGfx: overlayGfx, grid: grid });
     this.clearHighlight(ev, x, y);
 
     if (this.state.isMouseDown) {
@@ -63218,6 +63230,7 @@ var DrawCanvas = React.createClass({
     console.log('CLEAR');
     ev.preventDefault();
     var grid = this.state.grid;
+    var overlayGfx = this.state.overlayGfx;
 
     for (var ix = 0; ix < this.state.width; ix++) {
       for (var iy = 0; iy < this.state.height; iy++) {
@@ -63226,14 +63239,19 @@ var DrawCanvas = React.createClass({
         }
 
         grid[ix][iy].highlighted = false;
-        var fillX = ix * this.state.tileWidth;
-        var fillY = iy * this.state.tileHeight;
-        this.overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-        this.overlayCtx.fillRect(fillX, fillY, this.state.tileWidth, this.state.tileHeight);
+        var tileWidth = this.state.tileWidth;
+        var tileHeight = this.state.tileHeight;
+        var fillX = ix * tileWidth;
+        var fillY = iy * tileHeight;
+        overlayGfx.beginFill(16777215, 0.4);
+        overlayGfx.drawRect(fillX, fillY, tileWidth, tileHeight);
       }
     }
 
-    this.setState({ grid: grid });
+    this.setState({
+      grid: grid,
+      overlayGfx: overlayGfx
+    });
   },
 
   fillPixel: function fillPixel(ev) {
@@ -63241,6 +63259,7 @@ var DrawCanvas = React.createClass({
     ev.preventDefault();
     this.setState({ isMouseDown: true });
     var grid = this.state.grid;
+    var drawGfx = this.state.drawGfx;
 
     var _getTileCoordinates2 = this.getTileCoordinates(ev);
 
@@ -63258,15 +63277,17 @@ var DrawCanvas = React.createClass({
     var tileHeight = this.state.tileHeight;
     var fillX = x * tileWidth;
     var fillY = y * tileHeight;
-    this.drawCtx.fillStyle = color;
-    this.drawCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
+    drawGfx.beginFill(color);
+    drawGfx.drawRect(fillX, fillY, tileWidth, tileHeight);
 
     grid[x][y].color = color;
-    this.setState({ grid: grid });
+    this.setState({
+      grid: grid,
+      drawGfx: drawGfx
+    });
   },
 
   setMouseUp: function setMouseUp() {
-    console.log('MOUSEUP');
     this.setState({ isMouseDown: false });
   },
 
@@ -63290,6 +63311,7 @@ var DrawCanvas = React.createClass({
       actualWidth: actualWidth,
       actualHeight: actualHeight
     });
+
     this.updatePosition();
   }
 });
@@ -63512,7 +63534,7 @@ var EditPalette = React.createClass({
 
   addPaletteColor: function addPaletteColor() {
     var palette = this.state.palette;
-    var newColor = '#ffffff';
+    var newColor = 16777215;
     palette.push(newColor);
     this.setState({ palette: palette, activePaletteColor: newColor });
   },
@@ -63833,7 +63855,7 @@ var PaletteManager = React.createClass({
   getInitialState: function getInitialState() {
     return {
       palettes: {
-        'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#ff00ff']
+        'Rainbow': [16711680, 16755200, 16776960, 65280, 255, 7930111, 16711935]
       },
       activePalette: 'Rainbow'
     };
