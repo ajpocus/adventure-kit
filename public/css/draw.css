@@ -85,27 +85,13 @@
 
 #render .surface {
   position: relative;
+  z-index: 1000;
 }
 
-#zoom-canvas {
-  z-index: 0;
-}
-
-#bg-canvas {
-  z-index: 10;
-}
-
-#draw-canvas {
-  z-index: 20;
-}
-
-#overlay-canvas {
-  z-index: 30;
-}
-
-#render .surface-container {
-  z-index: 100;
-  position: relative;
+#render .surface canvas.draw {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 #draw .palette-manager .icon {

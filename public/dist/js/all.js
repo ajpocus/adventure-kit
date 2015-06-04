@@ -36887,32 +36887,16 @@ var DrawCanvas = React.createClass({
     };
   },
 
-  getDefaultProps: function getDefaultProps() {
-    return {
-      bgTileSize: 8
-    };
-  },
-
-  componentDidMount: function componentDidMount() {
-    var bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
-    var drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
-    var overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
-
-    this.setState({
-      bgCtx: bgCtx,
-      drawCtx: drawCtx,
-      overlayCtx: overlayCtx,
-      grid: this.initTiles()
-    });
-
-    this.updatePosition();
-    this.drawBackground(bgCtx);
-  },
+  componentDidMount: function componentDidMount() {},
 
   render: function render() {
+    var surfaceTop = (this.props.totalHeight - this.state.actualHeight) / 2;
+    var surfaceLeft = (this.props.totalWidth - this.state.actualWidth) / 2;
     var surfaceStyle = {
       width: this.state.actualWidth,
-      height: this.state.actualHeight
+      height: this.state.actualHeight,
+      top: surfaceTop,
+      left: surfaceLeft
     };
 
     return React.createElement(
@@ -36926,10 +36910,10 @@ var DrawCanvas = React.createClass({
           { className: 'surface',
             style: surfaceStyle,
             onMouseMove: this.handleMouseMove,
-            onMouseOut: this.clearHighlight,
-            onMouseDown: this.fillPixel,
-            onContextMenu: this.fillPixel,
-            onMouseUp: this.setMouseUp },
+            onMouseOut: this.handleMouseOut,
+            onMouseDown: this.handleMouseDown,
+            onContextMenu: this.handleMouseDown,
+            onMouseUp: this.handleMouseUp },
           React.createElement('canvas', { id: 'bg-canvas',
             className: 'draw',
             ref: 'bgCanvas',
@@ -36950,267 +36934,20 @@ var DrawCanvas = React.createClass({
     );
   },
 
-  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.state.width !== prevState.width || this.state.height !== prevState.height) {
-      this.updatePosition();
-      this.redrawTiles();
-    }
-  },
-
-  redrawTiles: function redrawTiles() {
-    console.log('DRAWING');
-    this.drawBackground();
-    var tileWidth = this.state.tileWidth;
-    var tileHeight = this.state.tileHeight;
-    var overlayCtx = this.state.overlayCtx;
-    var drawCtx = this.state.drawCtx;
-
-    overlayCtx.fillStyle;
-    overlayCtx.drawRect(0, 0, overlayCtx.width, overlayCtx.height);
-
-    for (var x = 0; x < this.state.width; x++) {
-      for (var y = 0; y < this.state.height; y++) {
-        var px = this.state.grid[x][y];
-        if (px.color) {
-          var fillX = px.x * tileWidth;
-          var fillY = px.y * tileHeight;
-          drawCtx.beginFill(px.color);
-          drawCtx.drawRect(fillX, fillY, tileWidth, tileHeight);
-        }
-
-        if (px.highlighted) {
-          var fillX = px.x * tileWidth;
-          var fillY = px.y * tileHeight;
-          overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-          overlayCtx.fillRect(fillX, fillY, tileWidth, tileHeight);
-        }
-      }
-    }
-
-    this.setState({
-      overlayCtx: overlayCtx,
-      drawCtx: drawCtx
-    });
-  },
-
-  initTiles: function initTiles() {
-    var grid = [];
-
-    for (var x = 0; x < this.props.width; x++) {
-      grid[x] = [];
-
-      for (var y = 0; y < this.props.height; y++) {
-        grid[x].push(new _modelsPixel2['default'](x, y));
-      }
-    }
-
-    return grid;
-  },
-
-  updateTiles: function updateTiles() {
-    var oldGrid = this.state.grid;
-    var newGrid = [];
-
-    for (var x = 0; x < this.state.width; x++) {
-      newGrid[x] = [];
-      for (var y = 0; y < this.state.height; y++) {
-        if (x < oldGrid.length && y < oldGrid[x].length) {
-          newGrid[x][y] = oldGrid[x][y];
-        } else {
-          newGrid[x].push(new _modelsPixel2['default'](x, y));
-        }
-      }
-    }
-
-    this.setState({ grid: newGrid });
-  },
-
-  updatePosition: function updatePosition() {
-    var left = (this.props.totalWidth - this.state.actualWidth) / 2;
-    var top = (this.props.totalHeight - this.state.actualHeight) / 2;
-
-    $('#render .surface').css({
-      top: top,
-      left: left
-    });
-  },
-
-  getTileCoordinates: function getTileCoordinates(ev) {
-    var elRect = ev.target.getBoundingClientRect();
-    var absX = ev.clientX;
-    var absY = ev.clientY;
-    var x = absX - elRect.left;
-    var y = absY - elRect.top;
-
-    var tileX = Math.floor(x / this.state.tileWidth);
-    var tileY = Math.floor(y / this.state.tileHeight);
-
-    return { x: tileX, y: tileY };
-  },
-
-  getFillParams: function getFillParams(x, y) {
-    var tileWidth = this.state.tileWidth;
-    var tileHeight = this.state.tileHeight;
-    var fillX = x * tileWidth;
-    var fillY = y * tileHeight;
-    return {
-      x: fillX,
-      y: fillY,
-      width: tileWidth,
-      height: tileHeight
-    };
-  },
-
-  drawBackground: function drawBackground(bgCtx) {
-    var numTilesH = this.state.actualWidth / this.props.bgTileSize;
-    var numTilesV = this.state.actualHeight / this.props.bgTileSize;
-
-    for (var i = 0; i < numTilesH; i++) {
-      for (var j = 0; j < numTilesV; j++) {
-        var x = i * this.props.bgTileSize;
-        var y = j * this.props.bgTileSize;
-
-        var fill = (i + j) % 2 == 0 ? 10066329 : 7829367;
-        var tileSize = this.props.bgTileSize;
-        bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, tileSize, tileSize);
-      }
-    }
-
-    this.setState({ bgCtx: bgCtx });
-  },
-
   handleMouseMove: function handleMouseMove(ev) {
-    console.log('MOUSE MOVED');
-    ev.preventDefault();
-
-    var _getTileCoordinates = this.getTileCoordinates(ev);
-
-    var tx = _getTileCoordinates.tx;
-    var ty = _getTileCoordinates.ty;
-
-    var grid = this.state.grid;
-    grid[tx][ty].highlighted = true;
-
-    var overlayCtx = this.state.overlayCtx;
-    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-
-    var _getFillParams = this.getFillParams(tx, ty);
-
-    var x = _getFillParams.x;
-    var y = _getFillParams.y;
-    var width = _getFillParams.width;
-    var height = _getFillParams.height;
-
-    overlayCtx.fillRect(x, y, width, height);
-
-    this.setState({
-      overlayCtx: overlayCtx,
-      grid: grid
-    });
-    this.clearHighlight(ev, x, y);
-
-    if (this.state.isMouseDown) {
-      this.fillPixel(ev);
-    }
+    console.log('mousemove', ev);
   },
 
-  clearHighlight: function clearHighlight(ev, tx, ty) {
-    console.log('CLEAR');
-    ev.preventDefault();
-    var grid = this.state.grid;
-    var overlayCtx = this.state.overlayCtx;
-
-    for (var ix = 0; ix < this.state.width; ix++) {
-      for (var iy = 0; iy < this.state.height; iy++) {
-        if (tx === ix && ty === iy) {
-          continue;
-        }
-
-        grid[ix][iy].highlighted = false;
-      }
-    }
-
-    overlayCtx.clearRect(0, 0, this.state.actualWidth, this.state.actualHeight);
-
-    var _getFillParams2 = this.getFillParams(tx, ty);
-
-    var x = _getFillParams2.x;
-    var y = _getFillParams2.y;
-    var width = _getFillParams2.width;
-    var height = _getFillParams2.height;
-
-    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    overlayCtx.fillRect(x, y, width, height);
-
-    this.setState({
-      grid: grid,
-      overlayCtx: overlayCtx
-    });
+  handleMouseOut: function handleMouseOut(ev) {
+    console.log('mouseout');
   },
 
-  fillPixel: function fillPixel(ev) {
-    console.log('FILL');
-    ev.preventDefault();
-    this.setState({ isMouseDown: true });
-    var grid = this.state.grid;
-    var drawCtx = this.state.drawCtx;
-
-    var _getTileCoordinates2 = this.getTileCoordinates(ev);
-
-    var tx = _getTileCoordinates2.tx;
-    var ty = _getTileCoordinates2.ty;
-
-    var button = ev.which || ev.button;
-    var color = this.props.primaryColor;
-
-    if (button === 2) {
-      color = this.props.secondaryColor;
-    }
-
-    var _getFillParams3 = this.getFillParams(tx, ty);
-
-    var x = _getFillParams3.x;
-    var y = _getFillParams3.y;
-    var width = _getFillParams3.width;
-    var height = _getFillParams3.height;
-
-    drawCtx.fillStyle = color;
-    drawCtx.fillRect(x, x, width, height);
-
-    grid[x][y].color = color;
-    this.setState({
-      grid: grid,
-      drawCtx: drawCtx
-    });
+  handleMouseDown: function handleMouseDown(ev) {
+    console.log('mousedown');
   },
 
-  setMouseUp: function setMouseUp() {
-    this.setState({ isMouseDown: false });
-  },
-
-  onZoom: function onZoom(ev) {
-    ev.preventDefault();
-    var delta = 0;
-    if (ev.deltaY > 0) {
-      delta = -0.1;
-    } else if (ev.deltaY < 0) {
-      delta = 0.1;
-    } else {
-      return;
-    }
-
-    var newZoom = this.state.zoom + delta;
-    var actualWidth = this.props.totalWidth * newZoom;
-    var actualHeight = this.props.totalHeight * newZoom;
-
-    this.setState({
-      zoom: newZoom,
-      actualWidth: actualWidth,
-      actualHeight: actualHeight
-    });
-
-    this.updatePosition();
+  handleMouseUp: function handleMouseUp(ev) {
+    console.log('mouseup');
   }
 });
 
