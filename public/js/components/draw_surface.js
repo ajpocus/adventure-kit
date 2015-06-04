@@ -48,10 +48,8 @@ let DrawSurface = React.createClass({
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    console.log(this.state.grid[0][0]);
     if (this.state.actualWidth !== prevState.actualWidth ||
         this.state.actualHeight !== prevState.actualHeight) {
-      console.log('redraw');
       this.redraw();
     }
   },
@@ -123,7 +121,6 @@ let DrawSurface = React.createClass({
       for (let y = 0; y < this.state.height; y++) {
         let pixel = grid[x][y];
         if (pixel.color) {
-          console.log(pixel.color);
           drawCtx.fillStyle = pixel.color;
           drawCtx.fillRect(x, y, 1, 1);
         }
@@ -256,8 +253,6 @@ let DrawSurface = React.createClass({
     let numTilesH = this.state.actualWidth / bgTileSize;
     let numTilesV = this.state.actualHeight / bgTileSize;
 
-    console.log('tiles-w: ', numTilesH);
-    console.log('tiles-h: ', numTilesV);
     for (let x = 0; x < numTilesH; x++) {
       for (let y = 0; y < numTilesV; y++) {
         let fill = ((x + y) % 2 == 0) ? "#999" : "#777";
