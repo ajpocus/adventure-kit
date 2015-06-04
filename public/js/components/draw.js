@@ -10,8 +10,8 @@ import ResizePrompt from './resize_prompt';
 let Draw = React.createClass({
   getInitialState: function () {
     return {
-      primaryColor: 0x000000,
-      secondaryColor: 0xffffff,
+      primaryColor: '#000000',
+      secondaryColor: '#ffffff',
       width: 32,
       height: 32,
       totalWidth: 1024,

@@ -36780,8 +36780,8 @@ var Draw = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      primaryColor: 0,
-      secondaryColor: 16777215,
+      primaryColor: '#000000',
+      secondaryColor: '#ffffff',
       width: 32,
       height: 32,
       totalWidth: 1024,
@@ -36925,7 +36925,9 @@ var DrawSurface = React.createClass({
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+    console.log(this.state.grid[0][0]);
     if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight) {
+      console.log('redraw');
       this.redraw();
     }
   },
@@ -36998,13 +37000,18 @@ var DrawSurface = React.createClass({
       for (var y = 0; y < this.state.height; y++) {
         var pixel = grid[x][y];
         if (pixel.color) {
+          console.log(pixel.color);
           drawCtx.fillStyle = pixel.color;
           drawCtx.fillRect(x, y, 1, 1);
         }
       }
     }
 
-    this.setState({ drawCtx: drawCtx });
+    this.setState({
+      bgCtx: bgCtx,
+      drawCtx: drawCtx,
+      overlayCtx: overlayCtx
+    });
   },
 
   highlightPixel: function highlightPixel(ev) {
@@ -37071,14 +37078,13 @@ var DrawSurface = React.createClass({
     var grid = this.state.grid;
     var drawCtx = this.state.drawCtx;
 
-    var color = this.state.primaryColor;
+    var color = this.props.primaryColor;
     var button = ev.which || ev.button;
     if (button === 2) {
       color = this.props.secondaryColor;
     }
 
-    var pixel = grid[x][y];
-    pixel.color = color;
+    grid[x][y].color = color;
     drawCtx.fillStyle = color;
     drawCtx.fillRect(x, y, 1, 1);
 
