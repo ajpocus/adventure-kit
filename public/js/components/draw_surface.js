@@ -65,7 +65,8 @@ let DrawSurface = React.createClass({
     };
 
     return (
-      <div id="render">
+      <div id="render"
+           onWheel={this.onZoom}>
         <div className="background">
           <div className="surface"
                style={surfaceStyle}
@@ -73,8 +74,7 @@ let DrawSurface = React.createClass({
                onMouseOut={this.clearHighlight}
                onMouseDown={this.drawPixel}
                onContextMenu={this.drawPixel}
-               onMouseUp={this.setMouseUp}
-               onWheel={this.onZoom}>
+               onMouseUp={this.setMouseUp}>
             <canvas id="bg-canvas"
                     className="draw"
                     ref="bgCanvas"

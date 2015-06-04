@@ -36942,7 +36942,8 @@ var DrawSurface = React.createClass({
 
     return React.createElement(
       'div',
-      { id: 'render' },
+      { id: 'render',
+        onWheel: this.onZoom },
       React.createElement(
         'div',
         { className: 'background' },
@@ -36954,8 +36955,7 @@ var DrawSurface = React.createClass({
             onMouseOut: this.clearHighlight,
             onMouseDown: this.drawPixel,
             onContextMenu: this.drawPixel,
-            onMouseUp: this.setMouseUp,
-            onWheel: this.onZoom },
+            onMouseUp: this.setMouseUp },
           React.createElement('canvas', { id: 'bg-canvas',
             className: 'draw',
             ref: 'bgCanvas',
