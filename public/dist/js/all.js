@@ -36874,7 +36874,9 @@ var DrawSurface = React.createClass({
 
   getDefaultProps: function getDefaultProps() {
     return {
-      bgTileSize: 8
+      bgTileSize: 8,
+      minZoom: 0.125,
+      maxZoom: 4
     };
   },
 
@@ -36926,8 +36928,7 @@ var DrawSurface = React.createClass({
       { className: 'render-container' },
       React.createElement(
         'div',
-        { id: 'render',
-          onWheel: this.onZoom },
+        { id: 'render' },
         React.createElement(
           'div',
           { className: 'background' },
@@ -36939,7 +36940,8 @@ var DrawSurface = React.createClass({
               onMouseOut: this.clearHighlight,
               onMouseDown: this.drawPixel,
               onContextMenu: this.drawPixel,
-              onMouseUp: this.setMouseUp },
+              onMouseUp: this.setMouseUp,
+              onWheel: this.onZoom },
             React.createElement('canvas', { id: 'bg-canvas',
               className: 'draw',
               ref: 'bgCanvas',
@@ -37097,9 +37099,9 @@ var DrawSurface = React.createClass({
     if (ev) {
       ev.preventDefault();
       if (ev.deltaY > 0) {
-        zoom -= 0.25;
+        zoom /= 2;
       } else if (ev.deltaY < 0) {
-        zoom += 0.25;
+        zoom *= 2;
       } else {
         return;
       }
@@ -37112,6 +37114,10 @@ var DrawSurface = React.createClass({
         return;
       }
     } else {
+      return;
+    }
+
+    if (zoom < this.props.minZoom || zoom > this.props.maxZoom) {
       return;
     }
 
