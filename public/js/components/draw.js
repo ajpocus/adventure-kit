@@ -16,7 +16,7 @@ let Draw = React.createClass({
       height: 32,
       totalWidth: 1024,
       totalHeight: 1024,
-      zoom: 0.8
+      zoom: 0.875
     };
   },
 

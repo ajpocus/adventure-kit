@@ -4,7 +4,7 @@ let $ = require('jquery');
 import Pixel from '../models/pixel';
 import Transparency from '../mixins/transparency';
 
-let DrawCanvas = React.createClass({
+let DrawSurface = React.createClass({
   getInitialState: function () {
     return {
       isMouseDown: false,
@@ -47,6 +47,13 @@ let DrawCanvas = React.createClass({
     this.initGrid();
   },
 
+  componentDidUpdate: function (prevProps, prevState) {
+    if (this.state.actualWidth !== prevState.actualWidth ||
+        this.state.actualHeight !== prevState.actualHeight) {
+      this.redraw();
+    }
+  },
+
   render: function () {
     let surfaceTop = (this.props.totalHeight - this.state.actualHeight) / 2;
     let surfaceLeft = (this.props.totalWidth - this.state.actualWidth) / 2;
@@ -66,7 +73,8 @@ let DrawCanvas = React.createClass({
                onMouseOut={this.clearHighlight}
                onMouseDown={this.drawPixel}
                onContextMenu={this.drawPixel}
-               onMouseUp={this.setMouseUp}>
+               onMouseUp={this.setMouseUp}
+               onWheel={this.onZoom}>
             <canvas id="bg-canvas"
                     className="draw"
                     ref="bgCanvas"
@@ -89,6 +97,38 @@ let DrawCanvas = React.createClass({
         </div>
       </div>
     );
+  },
+
+  redraw: function () {
+    let bgCtx = this.state.bgCtx;
+    let drawCtx = this.state.drawCtx;
+    let overlayCtx = this.state.overlayCtx;
+    let zoom = this.state.zoom;
+
+    let bgScale = this.props.bgTileSize * zoom;
+    bgCtx.scale(bgScale, bgScale);
+
+    let scaleWidth = this.state.tileWidth * zoom;
+    let scaleHeight = this.state.tileHeight * zoom;
+    drawCtx.scale(scaleWidth, scaleHeight);
+    overlayCtx.scale(scaleWidth, scaleHeight);
+
+    let grid = this.state.grid;
+    this.drawBackground(bgCtx);
+    drawCtx.clearRect(0, 0, this.state.width, this.state.height);
+
+
+    for (let x = 0; x < this.state.width; x++) {
+      for (let y = 0; y < this.state.height; y++) {
+        let pixel = grid[x][y];
+        if (pixel.color) {
+          drawCtx.fillStyle = pixel.color;
+          drawCtx.fillRect(x, y, 1, 1);
+        }
+      }
+    }
+
+    this.setState({ drawCtx: drawCtx });
   },
 
   highlightPixel: function (ev) {
@@ -168,16 +208,45 @@ let DrawCanvas = React.createClass({
     this.setState({ isMouseDown: false });
   },
 
-  drawBackground: function (bgCtx) {
-    let numTilesH = this.state.actualWidth / this.props.bgTileSize;
-    let numTilesV = this.state.actualHeight / this.props.bgTileSize;
+  onZoom: function (ev) {
+    ev.preventDefault();
+    let zoom = this.state.zoom;
+    let actualWidth = this.state.actualWidth;
+    let actualHeight = this.state.actualHeight;
+    let delta = 0;
 
+    if (ev.deltaY > 0) {
+      delta = -0.25;
+    } else if (ev.deltaY < 0) {
+      delta = 0.25;
+    } else {
+      return;
+    }
+
+    zoom += delta;
+    actualWidth = this.props.totalWidth * zoom;
+    actualHeight = this.props.totalHeight * zoom;
+
+    this.setState({
+      zoom: zoom,
+      actualWidth: actualWidth,
+      actualHeight: actualHeight
+    });
+  },
+
+  drawBackground: function (bgCtx) {
+    let bgTileSize = this.props.bgTileSize;
+    let numTilesH = this.state.actualWidth / bgTileSize;
+    let numTilesV = this.state.actualHeight / bgTileSize;
+
+    console.log('tiles-w: ', numTilesH);
+    console.log('tiles-h: ', numTilesV);
     for (let x = 0; x < numTilesH; x++) {
       for (let y = 0; y < numTilesV; y++) {
         let fill = ((x + y) % 2 == 0) ? "#999" : "#777";
 
         bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
+        bgCtx.fillRect(x, y, 1, 1);
       }
     }
 
@@ -212,4 +281,4 @@ let DrawCanvas = React.createClass({
   },
 });
 
-export default DrawCanvas;
+export default DrawSurface;

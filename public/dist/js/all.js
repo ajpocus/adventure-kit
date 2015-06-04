@@ -36786,7 +36786,7 @@ var Draw = React.createClass({
       height: 32,
       totalWidth: 1024,
       totalHeight: 1024,
-      zoom: 0.8
+      zoom: 0.875
     };
   },
 
@@ -36871,8 +36871,8 @@ var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 var React = require('react');
 var $ = require('jquery');
 
-var DrawCanvas = React.createClass({
-  displayName: 'DrawCanvas',
+var DrawSurface = React.createClass({
+  displayName: 'DrawSurface',
 
   getInitialState: function getInitialState() {
     return {
@@ -36916,6 +36916,12 @@ var DrawCanvas = React.createClass({
     this.initGrid();
   },
 
+  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+    if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight) {
+      this.redraw();
+    }
+  },
+
   render: function render() {
     var surfaceTop = (this.props.totalHeight - this.state.actualHeight) / 2;
     var surfaceLeft = (this.props.totalWidth - this.state.actualWidth) / 2;
@@ -36940,7 +36946,8 @@ var DrawCanvas = React.createClass({
             onMouseOut: this.clearHighlight,
             onMouseDown: this.drawPixel,
             onContextMenu: this.drawPixel,
-            onMouseUp: this.setMouseUp },
+            onMouseUp: this.setMouseUp,
+            onWheel: this.onZoom },
           React.createElement('canvas', { id: 'bg-canvas',
             className: 'draw',
             ref: 'bgCanvas',
@@ -36959,6 +36966,37 @@ var DrawCanvas = React.createClass({
         )
       )
     );
+  },
+
+  redraw: function redraw() {
+    var bgCtx = this.state.bgCtx;
+    var drawCtx = this.state.drawCtx;
+    var overlayCtx = this.state.overlayCtx;
+    var zoom = this.state.zoom;
+
+    var bgScale = this.props.bgTileSize * zoom;
+    bgCtx.scale(bgScale, bgScale);
+
+    var scaleWidth = this.state.tileWidth * zoom;
+    var scaleHeight = this.state.tileHeight * zoom;
+    drawCtx.scale(scaleWidth, scaleHeight);
+    overlayCtx.scale(scaleWidth, scaleHeight);
+
+    var grid = this.state.grid;
+    this.drawBackground(bgCtx);
+    drawCtx.clearRect(0, 0, this.state.width, this.state.height);
+
+    for (var x = 0; x < this.state.width; x++) {
+      for (var y = 0; y < this.state.height; y++) {
+        var pixel = grid[x][y];
+        if (pixel.color) {
+          drawCtx.fillStyle = pixel.color;
+          drawCtx.fillRect(x, y, 1, 1);
+        }
+      }
+    }
+
+    this.setState({ drawCtx: drawCtx });
   },
 
   highlightPixel: function highlightPixel(ev) {
@@ -37047,16 +37085,45 @@ var DrawCanvas = React.createClass({
     this.setState({ isMouseDown: false });
   },
 
-  drawBackground: function drawBackground(bgCtx) {
-    var numTilesH = this.state.actualWidth / this.props.bgTileSize;
-    var numTilesV = this.state.actualHeight / this.props.bgTileSize;
+  onZoom: function onZoom(ev) {
+    ev.preventDefault();
+    var zoom = this.state.zoom;
+    var actualWidth = this.state.actualWidth;
+    var actualHeight = this.state.actualHeight;
+    var delta = 0;
 
+    if (ev.deltaY > 0) {
+      delta = -0.25;
+    } else if (ev.deltaY < 0) {
+      delta = 0.25;
+    } else {
+      return;
+    }
+
+    zoom += delta;
+    actualWidth = this.props.totalWidth * zoom;
+    actualHeight = this.props.totalHeight * zoom;
+
+    this.setState({
+      zoom: zoom,
+      actualWidth: actualWidth,
+      actualHeight: actualHeight
+    });
+  },
+
+  drawBackground: function drawBackground(bgCtx) {
+    var bgTileSize = this.props.bgTileSize;
+    var numTilesH = this.state.actualWidth / bgTileSize;
+    var numTilesV = this.state.actualHeight / bgTileSize;
+
+    console.log('tiles-w: ', numTilesH);
+    console.log('tiles-h: ', numTilesV);
     for (var x = 0; x < numTilesH; x++) {
       for (var y = 0; y < numTilesV; y++) {
         var fill = (x + y) % 2 == 0 ? '#999' : '#777';
 
         bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
+        bgCtx.fillRect(x, y, 1, 1);
       }
     }
 
@@ -37090,7 +37157,7 @@ var DrawCanvas = React.createClass({
     return { x: tileX, y: tileY };
   } });
 
-exports['default'] = DrawCanvas;
+exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
 },{"../mixins/transparency":302,"../models/pixel":303,"jquery":93,"react":287}],292:[function(require,module,exports){
