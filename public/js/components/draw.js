@@ -51,8 +51,11 @@ let Draw = React.createClass({
                      tileHeight={tileHeight}/>
 
         <div className="manage-surface">
-          <ManageDrawList onResizeClick={this.onResizeClick}/>
+          <ManageDrawList onResizeClick={this.onResizeClick}
+                          onExportClick={this.onExportClick}/>
         </div>
+
+        <iframe id="download-iframe" style={{display: 'none'}}/>
       </div>
     );
   },
@@ -74,6 +77,16 @@ let Draw = React.createClass({
 
   handleResize: function (width, height) {
     this.setState({ width: width, height: height });
+  },
+
+  onExportClick: function () {
+    let url = $('#draw-canvas')[0].toDataURL();
+    window.location = url;
+    // let el = $(`<a href=${url}></a>`);
+    // console.log(el);
+    // el.click();
+    // console.log(url);
+    // document.getElementById('download-iframe').src = url;
   }
 });
 

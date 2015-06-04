@@ -46,6 +46,10 @@ let ManageDrawList = React.createClass({
         this.props.onResizeClick();
         break;
 
+      case 'Export':
+        this.props.onExportClick();
+        break;
+
       default:
         return true;
     }

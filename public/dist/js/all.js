@@ -36824,8 +36824,10 @@ var Draw = React.createClass({
       React.createElement(
         'div',
         { className: 'manage-surface' },
-        React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick })
-      )
+        React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick,
+          onExportClick: this.onExportClick })
+      ),
+      React.createElement('iframe', { id: 'download-iframe', style: { display: 'none' } })
     );
   },
 
@@ -36845,6 +36847,16 @@ var Draw = React.createClass({
 
   handleResize: function handleResize(width, height) {
     this.setState({ width: width, height: height });
+  },
+
+  onExportClick: function onExportClick() {
+    var url = $('#draw-canvas')[0].toDataURL();
+    window.location = url;
+    // let el = $(`<a href=${url}></a>`);
+    // console.log(el);
+    // el.click();
+    // console.log(url);
+    // document.getElementById('download-iframe').src = url;
   }
 });
 
@@ -37567,6 +37579,10 @@ var ManageDrawList = React.createClass({
     switch (name) {
       case 'Resize':
         this.props.onResizeClick();
+        break;
+
+      case 'Export':
+        this.props.onExportClick();
         break;
 
       default:
