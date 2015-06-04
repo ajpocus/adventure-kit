@@ -82,9 +82,9 @@ let Draw = React.createClass({
   onExportClick: function () {
     let url = $('#draw-canvas')[0].toDataURL();
     window.location = url;
-    // let el = $(`<a href=${url}></a>`);
+    let el = $(`<a href=${url} download</a>`);
     // console.log(el);
-    // el.click();
+    el.click();
     // console.log(url);
     // document.getElementById('download-iframe').src = url;
   }
