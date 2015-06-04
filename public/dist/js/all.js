@@ -36765,14 +36765,6 @@ var _draw_surface = require('./draw_surface');
 
 var _draw_surface2 = _interopRequireDefault(_draw_surface);
 
-var _manage_draw_list = require('./manage_draw_list');
-
-var _manage_draw_list2 = _interopRequireDefault(_manage_draw_list);
-
-var _resize_prompt = require('./resize_prompt');
-
-var _resize_prompt2 = _interopRequireDefault(_resize_prompt);
-
 var React = require('react');
 
 var Draw = React.createClass({
@@ -36820,13 +36812,7 @@ var Draw = React.createClass({
         actualWidth: actualWidth,
         actualHeight: actualHeight,
         tileWidth: tileWidth,
-        tileHeight: tileHeight }),
-      React.createElement(
-        'div',
-        { className: 'manage-surface' },
-        React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick,
-          onExportClick: this.onExportClick })
-      )
+        tileHeight: tileHeight })
     );
   },
 
@@ -36836,30 +36822,13 @@ var Draw = React.createClass({
 
   onSecondaryColorChange: function onSecondaryColorChange(color) {
     this.setState({ secondaryColor: color });
-  },
-
-  onResizeClick: function onResizeClick() {
-    React.render(React.createElement(_resize_prompt2['default'], { width: this.state.width,
-      height: this.state.height,
-      handleResize: this.handleResize }), document.getElementById('modal-container'));
-  },
-
-  handleResize: function handleResize(width, height) {
-    this.setState({ width: width, height: height });
-  },
-
-  onExportClick: function onExportClick() {
-    var url = $('#draw-canvas')[0].toDataURL();
-    var link = $('.manage-buttons .tool .link.export');
-    link.attr('download', 'sprite.png');
-    link.attr('href', url);
   }
 });
 
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":289,"./draw_surface":291,"./draw_tool_list":292,"./manage_draw_list":296,"./palette_manager":300,"./resize_prompt":301,"react":287}],291:[function(require,module,exports){
+},{"./color_picker":289,"./draw_surface":291,"./draw_tool_list":292,"./palette_manager":300,"react":287}],291:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -36867,6 +36836,14 @@ Object.defineProperty(exports, '__esModule', {
 });
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _manage_draw_list = require('./manage_draw_list');
+
+var _manage_draw_list2 = _interopRequireDefault(_manage_draw_list);
+
+var _resize_prompt = require('./resize_prompt');
+
+var _resize_prompt2 = _interopRequireDefault(_resize_prompt);
 
 var _modelsPixel = require('../models/pixel');
 
@@ -36920,12 +36897,16 @@ var DrawSurface = React.createClass({
       overlayCtx: overlayCtx
     });
 
-    this.drawBackground(bgCtx);
     this.initGrid();
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight) {
+    if (this.state.bgCtx && this.state.bgCtx !== prevState.bgCtx && !prevState.bgCtx) {
+      this.drawBackground();
+    }
+
+    if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
+      this.updateGrid();
       this.redraw();
     }
   },
@@ -36942,36 +36923,46 @@ var DrawSurface = React.createClass({
 
     return React.createElement(
       'div',
-      { id: 'render',
-        onWheel: this.onZoom },
+      { className: 'render-container' },
       React.createElement(
         'div',
-        { className: 'background' },
+        { id: 'render',
+          onWheel: this.onZoom },
         React.createElement(
           'div',
-          { className: 'surface',
-            style: surfaceStyle,
-            onMouseMove: this.highlightPixel,
-            onMouseOut: this.clearHighlight,
-            onMouseDown: this.drawPixel,
-            onContextMenu: this.drawPixel,
-            onMouseUp: this.setMouseUp },
-          React.createElement('canvas', { id: 'bg-canvas',
-            className: 'draw',
-            ref: 'bgCanvas',
-            width: this.state.actualWidth,
-            height: this.state.actualHeight }),
-          React.createElement('canvas', { id: 'draw-canvas',
-            className: 'draw',
-            ref: 'drawCanvas',
-            width: this.state.actualWidth,
-            height: this.state.actualHeight }),
-          React.createElement('canvas', { id: 'overlay-canvas',
-            className: 'draw',
-            ref: 'overlayCanvas',
-            width: this.state.actualWidth,
-            height: this.state.actualHeight })
+          { className: 'background' },
+          React.createElement(
+            'div',
+            { className: 'surface',
+              style: surfaceStyle,
+              onMouseMove: this.highlightPixel,
+              onMouseOut: this.clearHighlight,
+              onMouseDown: this.drawPixel,
+              onContextMenu: this.drawPixel,
+              onMouseUp: this.setMouseUp },
+            React.createElement('canvas', { id: 'bg-canvas',
+              className: 'draw',
+              ref: 'bgCanvas',
+              width: this.state.actualWidth,
+              height: this.state.actualHeight }),
+            React.createElement('canvas', { id: 'draw-canvas',
+              className: 'draw',
+              ref: 'drawCanvas',
+              width: this.state.actualWidth,
+              height: this.state.actualHeight }),
+            React.createElement('canvas', { id: 'overlay-canvas',
+              className: 'draw',
+              ref: 'overlayCanvas',
+              width: this.state.actualWidth,
+              height: this.state.actualHeight })
+          )
         )
+      ),
+      React.createElement(
+        'div',
+        { className: 'manage-surface' },
+        React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick,
+          onExportClick: this.onExportClick })
       )
     );
   },
@@ -36991,7 +36982,7 @@ var DrawSurface = React.createClass({
     overlayCtx.scale(scaleWidth, scaleHeight);
 
     var grid = this.state.grid;
-    this.drawBackground(bgCtx);
+    this.drawBackground();
     drawCtx.clearRect(0, 0, this.state.width, this.state.height);
 
     for (var x = 0; x < this.state.width; x++) {
@@ -37102,24 +37093,28 @@ var DrawSurface = React.createClass({
     var actualHeight = this.state.actualHeight;
     var tileWidth = this.state.tileWidth;
     var tileHeight = this.state.tileHeight;
-    var delta = 0;
 
     if (ev) {
       ev.preventDefault();
       if (ev.deltaY > 0) {
-        delta = -0.25;
+        zoom -= 0.25;
       } else if (ev.deltaY < 0) {
-        delta = 0.25;
+        zoom += 0.25;
       } else {
         return;
       }
     } else if (data) {
-      delta = data.delta;
+      if (data.delta) {
+        zoom += data.delta;
+      } else if (data.zoom) {
+        zoom = data.zoom;
+      } else {
+        return;
+      }
     } else {
       return;
     }
 
-    zoom += delta;
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
     tileWidth = actualWidth / this.state.width;
@@ -37134,7 +37129,44 @@ var DrawSurface = React.createClass({
     });
   },
 
-  drawBackground: function drawBackground(bgCtx) {
+  onResizeClick: function onResizeClick() {
+    React.render(React.createElement(_resize_prompt2['default'], { width: this.state.width,
+      height: this.state.height,
+      handleResize: this.handleResize }), document.getElementById('modal-container'));
+  },
+
+  handleResize: function handleResize(width, height) {
+    var tileWidth = this.state.tileWidth;
+    var tileHeight = this.state.tileHeight;
+    var actualWidth = this.state.actualWidth;
+    var actualHeight = this.state.actualHeight;
+    var zoom = this.props.zoom;
+
+    actualWidth = this.props.totalWidth * zoom;
+    actualHeight = this.props.totalHeight * zoom;
+    tileWidth = actualWidth / width;
+    tileHeight = actualHeight / height;
+
+    this.setState({
+      width: width,
+      height: height,
+      actualWidth: actualWidth,
+      actualHeight: actualHeight,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight,
+      zoom: zoom
+    });
+  },
+
+  onExportClick: function onExportClick() {
+    var url = $('#draw-canvas')[0].toDataURL();
+    var link = $('.manage-buttons .tool .link.export');
+    link.attr('download', 'sprite.png');
+    link.attr('href', url);
+  },
+
+  drawBackground: function drawBackground() {
+    var bgCtx = this.state.bgCtx;
     var bgTileSize = this.props.bgTileSize;
     var numTilesH = this.state.actualWidth / bgTileSize;
     var numTilesV = this.state.actualHeight / bgTileSize;
@@ -37165,6 +37197,26 @@ var DrawSurface = React.createClass({
     this.setState({ grid: grid });
   },
 
+  updateGrid: function updateGrid() {
+    var width = this.state.width;
+    var height = this.state.height;
+    var oldGrid = this.state.grid;
+    var newGrid = [];
+
+    for (var x = 0; x < width; x++) {
+      newGrid[x] = [];
+      for (var y = 0; y < height; y++) {
+        if (x < oldGrid.length && y < oldGrid[x].length) {
+          newGrid[x][y] = oldGrid[x][y];
+        } else {
+          newGrid[x].push(new _modelsPixel2['default'](x, y));
+        }
+      }
+    }
+
+    this.setState({ grid: newGrid });
+  },
+
   getTileCoordinates: function getTileCoordinates(ev) {
     var elRect = ev.target.getBoundingClientRect();
     var absX = ev.clientX;
@@ -37181,7 +37233,7 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":302,"../models/pixel":303,"jquery":93,"react":287}],292:[function(require,module,exports){
+},{"../mixins/transparency":302,"../models/pixel":303,"./manage_draw_list":296,"./resize_prompt":301,"jquery":93,"react":287}],292:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

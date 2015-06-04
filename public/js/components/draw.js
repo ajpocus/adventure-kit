@@ -4,8 +4,6 @@ import DrawToolList from './draw_tool_list';
 import PaletteManager from './palette_manager';
 import ColorPicker from './color_picker';
 import DrawSurface from './draw_surface';
-import ManageDrawList from './manage_draw_list';
-import ResizePrompt from './resize_prompt';
 
 let Draw = React.createClass({
   getInitialState: function () {
@@ -49,11 +47,6 @@ let Draw = React.createClass({
                      actualHeight={actualHeight}
                      tileWidth={tileWidth}
                      tileHeight={tileHeight}/>
-
-        <div className="manage-surface">
-          <ManageDrawList onResizeClick={this.onResizeClick}
-                          onExportClick={this.onExportClick}/>
-        </div>
       </div>
     );
   },
@@ -64,24 +57,6 @@ let Draw = React.createClass({
 
   onSecondaryColorChange: function (color) {
     this.setState({ secondaryColor: color });
-  },
-
-  onResizeClick: function () {
-    React.render(<ResizePrompt width={this.state.width}
-                               height={this.state.height}
-                               handleResize={this.handleResize}/>,
-                 document.getElementById('modal-container'));
-  },
-
-  handleResize: function (width, height) {
-    this.setState({ width: width, height: height });
-  },
-
-  onExportClick: function () {
-    let url = $('#draw-canvas')[0].toDataURL();
-    let link = $('.manage-buttons .tool .link.export');
-    link.attr('download', 'sprite.png');
-    link.attr('href', url);
   }
 });
 

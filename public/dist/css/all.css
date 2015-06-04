@@ -62,11 +62,7 @@ body a:visited {
 }
 
 #header nav .tab.active {
-  background: #07a;
-}
-
-#header nav .tab.active a {
-  color: #eee;
+  background: #f8b217;
 }
 
 #footer {
@@ -196,6 +192,10 @@ img.pixel {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.render-container {
+  display: flex;
 }
 
 #draw .palette-manager .icon {

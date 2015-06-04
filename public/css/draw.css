@@ -94,6 +94,10 @@
   left: 0;
 }
 
+.render-container {
+  display: flex;
+}
+
 #draw .palette-manager .icon {
   width: 12px;
   height: 12px;

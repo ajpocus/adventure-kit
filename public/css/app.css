@@ -60,11 +60,7 @@ body a:visited {
 }
 
 #header nav .tab.active {
-  background: #07a;
-}
-
-#header nav .tab.active a {
-  color: #eee;
+  background: #f8b217;
 }
 
 #footer {
