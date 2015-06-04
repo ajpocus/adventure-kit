@@ -85,7 +85,6 @@
 
 #render .surface {
   position: relative;
-  z-index: 1000;
 }
 
 #render .surface canvas.draw {

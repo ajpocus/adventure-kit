@@ -20,15 +20,18 @@ let ManageDrawList = React.createClass({
     let toolList = [];
     for (let i = 0; i < this.props.tools.length; i++) {
       let tool = this.props.tools[i];
+      let className = 'link ' + tool.name.toLowerCase();
 
       toolList.push(
         <li className="tool" key={i}>
-          <button className="btn"
-                  onClick={this.handleClick.bind(this, tool.name)}>
-            <div className="img-container">
-              <img className="icon" src={tool.imgUrl}/>
-            </div>
-          </button>
+          <a href="#" className={className}>
+            <button className="btn"
+                    onClick={this.handleClick.bind(this, tool.name)}>
+              <div className="img-container">
+                <img className="icon" src={tool.imgUrl}/>
+              </div>
+            </button>
+          </a>
         </li>
       );
     }

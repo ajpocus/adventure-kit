@@ -54,8 +54,6 @@ let Draw = React.createClass({
           <ManageDrawList onResizeClick={this.onResizeClick}
                           onExportClick={this.onExportClick}/>
         </div>
-
-        <iframe id="download-iframe" style={{display: 'none'}}/>
       </div>
     );
   },
@@ -81,12 +79,9 @@ let Draw = React.createClass({
 
   onExportClick: function () {
     let url = $('#draw-canvas')[0].toDataURL();
-    window.location = url;
-    let el = $(`<a href=${url} download</a>`);
-    // console.log(el);
-    el.click();
-    // console.log(url);
-    // document.getElementById('download-iframe').src = url;
+    let link = $('.manage-buttons .tool .link.export');
+    link.attr('download', 'sprite.png');
+    link.attr('href', url);
   }
 });
 

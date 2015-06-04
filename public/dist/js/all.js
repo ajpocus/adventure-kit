@@ -36826,8 +36826,7 @@ var Draw = React.createClass({
         { className: 'manage-surface' },
         React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick,
           onExportClick: this.onExportClick })
-      ),
-      React.createElement('iframe', { id: 'download-iframe', style: { display: 'none' } })
+      )
     );
   },
 
@@ -36851,12 +36850,9 @@ var Draw = React.createClass({
 
   onExportClick: function onExportClick() {
     var url = $('#draw-canvas')[0].toDataURL();
-    window.location = url;
-    var el = $('<a href=' + url + ' download</a>');
-    // console.log(el);
-    el.click();
-    // console.log(url);
-    // document.getElementById('download-iframe').src = url;
+    var link = $('.manage-buttons .tool .link.export');
+    link.attr('download', 'sprite.png');
+    link.attr('href', url);
   }
 });
 
@@ -37551,18 +37547,23 @@ var ManageDrawList = React.createClass({
     var toolList = [];
     for (var i = 0; i < this.props.tools.length; i++) {
       var tool = this.props.tools[i];
+      var className = 'link ' + tool.name.toLowerCase();
 
       toolList.push(React.createElement(
         'li',
         { className: 'tool', key: i },
         React.createElement(
-          'button',
-          { className: 'btn',
-            onClick: this.handleClick.bind(this, tool.name) },
+          'a',
+          { href: '#', className: className },
           React.createElement(
-            'div',
-            { className: 'img-container' },
-            React.createElement('img', { className: 'icon', src: tool.imgUrl })
+            'button',
+            { className: 'btn',
+              onClick: this.handleClick.bind(this, tool.name) },
+            React.createElement(
+              'div',
+              { className: 'img-container' },
+              React.createElement('img', { className: 'icon', src: tool.imgUrl })
+            )
           )
         )
       ));
