@@ -36946,8 +36946,7 @@ var DrawSurface = React.createClass({
             onMouseOut: this.clearHighlight,
             onMouseDown: this.drawPixel,
             onContextMenu: this.drawPixel,
-            onMouseUp: this.setMouseUp,
-            onWheel: this.onZoom },
+            onMouseUp: this.setMouseUp },
           React.createElement('canvas', { id: 'bg-canvas',
             className: 'draw',
             ref: 'bgCanvas',
@@ -36974,11 +36973,11 @@ var DrawSurface = React.createClass({
     var overlayCtx = this.state.overlayCtx;
     var zoom = this.state.zoom;
 
-    var bgScale = this.props.bgTileSize * zoom;
+    var bgScale = this.props.bgTileSize;
     bgCtx.scale(bgScale, bgScale);
 
-    var scaleWidth = this.state.tileWidth * zoom;
-    var scaleHeight = this.state.tileHeight * zoom;
+    var scaleWidth = this.state.tileWidth;
+    var scaleHeight = this.state.tileHeight;
     drawCtx.scale(scaleWidth, scaleHeight);
     overlayCtx.scale(scaleWidth, scaleHeight);
 

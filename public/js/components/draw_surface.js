@@ -73,8 +73,7 @@ let DrawSurface = React.createClass({
                onMouseOut={this.clearHighlight}
                onMouseDown={this.drawPixel}
                onContextMenu={this.drawPixel}
-               onMouseUp={this.setMouseUp}
-               onWheel={this.onZoom}>
+               onMouseUp={this.setMouseUp}>
             <canvas id="bg-canvas"
                     className="draw"
                     ref="bgCanvas"
@@ -105,11 +104,11 @@ let DrawSurface = React.createClass({
     let overlayCtx = this.state.overlayCtx;
     let zoom = this.state.zoom;
 
-    let bgScale = this.props.bgTileSize * zoom;
+    let bgScale = this.props.bgTileSize;
     bgCtx.scale(bgScale, bgScale);
 
-    let scaleWidth = this.state.tileWidth * zoom;
-    let scaleHeight = this.state.tileHeight * zoom;
+    let scaleWidth = this.state.tileWidth;
+    let scaleHeight = this.state.tileHeight;
     drawCtx.scale(scaleWidth, scaleHeight);
     overlayCtx.scale(scaleWidth, scaleHeight);
 
