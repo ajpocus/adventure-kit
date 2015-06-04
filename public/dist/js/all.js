@@ -36887,7 +36887,34 @@ var DrawCanvas = React.createClass({
     };
   },
 
-  componentDidMount: function componentDidMount() {},
+  getDefaultProps: function getDefaultProps() {
+    return {
+      bgTileSize: 8
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    var bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
+    var drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
+    var overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
+
+    var bgTileSize = this.props.bgTileSize;
+    bgCtx.scale(bgTileSize, bgTileSize);
+
+    var tileWidth = this.state.tileWidth;
+    var tileHeight = this.state.tileHeight;
+    drawCtx.scale(tileWidth, tileHeight);
+    overlayCtx.scale(tileWidth, tileHeight);
+
+    this.setState({
+      bgCtx: bgCtx,
+      drawCtx: drawCtx,
+      overlayCtx: overlayCtx
+    });
+
+    this.drawBackground(bgCtx);
+    this.initGrid();
+  },
 
   render: function render() {
     var surfaceTop = (this.props.totalHeight - this.state.actualHeight) / 2;
@@ -36909,11 +36936,11 @@ var DrawCanvas = React.createClass({
           'div',
           { className: 'surface',
             style: surfaceStyle,
-            onMouseMove: this.handleMouseMove,
-            onMouseOut: this.handleMouseOut,
-            onMouseDown: this.handleMouseDown,
-            onContextMenu: this.handleMouseDown,
-            onMouseUp: this.handleMouseUp },
+            onMouseMove: this.highlightPixel,
+            onMouseOut: this.clearHighlight,
+            onMouseDown: this.drawPixel,
+            onContextMenu: this.drawPixel,
+            onMouseUp: this.setMouseUp },
           React.createElement('canvas', { id: 'bg-canvas',
             className: 'draw',
             ref: 'bgCanvas',
@@ -36934,22 +36961,134 @@ var DrawCanvas = React.createClass({
     );
   },
 
-  handleMouseMove: function handleMouseMove(ev) {
-    console.log('mousemove', ev);
+  highlightPixel: function highlightPixel(ev) {
+    var overlayCtx = this.state.overlayCtx;
+
+    var _getTileCoordinates = this.getTileCoordinates(ev);
+
+    var x = _getTileCoordinates.x;
+    var y = _getTileCoordinates.y;
+
+    var grid = this.state.grid;
+    var numPixels = grid.length;
+    var currentPixel = grid[x][y];
+
+    if (!currentPixel.highlighted) {
+      overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      overlayCtx.fillRect(x, y, 1, 1);
+      currentPixel.highlighted = true;
+    }
+
+    this.setState({
+      grid: grid,
+      overlayCtx: overlayCtx
+    });
+
+    this.clearHighlight(null, currentPixel);
+
+    if (this.state.isMouseDown) {
+      this.drawPixel(ev);
+    }
   },
 
-  handleMouseOut: function handleMouseOut(ev) {
-    console.log('mouseout');
+  clearHighlight: function clearHighlight(ev, currentPixel) {
+    var overlayCtx = this.state.overlayCtx;
+    var grid = this.state.grid;
+
+    overlayCtx.clearRect(0, 0, this.state.width, this.state.height);
+    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    overlayCtx.fillRect(currentPixel.x, currentPixel.y, 1, 1);
+
+    for (var x = 0; x < this.state.width; x++) {
+      for (var y = 0; y < this.state.height; y++) {
+        var pixel = grid[x][y];
+        if (pixel === currentPixel) {
+          continue;
+        }
+
+        pixel.highlighted = false;
+      }
+    }
+
+    this.setState({
+      grid: grid,
+      overlayCtx: overlayCtx
+    });
   },
 
-  handleMouseDown: function handleMouseDown(ev) {
-    console.log('mousedown');
+  drawPixel: function drawPixel(ev) {
+    var _getTileCoordinates2 = this.getTileCoordinates(ev);
+
+    var x = _getTileCoordinates2.x;
+    var y = _getTileCoordinates2.y;
+
+    var grid = this.state.grid;
+    var drawCtx = this.state.drawCtx;
+
+    var color = this.state.primaryColor;
+    var button = ev.which || ev.button;
+    if (button === 2) {
+      color = this.props.secondaryColor;
+    }
+
+    var pixel = grid[x][y];
+    pixel.color = color;
+    drawCtx.fillStyle = color;
+    drawCtx.fillRect(x, y, 1, 1);
+
+    this.setState({
+      grid: grid,
+      drawCtx: drawCtx,
+      isMouseDown: true
+    });
   },
 
-  handleMouseUp: function handleMouseUp(ev) {
-    console.log('mouseup');
-  }
-});
+  setMouseUp: function setMouseUp(ev) {
+    this.setState({ isMouseDown: false });
+  },
+
+  drawBackground: function drawBackground(bgCtx) {
+    var numTilesH = this.state.actualWidth / this.props.bgTileSize;
+    var numTilesV = this.state.actualHeight / this.props.bgTileSize;
+
+    for (var x = 0; x < numTilesH; x++) {
+      for (var y = 0; y < numTilesV; y++) {
+        var fill = (x + y) % 2 == 0 ? '#999' : '#777';
+
+        bgCtx.fillStyle = fill;
+        bgCtx.fillRect(x, y, this.props.bgTileSize, this.props.bgTileSize);
+      }
+    }
+
+    this.setState({ bgCtx: bgCtx });
+  },
+
+  initGrid: function initGrid() {
+    var grid = [];
+
+    for (var x = 0; x < this.state.width; x++) {
+      grid[x] = [];
+
+      for (var y = 0; y < this.state.height; y++) {
+        grid[x].push(new _modelsPixel2['default'](x, y));
+      }
+    }
+
+    this.setState({ grid: grid });
+  },
+
+  getTileCoordinates: function getTileCoordinates(ev) {
+    var elRect = ev.target.getBoundingClientRect();
+    var absX = ev.clientX;
+    var absY = ev.clientY;
+    var x = absX - elRect.left;
+    var y = absY - elRect.top;
+
+    var tileX = Math.floor(x / this.state.tileWidth);
+    var tileY = Math.floor(y / this.state.tileHeight);
+
+    return { x: tileX, y: tileY };
+  } });
 
 exports['default'] = DrawCanvas;
 module.exports = exports['default'];
