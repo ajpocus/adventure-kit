@@ -30,7 +30,7 @@
 
 #draw .draw-tools .tool-list {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex-wrap: wrap;
   width: 100px;
 }
@@ -85,6 +85,7 @@
 
 #render .surface {
   position: relative;
+  cursor: crosshair;
 }
 
 #render .surface canvas.draw {

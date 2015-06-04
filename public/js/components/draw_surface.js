@@ -73,7 +73,8 @@ let DrawSurface = React.createClass({
                onMouseOut={this.clearHighlight}
                onMouseDown={this.drawPixel}
                onContextMenu={this.drawPixel}
-               onMouseUp={this.setMouseUp}>
+               onMouseUp={this.setMouseUp}
+               onWheel={this.onZoom}>
             <canvas id="bg-canvas"
                     className="draw"
                     ref="bgCanvas"
@@ -207,17 +208,25 @@ let DrawSurface = React.createClass({
     this.setState({ isMouseDown: false });
   },
 
-  onZoom: function (ev) {
-    ev.preventDefault();
+  onZoom: function (ev, data) {
     let zoom = this.state.zoom;
     let actualWidth = this.state.actualWidth;
     let actualHeight = this.state.actualHeight;
+    let tileWidth = this.state.tileWidth;
+    let tileHeight = this.state.tileHeight;
     let delta = 0;
 
-    if (ev.deltaY > 0) {
-      delta = -0.25;
-    } else if (ev.deltaY < 0) {
-      delta = 0.25;
+    if (ev) {
+      ev.preventDefault();
+      if (ev.deltaY > 0) {
+        delta = -0.25;
+      } else if (ev.deltaY < 0) {
+        delta = 0.25;
+      } else {
+        return;
+      }
+    } else if (data) {
+      delta = data.delta
     } else {
       return;
     }
@@ -225,11 +234,15 @@ let DrawSurface = React.createClass({
     zoom += delta;
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
+    tileWidth = actualWidth / this.state.width;
+    tileHeight = actualHeight / this.state.height;
 
     this.setState({
       zoom: zoom,
       actualWidth: actualWidth,
-      actualHeight: actualHeight
+      actualHeight: actualHeight,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight
     });
   },
 

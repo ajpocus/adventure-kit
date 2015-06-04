@@ -36954,7 +36954,8 @@ var DrawSurface = React.createClass({
             onMouseOut: this.clearHighlight,
             onMouseDown: this.drawPixel,
             onContextMenu: this.drawPixel,
-            onMouseUp: this.setMouseUp },
+            onMouseUp: this.setMouseUp,
+            onWheel: this.onZoom },
           React.createElement('canvas', { id: 'bg-canvas',
             className: 'draw',
             ref: 'bgCanvas',
@@ -37092,17 +37093,25 @@ var DrawSurface = React.createClass({
     this.setState({ isMouseDown: false });
   },
 
-  onZoom: function onZoom(ev) {
-    ev.preventDefault();
+  onZoom: function onZoom(ev, data) {
     var zoom = this.state.zoom;
     var actualWidth = this.state.actualWidth;
     var actualHeight = this.state.actualHeight;
+    var tileWidth = this.state.tileWidth;
+    var tileHeight = this.state.tileHeight;
     var delta = 0;
 
-    if (ev.deltaY > 0) {
-      delta = -0.25;
-    } else if (ev.deltaY < 0) {
-      delta = 0.25;
+    if (ev) {
+      ev.preventDefault();
+      if (ev.deltaY > 0) {
+        delta = -0.25;
+      } else if (ev.deltaY < 0) {
+        delta = 0.25;
+      } else {
+        return;
+      }
+    } else if (data) {
+      delta = data.delta;
     } else {
       return;
     }
@@ -37110,11 +37119,15 @@ var DrawSurface = React.createClass({
     zoom += delta;
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
+    tileWidth = actualWidth / this.state.width;
+    tileHeight = actualHeight / this.state.height;
 
     this.setState({
       zoom: zoom,
       actualWidth: actualWidth,
-      actualHeight: actualHeight
+      actualHeight: actualHeight,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight
     });
   },
 
@@ -37168,31 +37181,37 @@ exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
 },{"../mixins/transparency":302,"../models/pixel":303,"jquery":93,"react":287}],292:[function(require,module,exports){
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var React = require("react");
+var React = require('react');
 
 var DrawToolList = React.createClass({
-  displayName: "DrawToolList",
+  displayName: 'DrawToolList',
 
   getDefaultProps: function getDefaultProps() {
     return {
       tools: [{
-        name: "Pencil",
-        imgUrl: "/img/icons/glyphicons-31-pencil.png"
+        name: 'Pencil',
+        imgUrl: '/img/icons/glyphicons-31-pencil.png'
       }, {
-        name: "Bucket",
-        imgUrl: "/img/icons/glyphicons-481-bucket.png"
+        name: 'Bucket',
+        imgUrl: '/img/icons/glyphicons-481-bucket.png'
+      }, {
+        name: 'Zoom In',
+        imgUrl: '/img/icons/glyphicons-237-zoom-in.png'
+      }, {
+        name: 'Zoom Out',
+        imgUrl: '/img/icons/glyphicons-238-zoom-out.png'
       }]
     };
   },
 
   getInitialState: function getInitialState() {
     return {
-      activeTool: "Pencil"
+      activeTool: 'Pencil'
     };
   },
 
@@ -37200,44 +37219,53 @@ var DrawToolList = React.createClass({
     var toolList = [];
     for (var i = 0; i < this.props.tools.length; i++) {
       var tool = this.props.tools[i];
-      var className = "btn";
+      var className = 'btn';
       if (tool.name === this.state.activeTool) {
-        className += " active";
+        className += ' active';
       }
 
       toolList.push(React.createElement(
-        "li",
-        { className: "tool", key: tool.name },
+        'li',
+        { className: 'tool', key: tool.name },
         React.createElement(
-          "button",
+          'button',
           { className: className,
             onClick: this.setActiveTool.bind(this, tool.name) },
           React.createElement(
-            "div",
-            { className: "img-container" },
-            React.createElement("img", { className: "icon", src: tool.imgUrl })
+            'div',
+            { className: 'img-container' },
+            React.createElement('img', { className: 'icon', src: tool.imgUrl })
           )
         )
       ));
     }
 
     return React.createElement(
-      "div",
-      { className: "draw-tools" },
+      'div',
+      { className: 'draw-tools' },
       React.createElement(
-        "ul",
-        { className: "tool-list" },
+        'ul',
+        { className: 'tool-list' },
         toolList
       )
     );
   },
 
   setActiveTool: function setActiveTool(name) {
-    this.setState({ activeTool: name });
+    switch (name) {
+      case 'Zoom In':
+        break;
+
+      case 'Zoom Out':
+        break;
+
+      default:
+        this.setState({ activeTool: name });
+    }
   } });
 
-exports["default"] = DrawToolList;
-module.exports = exports["default"];
+exports['default'] = DrawToolList;
+module.exports = exports['default'];
 
 },{"react":287}],293:[function(require,module,exports){
 'use strict';

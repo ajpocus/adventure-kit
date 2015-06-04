@@ -5,12 +5,20 @@ let DrawToolList = React.createClass({
     return {
       tools: [
         {
-          name: "Pencil",
-          imgUrl: "/img/icons/glyphicons-31-pencil.png"
+          name: 'Pencil',
+          imgUrl: '/img/icons/glyphicons-31-pencil.png'
         },
         {
-          name: "Bucket",
-          imgUrl: "/img/icons/glyphicons-481-bucket.png"
+          name: 'Bucket',
+          imgUrl: '/img/icons/glyphicons-481-bucket.png'
+        },
+        {
+          name: 'Zoom In',
+          imgUrl: '/img/icons/glyphicons-237-zoom-in.png'
+        },
+        {
+          name: 'Zoom Out',
+          imgUrl: '/img/icons/glyphicons-238-zoom-out.png'
         }
       ]
     }
@@ -53,7 +61,16 @@ let DrawToolList = React.createClass({
   },
 
   setActiveTool: function (name) {
-    this.setState({ activeTool: name });
+    switch (name) {
+      case 'Zoom In':
+        break;
+
+      case 'Zoom Out':
+        break;
+
+      default:
+        this.setState({ activeTool: name });
+    }
   },
 });
 
