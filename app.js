@@ -6,6 +6,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var drawApi = require('./routes/api/v1/draw');
+
 var app = express();
 
 // view engine setup
@@ -15,10 +17,13 @@ app.set('view engine', 'ejs');
 app.use(compression());
 app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Routes
+app.use('/api/v1/draw', drawApi);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
