@@ -1,10 +1,14 @@
 let React = require('react');
 
+import TrackList from './track_list';
+import Keyboard from './keyboard';
+
 let Music = React.createClass({
   render: function () {
     return (
       <div id="music">
-        <h1>Music</h1>
+        <TrackList/>
+        <Keyboard/>
       </div>
     );
   }

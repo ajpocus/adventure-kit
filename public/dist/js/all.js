@@ -50540,11 +50540,8 @@ var Music = React.createClass({
     return React.createElement(
       "div",
       { id: "music" },
-      React.createElement(
-        "h1",
-        null,
-        "Music"
-      )
+      React.createElement(TrackList, null),
+      React.createElement(Keyboard, null)
     );
   }
 });
