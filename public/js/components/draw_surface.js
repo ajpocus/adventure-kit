@@ -9,21 +9,36 @@ import Pixel from '../models/pixel';
 import Transparency from '../mixins/transparency';
 
 let DrawSurface = React.createClass({
+  propTypes: {
+    primaryColor: React.PropTypes.string.isRequired,
+    secondaryColor: React.PropTypes.string.isRequired
+  },
+
   getInitialState: function () {
+    let zoom = 0.875;
+    let width = 32;
+    let height = 32;
+    let actualWidth = this.props.totalWidth * zoom;
+    let actualHeight = this.props.totalHeight * zoom;
+    let tileWidth = actualWidth / width;
+    let tileHeight = actualHeight / height;
+
     return {
       isMouseDown: false,
-      zoom: this.props.zoom,
-      width: this.props.width,
-      height: this.props.height,
-      actualWidth: this.props.actualWidth,
-      actualHeight: this.props.actualHeight,
-      tileWidth: this.props.tileWidth,
-      tileHeight: this.props.tileHeight
+      width: 32,
+      height: 32,
+      zoom: 0.875,
+      actualWidth: actualWidth,
+      actualHeight: actualHeight,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight
     };
   },
 
   getDefaultProps: function () {
     return {
+      totalWidth: 1024,
+      totalHeight: 1024,
       bgTileSize: 8,
       minZoom: 0.125,
       maxZoom: 4

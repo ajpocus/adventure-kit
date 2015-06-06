@@ -37,16 +37,7 @@ let Draw = React.createClass({
         </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}
-                     secondaryColor={this.state.secondaryColor}
-                     width={this.state.width}
-                     height={this.state.height}
-                     totalWidth={this.state.totalWidth}
-                     totalHeight={this.state.totalHeight}
-                     zoom={this.state.zoom}
-                     actualWidth={actualWidth}
-                     actualHeight={actualHeight}
-                     tileWidth={tileWidth}
-                     tileHeight={tileHeight}/>
+                     secondaryColor={this.state.secondaryColor}/>
       </div>
     );
   },
