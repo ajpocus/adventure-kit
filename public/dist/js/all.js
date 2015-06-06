@@ -50516,9 +50516,16 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 var React = require('react');
+var $ = require('jquery');
 
 var Keyboard = React.createClass({
   displayName: 'Keyboard',
+
+  getInitialState: function getInitialState() {
+    return {
+      isPlaying: false
+    };
+  },
 
   componentDidMount: function componentDidMount() {
     var context = new (window.AudioContext || window.webkitAudioContext)();
@@ -50537,30 +50544,42 @@ var Keyboard = React.createClass({
       oscillator: oscillator,
       gain: gain
     });
+
+    $(this.refs.keyInput.getDOMNode()).focus();
   },
 
   render: function render() {
-    return React.createElement('div', { id: 'keyboard',
-      onKeyDown: this.playNote,
-      onKeyUp: this.stopNote });
+    return React.createElement(
+      'div',
+      { id: 'keyboard' },
+      React.createElement('input', { className: 'key-input',
+        ref: 'keyInput',
+        readOnly: 'true',
+        autofocus: 'true',
+        onKeyDown: this.playNote,
+        onKeyUp: this.stopNote })
+    );
   },
 
   playNote: function playNote(ev) {
-    console.log('start');
-    var oscillator = this.state.oscillator;
-    oscillator.start();
+    if (!this.state.isPlaying) {
+      this.state.oscillator.start();
+      this.setState({ isPlaying: true });
+    }
   },
 
   stopNote: function stopNote(ev) {
-    console.log('stop');
-    this.state.oscillator.stop();
+    if (this.state.isPlaying) {
+      this.state.oscillator.stop();
+      this.setState({ isPlaying: false });
+    }
   }
 });
 
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"react":333}],343:[function(require,module,exports){
+},{"jquery":132,"react":333}],343:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

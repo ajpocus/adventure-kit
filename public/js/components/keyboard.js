@@ -1,6 +1,13 @@
 let React = require('react');
+let $ = require('jquery');
 
 let Keyboard = React.createClass({
+  getInitialState: function () {
+    return {
+      isPlaying: false
+    };
+  },
+
   componentDidMount: function () {
     let context = new (window.AudioContext || window.webkitAudioContext)();
     let oscillator = context.createOscillator();
@@ -18,26 +25,35 @@ let Keyboard = React.createClass({
       oscillator: oscillator,
       gain: gain
     });
+
+    $(this.refs.keyInput.getDOMNode()).focus();
   },
 
   render: function () {
     return (
-      <div id="keyboard"
-           onKeyDown={this.playNote}
-           onKeyUp={this.stopNote}>
+      <div id="keyboard">
+        <input className="key-input"
+               ref="keyInput"
+               readOnly="true"
+               autofocus="true"
+               onKeyDown={this.playNote}
+               onKeyUp={this.stopNote}/>
       </div>
     );
   },
 
   playNote: function (ev) {
-    console.log('start');
-    let oscillator = this.state.oscillator;
-    oscillator.start();
+    if (!this.state.isPlaying) {
+      this.state.oscillator.start();
+      this.setState({ isPlaying: true });
+    }
   },
 
   stopNote: function (ev) {
-    console.log('stop');
-    this.state.oscillator.stop()
+    if (this.state.isPlaying) {
+      this.state.oscillator.stop();
+      this.setState({ isPlaying: false });
+    }
   }
 });
 
