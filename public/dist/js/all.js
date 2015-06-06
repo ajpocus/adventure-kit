@@ -50528,7 +50528,7 @@ var Keyboard = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    var synth = new Beep.Instrument();
+    var synth = new Beep.Instrument('instrument');
     console.log(synth);
 
     this.setState({
@@ -50551,7 +50551,7 @@ var Keyboard = React.createClass({
       React.createElement(
         'div',
         { id: 'beep' },
-        React.createElement('div', { className: 'instrument' })
+        React.createElement('div', { id: 'instrument', className: 'mini instrument' })
       )
     );
   },

@@ -9,7 +9,7 @@ let Keyboard = React.createClass({
   },
 
   componentDidMount: function () {
-    let synth = new Beep.Instrument();
+    let synth = new Beep.Instrument('instrument');
     console.log(synth);
 
     this.setState({
@@ -29,7 +29,7 @@ let Keyboard = React.createClass({
                onKeyDown={this.playNote}
                onKeyUp={this.stopNote}/>
         <div id="beep">
-          <div className="instrument"></div>
+          <div id="instrument" className="mini instrument"></div>
         </div>
       </div>
     );
