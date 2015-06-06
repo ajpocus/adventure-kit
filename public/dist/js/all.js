@@ -50528,13 +50528,6 @@ var Keyboard = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    var synth = new Beep.Instrument('instrument');
-    console.log(synth);
-
-    this.setState({
-      synth: synth
-    });
-
     $(this.refs.keyInput.getDOMNode()).focus();
   },
 
@@ -50547,12 +50540,7 @@ var Keyboard = React.createClass({
         readOnly: 'true',
         autofocus: 'true',
         onKeyDown: this.playNote,
-        onKeyUp: this.stopNote }),
-      React.createElement(
-        'div',
-        { id: 'beep' },
-        React.createElement('div', { id: 'instrument', className: 'mini instrument' })
-      )
+        onKeyUp: this.stopNote })
     );
   },
 

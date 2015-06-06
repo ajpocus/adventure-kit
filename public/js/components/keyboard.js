@@ -9,13 +9,6 @@ let Keyboard = React.createClass({
   },
 
   componentDidMount: function () {
-    let synth = new Beep.Instrument('instrument');
-    console.log(synth);
-
-    this.setState({
-      synth: synth
-    });
-
     $(this.refs.keyInput.getDOMNode()).focus();
   },
 
@@ -28,9 +21,6 @@ let Keyboard = React.createClass({
                autofocus="true"
                onKeyDown={this.playNote}
                onKeyUp={this.stopNote}/>
-        <div id="beep">
-          <div id="instrument" className="mini instrument"></div>
-        </div>
       </div>
     );
   },
