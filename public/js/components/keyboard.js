@@ -1,22 +1,36 @@
 let React = require('react');
 let $ = require('jquery');
-let T = require('../lib/timbre');
+
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let Keyboard = React.createClass({
   getInitialState: function () {
     return {
-      isPlaying: false
+      isPlaying: false,
+      ctx: new window.AudioContext(),
+      oscillators: [],
+      instrument: [
+        {
+          freq: 440,
+          gain: 0.3,
+          type: 'sawtooth'
+        },
+        {
+          freq: 880,
+          gain: 0.5,
+          type: 'sine'
+        },
+        {
+          freq: 1760,
+          gain: 0.2,
+          type: 'square'
+        }
+      ]
     };
   },
 
   componentDidMount: function () {
     $(this.refs.keyInput.getDOMNode()).focus();
-
-    let synth = T('OscGen', { wave: 'saw', mul: 0.5 });
-
-    this.setState({
-      synth: synth
-    });
   },
 
   render: function () {
@@ -34,8 +48,30 @@ let Keyboard = React.createClass({
 
   playNote: function (ev) {
     if (!this.state.isPlaying) {
-      this.state.synth.noteOnWithFreq(880);
+      let ctx = this.state.ctx;
+      let instrument = this.state.instrument;
+      let oscillators = [];
+
+      for (let i = 0; i < instrument.length; i++) {
+        let wave = instrument[i];
+
+        let osc = ctx.createOscillator()
+        osc.frequency.value = wave.freq;
+        osc.type = wave.type;
+
+        let gainNode = ctx.createGain();
+        gainNode.gain.value = wave.gain;
+
+        osc.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        osc.start();
+        oscillators.push(osc);
+      }
+
       this.setState({
+        ctx: ctx,
+        oscillators: oscillators,
         isPlaying: true
       });
     }
@@ -43,8 +79,15 @@ let Keyboard = React.createClass({
 
   stopNote: function (ev) {
     if (this.state.isPlaying) {
-      this.state.synth.noteOff(880);
+      let oscillators = this.state.oscillators;
+
+      for (let i = 0; i < oscillators.length; i++) {
+        let osc = oscillators[i];
+        osc.stop();
+      }
+
       this.setState({
+        oscillators: [],
         isPlaying: false
       });
     }
