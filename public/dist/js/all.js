@@ -49677,16 +49677,7 @@ var Draw = React.createClass({
           onSecondaryColorChange: this.onSecondaryColorChange })
       ),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
-        secondaryColor: this.state.secondaryColor,
-        width: this.state.width,
-        height: this.state.height,
-        totalWidth: this.state.totalWidth,
-        totalHeight: this.state.totalHeight,
-        zoom: this.state.zoom,
-        actualWidth: actualWidth,
-        actualHeight: actualHeight,
-        tileWidth: tileWidth,
-        tileHeight: tileHeight })
+        secondaryColor: this.state.secondaryColor })
     );
   },
 
@@ -49735,21 +49726,36 @@ var tinycolor = require('tinycolor2');
 var DrawSurface = React.createClass({
   displayName: 'DrawSurface',
 
+  propTypes: {
+    primaryColor: React.PropTypes.string.isRequired,
+    secondaryColor: React.PropTypes.string.isRequired
+  },
+
   getInitialState: function getInitialState() {
+    var zoom = 0.875;
+    var width = 32;
+    var height = 32;
+    var actualWidth = this.props.totalWidth * zoom;
+    var actualHeight = this.props.totalHeight * zoom;
+    var tileWidth = actualWidth / width;
+    var tileHeight = actualHeight / height;
+
     return {
       isMouseDown: false,
-      zoom: this.props.zoom,
-      width: this.props.width,
-      height: this.props.height,
-      actualWidth: this.props.actualWidth,
-      actualHeight: this.props.actualHeight,
-      tileWidth: this.props.tileWidth,
-      tileHeight: this.props.tileHeight
+      width: 32,
+      height: 32,
+      zoom: 0.875,
+      actualWidth: actualWidth,
+      actualHeight: actualHeight,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight
     };
   },
 
   getDefaultProps: function getDefaultProps() {
     return {
+      totalWidth: 1024,
+      totalHeight: 1024,
       bgTileSize: 8,
       minZoom: 0.125,
       maxZoom: 4
