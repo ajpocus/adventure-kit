@@ -1,73 +1,41 @@
 let React = require('react');
 
+import InstrumentComponent from './instrument_component';
+
 let Instrument = React.createClass({
   getInitialState: function () {
     return {
-      instrument: [
-        {
-          frequency: 440,
-          gain: 0.3,
-          type: 'sawtooth'
-        },
-        {
-          frequency: 880,
-          gain: 0.5,
-          type: 'sine'
-        },
-        {
-          frequency: 1760,
-          gain: 0.2,
-          type: 'square'
-        }
-      ]
+      components: this.props.components
     };
   },
 
   render: function () {
-    let instrument = this.state.instrument;
-    let components = [];
+    let components = this.state.components;
+    let componentViews = [];
 
-    for (let i = 0; i < instrument.length; i++) {
-      let wave = instrument[i];
-      components.push(
-        <li className="component"
-            key={i}>
-          <input type="number"
-                 defaultValue={wave.frequency}
-                 onChange={this.onFrequencyChange}/>
-          <input type="slider"
-                 defaultValue={wave.gain}
-                 min="0"
-                 max="1"
-                 onChange={this.onGainChange}/>
-          <select defaultValue={wave.type}
-                  onChange={this.onTypeChange}>
-            <option value="sine">Sine</option>
-            <option value="square">Square</option>
-            <option value="sawtooth">Sawtooth</option>
-            <option value="triangle">Triangle</option>
-          </select>
-        </li>
+    for (let i = 0; i < components.length; i++) {
+      let wave = components[i];
+      componentViews.push(
+        <InstrumentComponent key={i}
+                             frequency={wave.frequency}
+                             gain={wave.gain}
+                             type={wave.type}
+                             onChange={this.onChange}/>
       );
     }
 
     return (
       <div className="instrument">
-        <ul className="components">
-          {components}
-        </ul>
+        <div className="components">
+          {componentViews}
+        </div>
       </div>
     );
   },
 
-  onFrequencyChange: function (ev) {
-    console.log(ev.target);
-  },
-
-  onGainChange: function (ev) {},
-
-  onTypeChange: function (ev) {}
-
+  onChange: function () {
+    this.props.onChange(this.state.components);
+  }
 });
 
 export default Instrument;

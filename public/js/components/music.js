@@ -7,7 +7,23 @@ import Keyboard from './keyboard';
 let Music = React.createClass({
   getInitialState: function () {
     return {
-
+      instrument: [
+        {
+          frequency: 440,
+          gain: 0.3,
+          type: 'sawtooth'
+        },
+        {
+          frequency: 880,
+          gain: 0.5,
+          type: 'sine'
+        },
+        {
+          frequency: 1760,
+          gain: 0.2,
+          type: 'square'
+        }
+      ]
     };
   },
 
@@ -15,10 +31,15 @@ let Music = React.createClass({
     return (
       <div id="music">
         <TrackList/>
-        <Instrument onChange={this.onInstrumentChange}/>
+        <Instrument components={this.state.instrument}
+                    onChange={this.onInstrumentChange}/>
         <Keyboard/>
       </div>
     );
+  },
+
+  onInstrumentChange: function (instrument) {
+    this.setState({ instrument: instrument });
   }
 });
 
