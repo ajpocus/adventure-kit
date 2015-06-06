@@ -49714,9 +49714,9 @@ var _modelsPixel = require('../models/pixel');
 
 var _modelsPixel2 = _interopRequireDefault(_modelsPixel);
 
-var _mixinsTransparency = require('../mixins/transparency');
+var _libTransparency = require('../lib/transparency');
 
-var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
+var _libTransparency2 = _interopRequireDefault(_libTransparency);
 
 var React = require('react');
 var $ = require('jquery');
@@ -50147,7 +50147,7 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":352,"../models/pixel":353,"./manage_draw_list":345,"./resize_prompt":350,"jquery":132,"pngjs":140,"react":333,"tinycolor2":334}],338:[function(require,module,exports){
+},{"../lib/transparency":352,"../models/pixel":353,"./manage_draw_list":345,"./resize_prompt":350,"jquery":132,"pngjs":140,"react":333,"tinycolor2":334}],338:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50243,9 +50243,9 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _mixinsTransparency = require('../mixins/transparency');
+var _libTransparency = require('../lib/transparency');
 
-var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
+var _libTransparency2 = _interopRequireDefault(_libTransparency);
 
 var React = require('react');
 var $ = require('jquery');
@@ -50265,7 +50265,7 @@ var EditPalette = React.createClass({
       var color = this.props.palette[i];
       var swatchStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
-        swatchStyle.background = _mixinsTransparency2['default'].background;
+        swatchStyle.background = _libTransparency2['default'].background;
       }
 
       colorList.push(React.createElement(
@@ -50404,7 +50404,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":352,"jquery":132,"react":333}],340:[function(require,module,exports){
+},{"../lib/transparency":352,"jquery":132,"react":333}],340:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51011,9 +51011,9 @@ var _edit_palette = require('./edit_palette');
 
 var _edit_palette2 = _interopRequireDefault(_edit_palette);
 
-var _mixinsTransparency = require('../mixins/transparency');
+var _libTransparency = require('../lib/transparency');
 
-var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
+var _libTransparency2 = _interopRequireDefault(_libTransparency);
 
 var _modal = require('./modal');
 
@@ -51055,7 +51055,7 @@ var PaletteManager = React.createClass({
       // When transparent, use a checkerboard pattern.
       var liStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
-        liStyle.background = _mixinsTransparency2['default'].background;
+        liStyle.background = _libTransparency2['default'].background;
       }
 
       paletteColors.push(React.createElement('li', { className: 'color', style: liStyle, key: i,
@@ -51139,7 +51139,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":352,"./edit_palette":339,"./modal":347,"jquery":132,"react":333,"tinycolor2":334}],350:[function(require,module,exports){
+},{"../lib/transparency":352,"./edit_palette":339,"./modal":347,"jquery":132,"react":333,"tinycolor2":334}],350:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

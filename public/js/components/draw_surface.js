@@ -6,7 +6,7 @@ let tinycolor = require('tinycolor2');
 import ManageDrawList from './manage_draw_list';
 import ResizePrompt from './resize_prompt';
 import Pixel from '../models/pixel';
-import Transparency from '../mixins/transparency';
+import Transparency from '../lib/transparency';
 
 let DrawSurface = React.createClass({
   propTypes: {

@@ -3,7 +3,7 @@ let tinycolor = require('tinycolor2');
 let $ = require('jquery');
 
 import EditPalette from './edit_palette';
-import Transparency from '../mixins/transparency';
+import Transparency from '../lib/transparency';
 import Modal from './modal';
 
 let PaletteManager = React.createClass({
