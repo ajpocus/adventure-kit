@@ -50546,6 +50546,7 @@ var Instrument = React.createClass({
     for (var i = 0; i < components.length; i++) {
       var wave = components[i];
       componentViews.push(React.createElement(_instrument_component2['default'], { key: i,
+        idx: i,
         frequency: wave.frequency,
         gain: wave.gain,
         type: wave.type,
@@ -50563,8 +50564,20 @@ var Instrument = React.createClass({
     );
   },
 
-  onChange: function onChange() {
-    this.props.onChange(this.state.components);
+  onChange: function onChange(newState, idx) {
+    console.log(component, idx);
+
+    var components = this.state.components;
+    var component = components[idx];
+    for (var prop in newState) {
+      if (newState.hasOwnProperty(prop)) {
+        component[prop] = newState[prop];
+      }
+    }
+
+    components[idx] = component;
+    this.setState({ components: components });
+    this.props.onChange(components);
   }
 });
 
@@ -50676,15 +50689,21 @@ var InstrumentComponent = React.createClass({
   },
 
   onFrequencyChange: function onFrequencyChange(ev) {
-    this.setState({ frequency: ev.target.value });
+    var newState = { frequency: ev.target.value };
+    this.setState(newState);
+    this.props.onChange(newState, this.props.idx);
   },
 
   onGainChange: function onGainChange(ev) {
-    this.setState({ gain: ev.target.value });
+    var newState = { gain: ev.target.value };
+    this.setState(newState);
+    this.props.onChange(newState, this.props.idx);
   },
 
   onTypeChange: function onTypeChange(ev) {
-    this.setState({ type: ev.target.value });
+    var newState = { type: ev.target.value };
+    this.setState(newState);
+    this.props.onChange(newState, this.props.idx);
   }
 });
 
@@ -50710,19 +50729,7 @@ var Keyboard = React.createClass({
       isPlaying: false,
       ctx: new window.AudioContext(),
       oscillators: [],
-      instrument: [{
-        freq: 440,
-        gain: 0.3,
-        type: 'sawtooth'
-      }, {
-        freq: 880,
-        gain: 0.5,
-        type: 'sine'
-      }, {
-        freq: 1760,
-        gain: 0.2,
-        type: 'square'
-      }]
+      instrument: this.props.instrument
     };
   },
 
@@ -50753,7 +50760,7 @@ var Keyboard = React.createClass({
         var wave = instrument[i];
 
         var osc = ctx.createOscillator();
-        osc.frequency.value = wave.freq;
+        osc.frequency.value = wave.frequency;
         osc.type = wave.type;
 
         var gainNode = ctx.createGain();
@@ -50979,7 +50986,7 @@ var Music = React.createClass({
       React.createElement(_track_list2['default'], null),
       React.createElement(_instrument2['default'], { components: this.state.instrument,
         onChange: this.onInstrumentChange }),
-      React.createElement(_keyboard2['default'], null)
+      React.createElement(_keyboard2['default'], { instrument: this.state.instrument })
     );
   },
 

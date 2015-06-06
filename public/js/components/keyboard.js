@@ -9,23 +9,7 @@ let Keyboard = React.createClass({
       isPlaying: false,
       ctx: new window.AudioContext(),
       oscillators: [],
-      instrument: [
-        {
-          freq: 440,
-          gain: 0.3,
-          type: 'sawtooth'
-        },
-        {
-          freq: 880,
-          gain: 0.5,
-          type: 'sine'
-        },
-        {
-          freq: 1760,
-          gain: 0.2,
-          type: 'square'
-        }
-      ]
+      instrument: this.props.instrument
     };
   },
 
@@ -56,7 +40,7 @@ let Keyboard = React.createClass({
         let wave = instrument[i];
 
         let osc = ctx.createOscillator()
-        osc.frequency.value = wave.freq;
+        osc.frequency.value = wave.frequency;
         osc.type = wave.type;
 
         let gainNode = ctx.createGain();

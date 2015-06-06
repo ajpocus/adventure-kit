@@ -61,15 +61,21 @@ let InstrumentComponent = React.createClass({
   },
 
   onFrequencyChange: function (ev) {
-    this.setState({ frequency: ev.target.value });
+    let newState = { frequency: ev.target.value };
+    this.setState(newState);
+    this.props.onChange(newState, this.props.idx);
   },
 
   onGainChange: function (ev) {
-    this.setState({ gain: ev.target.value });
+    let newState = { gain: ev.target.value };
+    this.setState(newState);
+    this.props.onChange(newState, this.props.idx);
   },
 
   onTypeChange: function (ev) {
-    this.setState({ type: ev.target.value });
+    let newState = { type: ev.target.value };
+    this.setState(newState);
+    this.props.onChange(newState, this.props.idx);
   }
 });
 

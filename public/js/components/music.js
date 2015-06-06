@@ -33,7 +33,7 @@ let Music = React.createClass({
         <TrackList/>
         <Instrument components={this.state.instrument}
                     onChange={this.onInstrumentChange}/>
-        <Keyboard/>
+        <Keyboard instrument={this.state.instrument}/>
       </div>
     );
   },

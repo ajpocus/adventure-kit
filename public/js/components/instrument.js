@@ -17,6 +17,7 @@ let Instrument = React.createClass({
       let wave = components[i];
       componentViews.push(
         <InstrumentComponent key={i}
+                             idx={i}
                              frequency={wave.frequency}
                              gain={wave.gain}
                              type={wave.type}
@@ -33,8 +34,20 @@ let Instrument = React.createClass({
     );
   },
 
-  onChange: function () {
-    this.props.onChange(this.state.components);
+  onChange: function (newState, idx) {
+    console.log(component, idx);
+
+    let components = this.state.components;
+    let component = components[idx];
+    for (let prop in newState) {
+      if (newState.hasOwnProperty(prop)) {
+        component[prop] = newState[prop];
+      }
+    }
+
+    components[idx] = component;
+    this.setState({ components: components });
+    this.props.onChange(components);
   }
 });
 
