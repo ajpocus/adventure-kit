@@ -1,13 +1,6 @@
 let React = require('react');
 let $ = require('jquery');
 
-require('../lib/beep/Beep.js');
-require('../lib/beep/Beep.Note.js');
-require('../lib/beep/Beep.Voice.js');
-require('../lib/beep/Beep.Sample.js');
-require('../lib/beep/Beep.Trigger.js');
-require('../lib/beep/Beep.Instrument.js');
-
 let Keyboard = React.createClass({
   getInitialState: function () {
     return {
@@ -16,10 +9,11 @@ let Keyboard = React.createClass({
   },
 
   componentDidMount: function () {
-    let voice = new Beep.Voice('2Eb');
+    let synth = new Beep.Instrument();
+    console.log(synth);
 
     this.setState({
-      voice: voice
+      synth: synth
     });
 
     $(this.refs.keyInput.getDOMNode()).focus();
@@ -34,22 +28,19 @@ let Keyboard = React.createClass({
                autofocus="true"
                onKeyDown={this.playNote}
                onKeyUp={this.stopNote}/>
+        <div id="beep">
+          <div className="instrument"></div>
+        </div>
       </div>
     );
   },
 
   playNote: function (ev) {
-    if (!this.state.isPlaying) {
-      this.state.voice.play();
-      this.setState({ isPlaying: true });
-    }
+
   },
 
   stopNote: function (ev) {
-    if (this.state.isPlaying) {
-      this.state.voice.pause();
-      this.setState({ isPlaying: false });
-    }
+
   }
 });
 
