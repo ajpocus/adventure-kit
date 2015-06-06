@@ -52092,12 +52092,12 @@ var Keyboard = React.createClass({
         ref: 'keyInput',
         readOnly: 'true',
         autofocus: 'true',
-        onKeyDown: this.playNote,
-        onKeyUp: this.stopNote })
+        onKeyDown: this.handleKeyDown,
+        onKeyUp: this.handleKeyUp })
     );
   },
 
-  playNote: function playNote(ev) {
+  handleKeyDown: function handleKeyDown(ev) {
     if (!this.state.isPlaying) {
       var ctx = this.state.ctx;
       var instrument = this.state.instrument;
@@ -52138,7 +52138,7 @@ var Keyboard = React.createClass({
     }
   },
 
-  stopNote: function stopNote(ev) {
+  handleKeyUp: function handleKeyUp(ev) {
     if (this.state.isPlaying) {
       var oscillators = this.state.oscillators;
 
@@ -52155,37 +52155,38 @@ var Keyboard = React.createClass({
   },
 
   keyToNote: function keyToNote(key) {
+    // To shift up an octave, add 12. To shift down, subtract 12.
     var keyMap = {
-      'z': 60, // C4
-      's': 61, // C#4
-      'x': 62, // D4
-      'd': 63, // D#4
-      'c': 64, // E4
-      'v': 65, // F4
-      'g': 66, // F#4
-      'b': 67, // G4
-      'h': 68, // G#4
-      'n': 69, // A4
-      'j': 70, // A#4
-      'm': 71, // B4
-      ',': 72, // C5
-      'q': 72, // C5 (again)
-      '2': 73, // C#5
-      'w': 74, // D5
-      '3': 75, // D#5
-      'e': 76, // E5
-      'r': 77, // F5
-      '5': 78, // F#5
-      't': 79, // G5
-      '6': 80, // G#5
-      'y': 81, // A5
-      '7': 82, // A#5
-      'u': 83, // B5
-      'i': 84, // C6
-      '9': 85, // C#6
-      'o': 86, // D6
-      '0': 87, // D#6
-      'p': 88 // E6
+      'z': 12, // C0
+      's': 13, // C#0
+      'x': 14, // D0
+      'd': 15, // D#0
+      'c': 16, // E0
+      'v': 17, // F0
+      'g': 18, // F#0
+      'b': 19, // G0
+      'h': 20, // G#0
+      'n': 21, // A0
+      'j': 22, // A#0
+      'm': 23, // B0
+      ',': 24, // C1
+      'q': 25, // C1 (again)
+      '2': 26, // C#1
+      'w': 27, // D1
+      '3': 28, // D#1
+      'e': 29, // E1
+      'r': 30, // F1
+      '5': 31, // F#1
+      't': 32, // G1
+      '6': 33, // G#1
+      'y': 34, // A1
+      '7': 35, // A#1
+      'u': 36, // B1
+      'i': 37, // C2
+      '9': 38, // C#2
+      'o': 39, // D2
+      '0': 40, // D#2
+      'p': 41 // E2
     };
 
     return keyMap[key];
@@ -52193,6 +52194,12 @@ var Keyboard = React.createClass({
 
   keyCodeToChar: function keyCodeToChar(keyCode) {
     var keyCodeMap = {
+      8: 'Backspace',
+      9: 'Tab',
+      13: 'Enter',
+      16: 'Shift',
+      17: 'Ctrl',
+      18: 'Alt',
       48: '0',
       49: '1',
       50: '2',
