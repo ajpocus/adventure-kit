@@ -50141,7 +50141,7 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":350,"../models/pixel":351,"./manage_draw_list":343,"./resize_prompt":348,"jquery":132,"pngjs":140,"react":333,"tinycolor2":334}],338:[function(require,module,exports){
+},{"../mixins/transparency":356,"../models/pixel":357,"./manage_draw_list":343,"./resize_prompt":348,"jquery":132,"pngjs":140,"react":333,"tinycolor2":334}],338:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50398,7 +50398,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":350,"jquery":132,"react":333}],340:[function(require,module,exports){
+},{"../mixins/transparency":356,"jquery":132,"react":333}],340:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -50518,6 +50518,13 @@ Object.defineProperty(exports, '__esModule', {
 var React = require('react');
 var $ = require('jquery');
 
+require('../lib/beep/Beep.js');
+require('../lib/beep/Beep.Note.js');
+require('../lib/beep/Beep.Voice.js');
+require('../lib/beep/Beep.Sample.js');
+require('../lib/beep/Beep.Trigger.js');
+require('../lib/beep/Beep.Instrument.js');
+
 var Keyboard = React.createClass({
   displayName: 'Keyboard',
 
@@ -50528,21 +50535,10 @@ var Keyboard = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    var context = new (window.AudioContext || window.webkitAudioContext)();
-    var oscillator = context.createOscillator();
-    var gain = context.createGain();
-
-    oscillator.type = 'sine';
-    oscillator.frequency.value = 3000;
-    gain.gain.value = 0.5;
-
-    oscillator.connect(gain);
-    gain.connect(context.destination);
+    var voice = new Beep.Voice('2Eb');
 
     this.setState({
-      context: context,
-      oscillator: oscillator,
-      gain: gain
+      voice: voice
     });
 
     $(this.refs.keyInput.getDOMNode()).focus();
@@ -50563,14 +50559,14 @@ var Keyboard = React.createClass({
 
   playNote: function playNote(ev) {
     if (!this.state.isPlaying) {
-      this.state.oscillator.start();
+      this.state.voice.play();
       this.setState({ isPlaying: true });
     }
   },
 
   stopNote: function stopNote(ev) {
     if (this.state.isPlaying) {
-      this.state.oscillator.stop();
+      this.state.voice.pause();
       this.setState({ isPlaying: false });
     }
   }
@@ -50579,7 +50575,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"jquery":132,"react":333}],343:[function(require,module,exports){
+},{"../lib/beep/Beep.Instrument.js":350,"../lib/beep/Beep.Note.js":351,"../lib/beep/Beep.Sample.js":352,"../lib/beep/Beep.Trigger.js":353,"../lib/beep/Beep.Voice.js":354,"../lib/beep/Beep.js":355,"jquery":132,"react":333}],343:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -50889,7 +50885,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":350,"./edit_palette":339,"./modal":345,"jquery":132,"react":333,"tinycolor2":334}],348:[function(require,module,exports){
+},{"../mixins/transparency":356,"./edit_palette":339,"./modal":345,"jquery":132,"react":333,"tinycolor2":334}],348:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51020,6 +51016,1907 @@ exports["default"] = TrackList;
 module.exports = exports["default"];
 
 },{"react":333}],350:[function(require,module,exports){
+/*
+
+
+	Beep.Instrument
+
+
+
+
+	Requires 
+
+	  1  Beep
+	  2  Beep.Note
+	  3  Beep.Voice
+	  4  Beep.Sample
+	  5  Beep.Trigger
+
+	Example uses
+
+	  synth = new Beep.Instrument()
+	  synth.play( '3C' ).play( '4G' ).play( '5C' )
+	  synth.pause()
+	  synth.buildCloseEncounters()
+
+
+*/
+
+'use strict';
+
+Beep.Instrument = function () {
+
+	var that = this,
+	    playPauseContainer = document.getElementById('play-pause-container');
+
+	Array.prototype.slice.call(arguments).forEach(function (arg) {
+
+		if (arg instanceof window.Element) that.domContainer = arg;else if (typeof arg === 'string') that.domContainer = document.getElementById(arg);else if (arg instanceof Function) that.createVoices = arg;
+	});
+
+	//  Let’s hook up to BEEP’s “global” Audio Context.
+
+	this.context = Beep.audioContext;
+
+	//  Now that we have an Audio Context we can give our Instrument
+	//  its own volume knob.
+	//  @@  Should add DAT GUI or similiar to control this...
+
+	this.gainNode = this.context.createGain();
+	this.gainNode.connect(this.context.destination);
+	this.gainNode.gain.value = 0.3;
+
+	//  We may have passed in a DOM Element as a target for this Instrument
+	//  or a String representing a DOM Element’s ID.
+	//  Otherwise we need to build a DOM Element and attach it.
+
+	if (this.domContainer === undefined) this.domContainer = document.createElement('div');
+	this.domContainer.classList.add('instrument');
+
+	if (Beep.domContainer) Beep.domContainer.appendChild(this.domContainer);else document.body.appendChild(this.domContainer);
+
+	//  What’s an Instrument without an interface?
+	//  Let’s add storage for our Triggers.
+
+	this.triggers = {};
+	this.domTriggers = document.createElement('div');
+	this.domTriggers.classList.add('triggers');
+	this.domContainer.appendChild(this.domTriggers);
+
+	//  And we could use a handy interface button
+	//  for playing the score we’re going to load.
+
+	if (!playPauseContainer) playPauseContainer = this.domContainer;
+	this.domScorePlayPause = document.createElement('img');
+	this.domScorePlayPause.classList.add('score-play-pause');
+	this.domScorePlayPause.setAttribute('src', 'beep/Beep.Instrument.svg#play');
+	playPauseContainer.appendChild(this.domScorePlayPause);
+	this.domScorePlayPause.addEventListener('mouseenter', function () {
+
+		if (that.scoreIsPlaying) that.domScorePlayPause.setAttribute('src', 'beep/Beep.Instrument.svg#pause-hover');else that.domScorePlayPause.setAttribute('src', 'beep/Beep.Instrument.svg#play-hover');
+	});
+	this.domScorePlayPause.addEventListener('mouseleave', function () {
+
+		if (that.scoreIsPlaying) that.domScorePlayPause.setAttribute('src', 'beep/Beep.Instrument.svg#pause');else that.domScorePlayPause.setAttribute('src', 'beep/Beep.Instrument.svg#play');
+	});
+	this.domScorePlayPause.addEventListener('click', function () {
+		that.scoreToggle();
+	});
+	this.domScorePlayPause.addEventListener('touchend', function (event) {
+
+		that.scoreToggle();
+		event.preventDefault();
+	});
+
+	//  Might be nice if Spacebar can play / pause a score.
+
+	window.addEventListener('keypress', function (event) {
+
+		var keyCode = event.which || event.keyCode;
+
+		if (Beep.isKeyboarding) {
+
+			if (keyCode === 32) {
+
+				that.scoreToggle();
+				event.preventDefault();
+			}
+
+			//  OMFG this is annoying.
+			//  We cannot reliably detect the ESCAPE key here
+			//  because of this problem in Chrome:
+			//  https://github.com/philc/vimium/issues/499
+			//  Temporarily using SHIFT + ENTER key instead....
+
+			else if (keyCode === 13 && event.shiftKey && that.scoreIsPlaying === false) {
+
+				if (Object.keys(that.triggers).length) that.unbuild();else that.build();
+				event.preventDefault();
+			}
+		}
+	});
+
+	//  Each Trigger will handle its own touch-start and touch-end
+	//  but touch-move must be handled by the Trigger’s container.
+
+	this.domContainer.addEventListener('touchmove', function (event) {
+
+		//  What are the bounds {X Y W H} of for each touch-move?
+		//  Does that intersect with bounds for any of our triggers?
+		//  @@  IN THE FUTURE WE’LL ADD EVENT.FORCE :)
+
+		Array.prototype.slice.call(event.changedTouches).forEach(function (touch) {
+
+			Object.keys(that.triggers).forEach(function (triggerKey) {
+
+				var trigger = that.triggers[triggerKey],
+				    rect = trigger.domTrigger.getBoundingClientRect();
+
+				if (rect.left < touch.pageX && touch.pageX < rect.right && rect.top < touch.pageY && touch.pageY < rect.bottom) {
+
+					trigger.engage('touched');
+				} else trigger.disengage('touched');
+			});
+		});
+		event.preventDefault();
+	});
+	this.domContainer.addEventListener('touchend', function (event) {
+
+		Object.keys(that.triggers).forEach(function (triggerKey) {
+
+			that.triggers[triggerKey].disengage('touched');
+		});
+	});
+
+	//  Maybe this instrument should play some tunes?
+	//  Perhaps makes sense to move all of this into a score.js
+	//  rather than have it be a part of Instrument?
+
+	this.bpm = 140; //  Beats per minute.
+	this.beatsPerBar = 4; //  Not in use yet.
+	this.oneBeat = 1 / 4; //  Quarter note.
+	this.beats = 0; //  Current beat... Maybe change name?
+	this.timePrevious = 0;
+	this.scoreCompleted = [];
+	this.scoreRemaining = [];
+	this.scoreIsPlaying = false;
+
+	//  We actually have to wait until the last second to build()
+	//  because it requires all of the above to be in place first.
+
+	this.build();
+
+	//  Push a reference of this instance into Beep’s library
+	//  so we can access and/or teardown it later.
+
+	Beep.instruments.push(this);
+};
+
+//  Convenience methods for adding and removing CSS Classes
+//  to this Instrument’s DOM Element. Why? Because by returning
+//  the instance (“this”) we make it chainable!
+
+Beep.Instrument.prototype.addStyleClass = function (className) {
+
+	this.domContainer.classList.add(className);
+	return this;
+};
+Beep.Instrument.prototype.removeStyleClass = function (className) {
+
+	this.domContainer.classList.remove(className);
+	return this;
+};
+
+Beep.Instrument.prototype.teardown = function () {
+
+	this.unbuild();
+	this.gainNode.disconnect();
+
+	//  @@ TO-DO: NEED TO DECOMISSION OUR EVENT LISTENERS TOO??
+
+	this.domScorePlayPause.remove();
+	this.domTriggers.remove();
+	this.domContainer.remove();
+};
+
+//////////////////
+//              //
+//   Triggers   //
+//              //
+//////////////////
+
+//  Convenience method for calling new Trigger() that
+//  automagically attaches it to this Instrument.
+//  You can of course build your own custom Triggers and
+//  add them manually, give them a custom ID, and so on.
+
+Beep.Instrument.prototype.newTrigger = function (note, triggerChars) {
+
+	var trigger;
+
+	if (note instanceof Beep.Note === false) note = new Beep.Note(note);
+
+	//  Here we’re going to assume if we intentionally sent a createVoices()
+	//  function to our Instrument then we’d like all Triggers to use it.
+	//  Otherwise you could quite easily send unique functions for creating
+	//  voices to each individual Trigger, eh?
+
+	if (this.createVoices !== undefined) trigger = new Beep.Trigger(this, note, this.createVoices);else trigger = new Beep.Trigger(this, note);
+
+	//  What keyboard character or characters should trigger this Trigger?
+
+	if (triggerChars instanceof Array === false) triggerChars = [triggerChars];
+	triggerChars.forEach(function (triggerChar) {
+
+		if (triggerChar !== undefined) trigger.addTriggerChar(triggerChar);
+	});
+
+	//  We’ll go with this format for ID’s:
+	//  Octave # + Note Name (sans any Natural symbols).
+
+	this.triggers[note.octaveIndex + note.nameSimple] = trigger;
+	return this;
+};
+Beep.Instrument.prototype.play = function (trigger) {
+
+	var triggersArray = Object.keys(this.triggers),
+	    triggersMiddle = Math.floor(triggersArray.length / 2); //  Middle C on our standard 2 octave build.
+
+	if (trigger === undefined) trigger = triggersArray[triggersMiddle];
+	if (typeof trigger === 'string' && this.triggers[trigger]) trigger = this.triggers[trigger];
+	if (trigger instanceof Beep.Trigger) trigger.engage('code');
+	return this;
+};
+Beep.Instrument.prototype.pause = function (trigger) {
+
+	var that = this;
+
+	if (typeof trigger === 'string' && this.triggers[trigger]) trigger = this.triggers[trigger];
+	if (trigger instanceof Beep.Trigger) trigger.disengage();
+	if (trigger === undefined) Object.keys(this.triggers).forEach(function (trigger) {
+
+		that.triggers[trigger].disengage();
+	});
+	return this;
+};
+Beep.Instrument.prototype.applyVoices = function (createVoices) {
+
+	var that = this;
+
+	this.createVoices = createVoices;
+	Object.keys(this.triggers).forEach(function (trigger) {
+
+		trigger = that.triggers[trigger];
+		trigger.teardownVoices();
+		trigger.createVoices = createVoices;
+		trigger.createVoices();
+	});
+	return this;
+};
+
+////////////////
+//            //
+//   Builds   //
+//            //
+////////////////
+
+//  Build a fleshed-out (full) two octave keyboard.
+//  No frills. Just the goods.
+
+Beep.Instrument.prototype.buildStandard = function () {
+
+	this.unbuild().newTrigger('3C', 'z').newTrigger('3C♯', 's').newTrigger('3D', 'x').newTrigger('3E♭', 'd').newTrigger('3E', 'c').newTrigger('3F', 'v').newTrigger('3F♯', 'g').newTrigger('3G', 'b').newTrigger('3A♭', 'h').newTrigger('3A', 'n').newTrigger('3B♭', 'j').newTrigger('3B', 'm').newTrigger('4C', ['q', '<']).newTrigger('4C♯', '2').newTrigger('4D', 'w').newTrigger('4E♭', '3').newTrigger('4E', 'e').newTrigger('4F', 'r').newTrigger('4F♯', '5').newTrigger('4G', 't').newTrigger('4A♭', '6').newTrigger('4A', 'y').newTrigger('4B♭', '7').newTrigger('4B', 'u').newTrigger('5C', 'i');
+
+	//  We’ve loaded a default set of Triggers with this.build()
+	//  and now we might as well load a default score
+	//  so it’s dead easy to demonstrate how this works.
+
+	this.scoreLoadDoReMi();
+	this.scoreLoadFromHash();
+	return this;
+};
+Beep.Instrument.prototype.buildCloseEncounters = function () {
+
+	this.unbuild().newTrigger('4G', '1').newTrigger('4A', '2').newTrigger('4F', '3').newTrigger('3F', '4').newTrigger('4C', '5');
+	return this;
+};
+Beep.Instrument.prototype.buildCloseEncountersJust = function () {
+	//@@  EVERYTHING IS ONE OCTAVE LOWER THAN SHOULD BE! ASIDE FROM '4A' !!
+
+	this.unbuild().newTrigger(new Beep.Note.JustIntonation('4G', '4C'), '1').newTrigger(new Beep.Note.JustIntonation('4A', '4C'), '2').newTrigger(new Beep.Note.JustIntonation('4F', '4C'), '3').newTrigger(new Beep.Note.JustIntonation('3F', '4C'), '4').newTrigger(new Beep.Note.JustIntonation('4C', '4C'), '5');
+	return this;
+};
+Beep.Instrument.prototype.buildJustVsEDO12 = function () {
+
+	this.unbuild().newTrigger('4C', '1').newTrigger('4D', '2').newTrigger('4A', '3').newTrigger(new Beep.Note.JustIntonation('4C', '4C'), '7').newTrigger(new Beep.Note.JustIntonation('4D', '4C'), '8').newTrigger(new Beep.Note.JustIntonation('4A', '4C'), '9');
+	return this;
+};
+Beep.Instrument.prototype.buildC = function () {
+
+	this.unbuild().newTrigger('3C', 'z').newTrigger('3C♯').newTrigger('3D', 'x').newTrigger('3E♭').newTrigger('3E', 'c').newTrigger('3F', 'v').newTrigger('3F♯').newTrigger('3G', 'b').newTrigger('3A♭').newTrigger('3A', 'n').newTrigger('3B♭').newTrigger('3B', 'm').newTrigger('4C', ['a', '<']).newTrigger('4C♯').newTrigger('4D', 's').newTrigger('4E♭').newTrigger('4E', 'd').newTrigger('4F', 'f').newTrigger('4F♯').newTrigger('4G', 'g').newTrigger('4A♭').newTrigger('4A', 'h').newTrigger('4B♭').newTrigger('4B', 'j').newTrigger('5C', ['k', 'q']).newTrigger('5C♯').newTrigger('5D', 'w').newTrigger('5E♭').newTrigger('5E', 'e').newTrigger('5F', 'r').newTrigger('5F♯').newTrigger('5G', 't').newTrigger('5A♭').newTrigger('5A', 'y').newTrigger('5B♭').newTrigger('5B', 'u').newTrigger('6C', ['i', '1']).newTrigger('6C♯').newTrigger('6D', '2').newTrigger('6E♭').newTrigger('6E', '3').newTrigger('6F', '4').newTrigger('6F♯').newTrigger('6G', '5').newTrigger('6A♭').newTrigger('6A', '6').newTrigger('6B♭').newTrigger('6B', '7').newTrigger('7C', '8').domContainer.classList.add('mini');
+	return this;
+};
+Beep.Instrument.prototype.buildCRainbow = function () {
+
+	this.buildC();
+	this.domContainer.classList.add('rainbow');
+	this.scoreLoadDoReMi();
+	this.scoreLoadFromHash();
+	return this;
+};
+Beep.Instrument.prototype.buildCJust = function () {
+
+	this.unbuild().newTrigger(new Beep.Note.JustIntonation('3C', '4C'), 'z').newTrigger(new Beep.Note.JustIntonation('3C♯', '4C')).newTrigger(new Beep.Note.JustIntonation('3D', '4C'), 'x').newTrigger(new Beep.Note.JustIntonation('3E♭', '4C')).newTrigger(new Beep.Note.JustIntonation('3E', '4C'), 'c').newTrigger(new Beep.Note.JustIntonation('3F', '4C'), 'v').newTrigger(new Beep.Note.JustIntonation('3F♯', '4C')).newTrigger(new Beep.Note.JustIntonation('3G', '4C'), 'b').newTrigger(new Beep.Note.JustIntonation('3A♭', '4C')).newTrigger(new Beep.Note.JustIntonation('3A', '4C'), 'n').newTrigger(new Beep.Note.JustIntonation('3B♭', '4C')).newTrigger(new Beep.Note.JustIntonation('3B', '4C'), 'm').newTrigger(new Beep.Note.JustIntonation('4C', '4C'), ['a', '<']).newTrigger(new Beep.Note.JustIntonation('4C♯', '4C')).newTrigger(new Beep.Note.JustIntonation('4D', '4C'), 's').newTrigger(new Beep.Note.JustIntonation('4E♭', '4C')).newTrigger(new Beep.Note.JustIntonation('4E', '4C'), 'd').newTrigger(new Beep.Note.JustIntonation('4F', '4C'), 'f').newTrigger(new Beep.Note.JustIntonation('4F♯', '4C')).newTrigger(new Beep.Note.JustIntonation('4G', '4C'), 'g').newTrigger(new Beep.Note.JustIntonation('4A♭', '4C')).newTrigger(new Beep.Note.JustIntonation('4A', '4C'), 'h').newTrigger(new Beep.Note.JustIntonation('4B♭', '4C')).newTrigger(new Beep.Note.JustIntonation('4B', '4C'), 'j').newTrigger(new Beep.Note.JustIntonation('5C', '4C'), ['k', 'q']).newTrigger(new Beep.Note.JustIntonation('5C♯', '4C')).newTrigger(new Beep.Note.JustIntonation('5D', '4C'), 'w').newTrigger(new Beep.Note.JustIntonation('5E♭', '4C')).newTrigger(new Beep.Note.JustIntonation('5E', '4C'), 'e').newTrigger(new Beep.Note.JustIntonation('5F', '4C'), 'r').newTrigger(new Beep.Note.JustIntonation('5F♯', '4C')).newTrigger(new Beep.Note.JustIntonation('5G', '4C'), 't').newTrigger(new Beep.Note.JustIntonation('5A♭', '4C')).newTrigger(new Beep.Note.JustIntonation('5A', '4C'), 'y').newTrigger(new Beep.Note.JustIntonation('5B♭', '4C')).newTrigger(new Beep.Note.JustIntonation('5B', '4C'), 'u').newTrigger(new Beep.Note.JustIntonation('6C', '4C'), ['i', '1']).newTrigger(new Beep.Note.JustIntonation('6C♯', '4C')).newTrigger(new Beep.Note.JustIntonation('6D', '4C'), '2').newTrigger(new Beep.Note.JustIntonation('6E♭', '4C')).newTrigger(new Beep.Note.JustIntonation('6E', '4C'), '3').newTrigger(new Beep.Note.JustIntonation('6F', '4C'), '4').newTrigger(new Beep.Note.JustIntonation('6F♯', '4C')).newTrigger(new Beep.Note.JustIntonation('6G', '4C'), '5').newTrigger(new Beep.Note.JustIntonation('6A♭', '4C')).newTrigger(new Beep.Note.JustIntonation('6A', '4C'), '6').newTrigger(new Beep.Note.JustIntonation('6B♭', '4C')).newTrigger(new Beep.Note.JustIntonation('6B', '4C'), '7').newTrigger(new Beep.Note.JustIntonation('7C', '4C'), '8').domContainer.classList.add('mini');
+	return this;
+};
+Beep.Instrument.prototype.build = Beep.Instrument.prototype.buildStandard;
+Beep.Instrument.prototype.unbuild = function () {
+
+	var that = this;
+
+	Object.keys(this.triggers).forEach(function (trigger) {
+
+		that.triggers[trigger].teardown();
+		delete that.triggers[trigger];
+	});
+	this.domContainer.classList.remove('mini');
+	this.domContainer.classList.remove('rainbow');
+	return this;
+};
+
+///////////////
+//           //
+//   Songs   //
+//           //
+///////////////
+
+Beep.Instrument.prototype.scoreLoadFromHash = function () {
+
+	if (document.location.hash !== '') {
+
+		var score = document.location.hash.substr(1).split(',').map(function (element) {
+
+			var value;
+
+			try {
+
+				value = eval(element);
+			} catch (error) {}
+			return value;
+		});
+		this.scoreUnload();
+		this.scoreLoad(score);
+	}
+};
+Beep.Instrument.prototype.scoreLoad = function (score) {
+
+	var beat = 0,
+	    i,
+	    note;
+
+	for (i = 0; i < score.length; i += 3) {
+
+		//  This bit here means you can call 'Bb'
+		//  and it will still trigger 'B♭', etc!
+
+		note = new Beep.Note(score[i + 1]);
+
+		//  TO DO FUTURE @@
+		//  Check if this entry is overwriting a call to this same Trigger.
+		//  For example a previous entry at this very beat calls the Trigger
+		//  to engage, while this current entry calls it to disengage at the
+		//  exact same beat. We should nudge the call for engagement one
+		//  loop into to the future!!
+
+		beat += score[i + 0] || 0;
+		this.scoreRemaining.push([beat, note.octaveIndex + note.nameSimple, true]);
+		this.scoreRemaining.push([beat + score[i + 2], note.octaveIndex + note.nameSimple, false]);
+	}
+	this.scoreRemaining.sort(function (a, b) {
+
+		return a[0] - b[0];
+	});
+	return this;
+};
+Beep.Instrument.prototype.scorePlayLoop = function () {
+
+	var performant = window.performance && window.performance.now,
+	    now = performant ? performance.now() : Date.now(),
+	    delta = now - this.timePrevious;
+
+	if (this.timePrevious === 0) delta = 1;
+	while (this.scoreRemaining.length && this.beats >= this.scoreRemaining[0][0]) {
+
+		if (this.scoreRemaining[0][2]) this.play(this.scoreRemaining[0][1]);else this.pause(this.scoreRemaining[0][1]);
+		this.scoreCompleted.push(this.scoreRemaining.shift());
+	}
+	this.beats += this.bpm / 60 / delta * this.oneBeat;
+	this.timePrevious = now;
+	if (this.scoreRemaining.length === 0) {
+
+		this.scoreIsPlaying = false;
+		this.scoreRemaining = this.scoreRemaining.concat(this.scoreCompleted);
+		this.scoreCompleted = [];
+		this.beats = 0;
+		this.timePrevious = 0;
+		this.domScorePlayPause.classList.remove('is-playing');
+	}
+	if (this.scoreIsPlaying) requestAnimationFrame(this.scorePlayLoop.bind(this));
+	return this;
+};
+Beep.Instrument.prototype.scorePlay = function () {
+
+	if (Object.keys(this.triggers).length) {
+
+		this.scoreIsPlaying = true;
+		this.scorePlayLoop();
+		this.domScorePlayPause.classList.add('is-playing');
+	}
+	return this;
+};
+Beep.Instrument.prototype.scoreStop = function () {
+
+	this.scoreIsPlaying = false;
+	this.pause();
+	this.domScorePlayPause.classList.remove('is-playing');
+	return this;
+};
+Beep.Instrument.prototype.scoreToggle = function () {
+
+	var that = this;
+
+	if (this.scoreIsPlaying) {
+
+		this.scoreStop();
+		this.domScorePlayPause.setAttribute('src', 'beep/Beep.Instrument.svg#play');
+	} else {
+
+		this.scorePlay();
+		this.domScorePlayPause.setAttribute('src', 'beep/Beep.Instrument.svg#pause');
+	}
+
+	//  Combatting a Safari display bug here:
+
+	this.domScorePlayPause.style.marginRight = '1px';
+	window.setTimeout(function () {
+
+		that.domScorePlayPause.style.marginRight = '0';
+	});
+	return this;
+};
+Beep.Instrument.prototype.scoreUnload = function () {
+
+	this.scoreStop();
+	this.scoreCompleted = [];
+	this.scoreRemaining = [];
+	this.beats = 0;
+	this.timePrevious = 0;
+};
+
+//  http://en.wikipedia.org/wiki/Solf%C3%A8ge
+
+Beep.Instrument.prototype.scoreLoadDoReMi = function () {
+
+	var melody = [36 / 4, '4C', 6 / 4, //  Do[e]
+	6 / 4, '4D', 2 / 4, //  a
+	2 / 4, '4E', 5 / 4, //  deer
+	6 / 4, '4C', 2 / 4, //  A
+	2 / 4, '4E', 4 / 4, //  fe
+	4 / 4, '4C', 3 / 4, //  male
+	4 / 4, '4E', 4 / 4, //  deer
+
+	8 / 4, '4D', 6 / 4, //  Re [Ray]
+	6 / 4, '4E', 2 / 4, //  a
+	2 / 4, '4F', 1 / 4, //  drop
+	2 / 4, '4F', 1 / 4, //  of
+	2 / 4, '4E', 2 / 4, //  gold
+	2 / 4, '4D', 2 / 4, //  en
+	2 / 4, '4F', 8 / 4, //  sun
+
+	16 / 4, '4E', 6 / 4, //  Mi [Me]
+	6 / 4, '4F', 2 / 4, //  a
+	2 / 4, '4G', 5 / 4, //  name
+	6 / 4, '4E', 2 / 4, //  I
+	2 / 4, '4G', 4 / 4, //  call
+	4 / 4, '4E', 3 / 4, //  my
+	4 / 4, '4G', 6 / 4, //  self
+
+	8 / 4, '4F', 6 / 4, //  Fa[r]
+	6 / 4, '4G', 2 / 4, //  a
+	2 / 4, '4A', 1 / 4, //  long
+	2 / 4, '4A', 1 / 4, //  long
+	2 / 4, '4G', 2 / 4, //  way
+	2 / 4, '4F', 2 / 4, //  to
+	2 / 4, '4A', 8 / 4, //  run
+
+	16 / 4, '4G', 6 / 4, //  So [Sew]
+	6 / 4, '4C', 2 / 4, //  a
+	2 / 4, '4D', 2 / 4, //  nee
+	2 / 4, '4E', 2 / 4, //  dle
+	2 / 4, '4F', 2 / 4, //  pull
+	2 / 4, '4G', 2 / 4, //  ing
+	2 / 4, '4A', 12 / 4, //  thread
+
+	16 / 4, '4A', 6 / 4, //  La
+	6 / 4, '4D', 2 / 4, //  a
+	2 / 4, '4E', 2 / 4, //  note
+	2 / 4, '4F', 2 / 4, //  to
+	2 / 4, '4G', 2 / 4, //  fol
+	2 / 4, '4A', 2 / 4, //  low
+	2 / 4, '4B', 12 / 4, //  So
+
+	16 / 4, '4B', 6 / 4, //  Ti [Tea]
+	6 / 4, '4E', 2 / 4, //  a
+	2 / 4, '4F', 2 / 4, //  drink
+	2 / 4, '4G', 2 / 4, //  with
+	2 / 4, '4A', 2 / 4, //  jam
+	2 / 4, '4B', 2 / 4, //  and
+	2 / 4, '5C', 12 / 4, //  bread
+
+	12 / 4, '4A', 1 / 4, //  That
+	2 / 4, '4A', 1 / 4, //  will
+	2 / 4, '4A', 3 / 4, //  bring
+	4 / 4, '4F', 3 / 4, //  us
+	4 / 4, '4B', 3 / 4, //  back
+	4 / 4, '4G', 3 / 4, //  to
+	4 / 4, '5C', 8 / 4, //  Do
+
+	4 / 4, '3C', 1 / 16, 1 / 16, '3D', 1 / 16, 1 / 16, '3C', 1 / 16, 1 / 16, '3E', 1 / 16, 1 / 16, '3F', 1 / 16, 1 / 16, '3G', 1 / 16, 1 / 16, '3A', 1 / 16, 1 / 16, '3B', 1 / 16, 1 / 16, '4C', 1 / 16, 1 / 16, '4D', 1 / 16, 1 / 16, '4C', 1 / 16, 1 / 16, '4E', 1 / 16, 1 / 16, '4F', 1 / 16, 1 / 16, '4G', 1 / 16, 1 / 16, '4A', 1 / 16, 1 / 16, '4B', 1 / 16, 1 / 16, '5C', 8 / 4, 2 / 4, '4C', 6 / 4, 2 / 4, '3C', 4 / 4],
+	    harmony = [4 / 4, '3C', 1 / 4, //  Intro measures...
+	4 / 4, '3G', 1 / 4, 4 / 4, '3C', 1 / 4, 4 / 4, '3G', 1 / 4, 4 / 4, '3C', 1 / 4, 4 / 4, '3G', 1 / 4, 4 / 4, '3C', 1 / 4, 4 / 4, '3G', 1 / 4, 4 / 4, '3C', 2 / 4, //  Do[e]
+	4 / 4, '3G', 2 / 4, 4 / 4, '3C', 2 / 4, 4 / 4, '3G', 2 / 4, 4 / 4, '3C', 2 / 4, 4 / 4, '3G', 2 / 4, 4 / 4, '3C', 2 / 4, 4 / 4, '3G', 2 / 4, 4 / 4, '3F', 2 / 4, //  Re [Ray]
+	4 / 4, '3D', 2 / 4, 4 / 4, '3F', 2 / 4, 4 / 4, '3D', 2 / 4, 4 / 4, '3F', 2 / 4, 4 / 4, '3D', 2 / 4, 4 / 4, '3F', 2 / 4, 4 / 4, '3D', 2 / 4, 4 / 4, '3G', 2 / 4, //  Mi [Me]
+	4 / 4, '3E', 2 / 4, 4 / 4, '3G', 2 / 4, 4 / 4, '3E', 2 / 4, 4 / 4, '3G', 2 / 4, 4 / 4, '3E', 2 / 4, 4 / 4, '3G', 2 / 4, 2 / 4, '3F', 2 / 4, 2 / 4, '3E', 2 / 4, 2 / 4, '3D', 2 / 4, 2 / 4, '3F', 2 / 4, //  Fa[r]
+	4 / 4, '3D', 2 / 4, 4 / 4, '3F', 2 / 4, 4 / 4, '3D', 2 / 4, 4 / 4, '3F', 2 / 4, 4 / 4, '3D', 2 / 4, 4 / 4, '3G', 2 / 4, 2 / 4, '3F', 2 / 4, 2 / 4, '3E', 2 / 4, 2 / 4, '3D', 2 / 4, 2 / 4, '3C', 2 / 4, 2 / 4, '3D', 2 / 4, //  So [Sew]
+	2 / 4, '3E', 2 / 4, 2 / 4, '3F', 2 / 4, 2 / 4, '3G', 2 / 4, 2 / 4, '3A', 2 / 4, 2 / 4, '3B', 2 / 4, 2 / 4, '4C', 2 / 4, 2 / 4, '3C', 2 / 4, 2 / 4, '3D', 2 / 4, 2 / 4, '3E', 2 / 4, 2 / 4, '3F', 2 / 4, 2 / 4, '3G', 2 / 4, 2 / 4, '3A', 2 / 4, 2 / 4, '3B', 2 / 4, 2 / 4, '4C', 2 / 4, 2 / 4, '3C', 2 / 4, //  La
+	2 / 4, '3D', 2 / 4, 2 / 4, '3E', 2 / 4, 2 / 4, '3F', 2 / 4, 2 / 4, '3G', 2 / 4, 2 / 4, '3A', 2 / 4, 2 / 4, '3B', 2 / 4, 2 / 4, '4C', 4 / 4, 4 / 4, '3B', 2 / 4, 2 / 4, '3A', 2 / 4, 2 / 4, '3G', 2 / 4, 2 / 4, '3F', 2 / 4, 2 / 4, '3E', 2 / 4, 2 / 4, '3D', 2 / 4, 2 / 4, '3C', 4 / 4, //  End of La / beginning of Ti
+
+	4 / 4, '3D', 2 / 4, 2 / 4, '3E', 2 / 4, 2 / 4, '3F', 2 / 4, 2 / 4, '3G', 2 / 4, 2 / 4, '3A', 2 / 4, 2 / 4, '3B', 2 / 4, 2 / 4, '4C', 4 / 4, 4 / 4, '3B', 2 / 4, 2 / 4, '3A', 2 / 4, 2 / 4, '3G', 2 / 4, 2 / 4, '3F', 2 / 4, 2 / 4, '3E', 2 / 4, 2 / 4, '3D', 2 / 4, 2 / 4, '3C', 2 / 4, 2 / 4, '3G', 2 / 4, //  When
+	2 / 4, '3C', 2 / 4, //  you
+	2 / 4, '3A', 2 / 4, //  know
+	2 / 4, '3F', 2 / 4, //  the
+	2 / 4, '3E', 2 / 4, //  notes
+	2 / 4, '3C', 2 / 4, //  to
+	2 / 4, '3D', 4 / 4, //  sing
+
+	4 / 4, '3G', 2 / 4, //  you
+	2 / 4, '3C', 2 / 4, //  can
+	2 / 4, '3A', 2 / 4, //  sing
+	2 / 4, '3B', 2 / 4, //  most
+	2 / 4, '4C', 2 / 4, //  an
+	2 / 4, '4D', 2 / 4, //  y
+	2 / 4, '4C', 4 / 4];
+
+	this.scoreUnload();
+	this.scoreLoad(melody);
+	this.scoreLoad(harmony);
+};
+Beep.Instrument.prototype.scoreLoadHSB = function () {
+
+	var guitar = [4 / 4, '3A♭', 3 / 4, 4 / 4, '4E♭', 3 / 4, 4 / 4, '4A♭', 3 / 4, 4 / 4, '4E♭', 3 / 4];
+
+	this.scoreUnload();
+	this.scoreLoad(guitar);
+};
+//  Kill eveything now regardless of who started it!
+//  thing
+
+},{}],351:[function(require,module,exports){
+/*
+
+
+	Beep.Note
+
+
+
+
+	Requires 
+
+	  1  Beep
+
+	Description
+
+	  Not sounds or oscillators, but mathematical models
+	  resolving to frequencies in Hertz.
+
+	Example uses
+
+	  note = new Beep.Note( '3eb' )
+	  note = new Beep.Note.EDO12( '3eb' )
+	  note = new Beep.Note.JustIntonation( 'C#3', 'C#2' )
+
+	Roadmap
+
+	  I knew this was complicated but it’s far moreso than I realized!
+	  Need to revisit all of this in much more depth once some more 
+	  functionality and interface fixes have been completed:
+	  https://github.com/stewdio/beep.js/issues/2
+	  http://everything2.com/title/The+difference+between+tritone%252C+augmented+fourth%252C+diminished+fifth%252C+%252311+and+b5
+
+
+*/
+
+'use strict';
+
+Beep.Note = function (params) {
+
+	var that = this;
+
+	if (typeof params === 'number') this.hertz = params;else if (typeof params === 'object' && params.hertz !== undefined) {
+
+		Object.keys(params).forEach(function (key) {
+
+			that[key] = params[key];
+		});
+	} else return Beep.Note.EDO12(params);
+};
+
+//  Common Western music has 12 notes per octave,
+//  lettered A through G with modifier symbols for sharps and flats.
+//  Let’s build a validator for Western music:
+
+Beep.Note.validateWestern = function (params) {
+
+	var NAMES = ['A♭', 'A♮', 'B♭', 'B♮', 'C♮', 'C♯', 'D♮', 'E♭', 'E♮', 'F♮', 'F♯', 'G♮'],
+	    LETTERS = 'ABCDEFG',
+	    SHARPS = 'CF',
+	    FLATS = 'EAB',
+	    temp;
+
+	if (typeof params === 'undefined') params = {};else if (typeof params === 'string') {
+
+		temp = params;
+		params = {};
+		temp.split('').forEach(function (p, i) {
+
+			if (+p + '' !== 'NaN') params.octaveIndex = +p;else if ('♭♮♯#'.indexOf(p) !== -1) {
+
+				params.modifier = p;
+			} else if ((LETTERS + 'H').indexOf(p.toUpperCase()) !== -1) {
+
+				if (p.toUpperCase() === 'H') params.letter = 'B';else if (p === 'b' && i > 0) params.modifier = '♭';else params.letter = p.toUpperCase();
+			}
+		});
+	}
+
+	//  What octave is this?
+
+	if (params.octaveIndex === undefined || params.octaveIndex === '' || +params.octaveIndex + '' === 'NaN') params.octaveIndex = 4;
+	params.octaveIndex = +params.octaveIndex;
+	if (params.octaveIndex < 0) params.octaveIndex = 0;else if (params.octaveIndex > 8) params.octaveIndex = 8;
+
+	//  What’s this Note’s name?
+
+	if (params.letter === undefined) params.letter = 'A';
+	params.letterIndex = LETTERS.indexOf(params.letter);
+	if (params.modifier === undefined) params.modifier = '♮';
+	if (params.A === undefined) params.A = 440;
+
+	//  Force the correct accidental symbols.
+
+	if (params.modifier === 'b') params.modifier = '♭';
+	if (params.modifier === '#') params.modifier = '♯';
+
+	//  Handy function for redefining the letter
+	//  when the letterIndex may have shifted.
+
+	function setLetterByLetterIndex(params) {
+
+		if (params.letterIndex < 0) {
+
+			params.letterIndex += LETTERS.length;
+			params.octaveIndex--;
+		}
+		if (params.letterIndex >= LETTERS.length) {
+
+			params.letterIndex -= LETTERS.length
+			//  Next line commented out but left in as a reminder
+			//  that it would cause G♯ conversion to A♭
+			//  to jump up an entire octave for no good reason!
+			//params.octaveIndex ++
+			;
+		}
+		params.letter = LETTERS.substr(params.letterIndex, 1);
+		return params;
+	}
+
+	//  Force the correct sharp / flat categorization.
+	//  Why does the Equal Temperament scale consider certain letters flat or sharp
+	//  when they are mathematically equal?!
+	//  Has to do with the delta between Equal Temperament and the Just Scale.
+	//  Where Equal Temperament comes in higher than Just we call it sharp,
+	//  and where it comes in lower than Just we call it flat:
+	//  http://www.phy.mtu.edu/~suits/scales.html
+
+	if (params.modifier === '♭' && FLATS.indexOf(params.letter) === -1) {
+
+		params.letterIndex = LETTERS.indexOf(params.letter) - 1;
+		params = setLetterByLetterIndex(params);
+		if (SHARPS.indexOf(params.letter) > -1) params.modifier = '♯';else params.modifier = '♮';
+	} else if (params.modifier === '♯' && SHARPS.indexOf(params.letter) === -1) {
+
+		params.letterIndex = LETTERS.indexOf(params.letter) + 1;
+		params = setLetterByLetterIndex(params);
+		if (FLATS.indexOf(params.letter) > -1) params.modifier = '♭';else params.modifier = '♮';
+	}
+
+	//  Now that we’re certain the modifier is correct
+	//  we can set convenience booleans.
+
+	if (params.modifier === '♯') params.isSharp = true;else if (params.modifier === '♭') params.isFlat = true;else params.isNatural = true;
+
+	//  Is this cleanse here still necessary?
+
+	params = setLetterByLetterIndex(params);
+
+	//  Let’s make sure we have the .name (letter + modifier)
+	//  and the .nampleSimple (letter yes, but only a modifier
+	//  if unnatural) and set the .nameIndex appropriately.
+
+	params.name = params.letter + params.modifier;
+	params.nameSimple = params.letter;
+	if (params.modifier !== '♮') params.nameSimple += params.modifier;
+	params.nameIndex = NAMES.indexOf(params.name);
+
+	//  Final gotcha: Let’s only allow a C Natural in the 8th octave.
+
+	if (params.octaveIndex === 8 && params.nameSimple !== 'C') params.octaveIndex = 7;
+
+	//  Set the .pianoKeyIndex and then the corresponding MIDI Number.
+
+	params.pianoKeyIndex = params.octaveIndex * 12 + params.nameIndex;
+	if (params.nameIndex > 3) params.pianoKeyIndex -= 12;
+	params.midiNumber = params.pianoKeyIndex + 20;
+
+	//  What tuning method are we supposed to use?
+
+	if (params.tuning === undefined) params.tuning = 'EDO12';
+
+	//  We now have the majority of the Note ready for use.
+	//  Everything except for ... the FREQUENCY of the Note!
+	//  That will be decided based on the tuning method.
+
+	return params;
+};
+
+/////////////////
+//             //
+//   Tunings   //
+//             //
+/////////////////
+
+//  EQUAL DIVISION OF OCTAVE INTO 12 UNITS
+//  -     -           -           --
+//  Does exactly what it says on the tin, man.
+
+Beep.Note.EDO12 = function (params) {
+
+	params = Beep.Note.validateWestern(params);
+
+	//  The Cent is a logarithmic unit of measure that divide
+	//  the 12-tone equal temperament octave into 12 semitones
+	//  of 100 cents each.
+	//  http://en.wikipedia.org/wiki/Cent_(music)
+
+	//   + 0¢  UNISON
+	//   100¢  minor   2nd
+	//   200¢  MAJOR   2nd
+	//   300¢  minor   3rd
+	//   400¢  MAJOR   3rd
+	//   500¢  PERFECT 4th
+	//   600¢  tritone
+	//   700¢  PERFECT 5th
+	//   800¢  minor   6th
+	//   900¢  MAJOR   6th
+	//  1000¢  minor   7th
+	//  1100¢  MAJOR   7th
+	//  1200¢  OCTAVE
+
+	params.hertz = params.A * Math.pow(Math.pow(2, 1 / 12), params.pianoKeyIndex - 49);
+	params.tuning = 'EDO12';
+	return new Beep.Note(params);
+};
+
+//  The most mathematically beautiful tuning,
+//  makes for sonically gorgeous experiences
+//  ... Until you change keys!
+
+Beep.Note.JustIntonation = function (params, key) {
+
+	var that = this,
+	    relationshipIndex;
+
+	params = Beep.Note.validateWestern(params);
+	params.tuning = 'JustIntonation';
+	params.key = new Beep.Note.EDO12(key);
+
+	//  This is Ptolemy’s “Intense Diatonic Scale” which is based on
+	//  Pythagorean tuning. It is but one example of Just Intonation.
+	//  http://en.wikipedia.org/wiki/Ptolemy%27s_intense_diatonic_scale
+	//  http://en.wikipedia.org/wiki/Pythagorean_tuning
+	//  http://en.wikipedia.org/wiki/List_of_pitch_intervals
+	//  http://www.chrysalis-foundation.org/just_intonation.htm
+
+	relationshipIndex = (params.nameIndex - params.key.nameIndex) % 12;
+	if (relationshipIndex < 0) relationshipIndex += 12;
+	params.hertz = [params.key.hertz, //  Do  UNISON
+	params.key.hertz * 16 / 15, //      minor     2nd
+	params.key.hertz * 9 / 8, //  Re  MAJOR     2nd
+	params.key.hertz * 6 / 5, //      minor     3rd
+	params.key.hertz * 5 / 4, //  Mi  MAJOR     3rd
+	params.key.hertz * 4 / 3, //  Fa  PERFECT   4th
+	params.key.hertz * 45 / 32, //      augmented 4th
+	params.key.hertz * 3 / 2, //  So  PERFECT   5th
+	params.key.hertz * 8 / 5, //      minor     6th
+	params.key.hertz * 5 / 3, //  La  MAJOR     6th
+	params.key.hertz * 16 / 9, //      minor     7th (HD, baby!)
+	params.key.hertz * 15 / 8, //  Ti  MAJOR     7th
+	params.key.hertz * 2 //  Do  OCTAVE
+
+	][relationshipIndex];
+
+	//  If the key’s octave and our desired note’s octave were equal
+	//  then we’d be done. Otherwise we’ve got to bump up or down our
+	//  note by whole octaves.
+
+	params.hertz = params.hertz * Math.pow(2, params.octaveIndex - params.key.octaveIndex);
+	return new Beep.Note(params);
+};
+
+//  Does this thing look like it could be a Note?
+
+Beep.Note.seemsLegit = function (x) {
+
+	var seemsLegit = true,
+	    noteNames = 0,
+	    octaveIndexes = 0,
+	    modifiers = 0,
+	    flatOrBs = 0,
+	    chr,
+	    i;
+
+	if (x instanceof Beep.Note) return true //  Is an actual Beep.Note.
+	;else if (typeof x === 'number') return true //  Expecting this to be a Hertz value.
+	;else if (typeof x === 'string') {
+
+		//  Longest combo we expect is
+		//  Note Name (1 char) +
+		//  OctaveIndex (1 char, value 0–8) +
+		//  Modifier (1 char, ♮♯♭#b).
+
+		if (x.length > 3) return false;
+
+		//  Here are the maximum possible outcomes:
+		//  octaves    1  1  1
+		//  noteNames  1  1  0
+		//  modifiers  1  0  1
+		//  flatOrBs   0  1  1
+
+		for (i = 0; i < x.length; i++) {
+
+			chr = x[i];
+			if (+chr + '' !== 'NaN' && +chr >= 0 && +chr <= 8) octaveIndexes++;else if ('ABCDEFGHacdefgh'.indexOf(chr) >= 0) noteNames++;else if ('♮♯♭#'.indexOf(chr) >= 0) modifiers++;else if ('b' === chr) flatOrBs++;else {
+
+				seemsLegit = false;
+				break;
+			}
+		}
+		//console.log( octaveIndexes, noteNames, modifiers, flatOrBs )
+		if (octaveIndexes > 1 || noteNames > 1 || modifiers > 1 || flatOrBs > 1 || noteNames + modifiers + flatOrBs > 2) seemsLegit = false;
+
+		return seemsLegit;
+	} else return false;
+};
+
+},{}],352:[function(require,module,exports){
+/*
+
+
+	Beep.Sample
+
+
+
+
+	Requires 
+
+	  1  Beep
+
+	Description
+
+	  Samples are playable representations of audio files. I think?
+
+	Example uses
+
+	  sample = new Beep.Sample( '2legit.mp4' )
+
+	Roadmap
+
+	  Add support for pitch bending so one loaded sample can 
+	  be used in place of Note.
+
+
+*/
+
+'use strict';
+
+Beep.Sample = function () {
+
+	var a, i;
+
+	for (i = 0; i < arguments.length && i <= 3; i++) {
+
+		a = arguments[i];
+
+		//  If we were passed a String then
+		//  it should either be a URL for an audio file
+		//  or the ID for a DOM Element.
+
+		if (typeof a === 'string') {
+
+			if (Beep.Sample.seemsLikeAudioFileName(a)) this.domElement = new Audio(a);else this.domElement = document.getElementById(a);
+		}
+
+		//  We’re also hoping for an audio connection
+		//  to hook this sample up to.
+
+		else if (a instanceof Beep.AudioContext) {
+
+			this.audioContext = a;
+			this.destination = a.destination;
+		} else if (a instanceof GainNode) {
+
+			this.audioContext = a.audioContext;
+			this.destination = a;
+		}
+	}
+
+	//  Contingency planning.
+
+	if (this.domElement instanceof HTMLAudioElement === false) this.domElement = new Audio();
+	if (this.audioContext === undefined) {
+
+		this.audioContext = new Beep.AudioContext();
+		this.destination = this.audioContext.destination;
+	}
+
+	//  Config some bid-niz.
+	//  Note to all you peeps running this off your desktop:
+	//  By setting .crossOrigin to 'anonymous' you can load
+	//  audio files from an http: or https: but NOT file: protocol.
+	//  So you will NOT be able to load local files :(
+
+	this.domElement.crossOrigin = 'anonymous';
+	this.domElement.preload = 'auto';
+	this.domElement.loop = 'loop';
+	if (this.domElement.src === undefined) this.domElement.src = 'https://storage.googleapis.com/chhirp-prod-aac-hdortfjlzncw/50e7eb29-a951-4757-942c-981b4c521d36.mp4';
+
+	//  The trick is you must create a “Media Element Source”
+	//  from the HTML Audio Element, and then connect that source
+	//  up to the Web Audio API context. Slightly wonky.
+
+	this.source = Beep.audioContext.createMediaElementSource(this.domElement);
+	this.source.mediaElement.crossOrigin = 'anonymous';
+	// this.filter = this.audioContext.createBiquadFilter()
+	// this.filter.type = this.filter.LOWPASS
+	// this.filter.frequency.value = 500
+	// this.source.connect( this.filter )
+	// this.filter.connect( this.gainNode )
+	this.source.connect(this.destination);
+
+	//  Good to know when it’s time to go home.
+
+	this.isTorndown = false;
+
+	//  Push a reference of this instance into Beep’s library
+	//  so we can access and/or teardown it later.
+
+	Beep.samples.push(this);
+};
+
+Beep.Sample.seemsLikeAudioFileName = function (s) {
+
+	return typeof s === 'string' && s.search(/\.(aac|mp3|mp4|ogg|webm|wav)(\?.*|)$/) >= 0;
+};
+
+Beep.Sample.prototype.teardown = function () {
+
+	if (this.isTorndown === false) {
+
+		this.source.disconnect();
+		this.isTorndown = true;
+	}
+	return this;
+};
+
+},{}],353:[function(require,module,exports){
+/*
+
+
+	Beep.Trigger
+
+
+
+
+	Requires 
+
+	  1  Beep
+	  2  Beep.Note
+	  3  Beep.Voice
+	  4  Beep.Sample
+
+	Description
+
+	  Instantly add interfaces to your Voices that respond to mouse, 
+	  keyboard, and MIDI events. 
+
+	Example uses
+
+	  trigger = new Beep.Trigger()
+
+	Roadmap
+
+	  Add ADSR envelope editing through MIDI.
+
+
+*/
+
+'use strict';
+
+Beep.Trigger = function () {
+
+	var that = this;
+
+	//  Trigger is rather permissive with its parameters.
+	//  You can send it an Instrument, Note, a replacement function
+	//  for its createVoices() method, or something that might
+	//  possibly be a valid Note if you ran it through Note().
+	//  Don’t shoot your eye out, kiddo.
+
+	Array.prototype.slice.call(arguments).forEach(function (arg) {
+
+		if (arg instanceof Beep.Instrument) that.instrument = arg;else if (arg instanceof Function) that.createVoices = arg;else if (arg instanceof Beep.Note) that.note = arg;else that.note = new Beep.Note(arg);
+	});
+
+	//  Might be a grand idea to have a unique ID in case anyone should
+	//  need that down the road.
+
+	this.id = Date.now() + '-' + Math.round(Math.random() * 10000000000);
+
+	//  If we already have an Instrument then we ought plug into
+	//  its existing Audio Context. Otherwise we’ll aim straight for
+	//  the “global” BEEP one.
+
+	if (this.instrument) this.audioContext = this.instrument.audioContext;else this.audioContext = Beep.audioContext;
+
+	//  What if we didn’t receive anything useful as a Note?
+	//  We’ll just run with defaults.
+
+	if (this.note === undefined) this.note = new Beep.Note();
+
+	//  Now that we have an Audio Context we should add a buffer of Voices.
+	//  Also good to know if our Trigger is engaged or not!
+
+	this.engaged = false;
+	this.voices = [];
+	this.createVoices();
+
+	//  This container visually houses the note name
+	//  and the visible trigger below it.
+
+	this.domContainer = document.createElement('div');
+	this.domContainer.classList.add('trigger-container');
+	if (this.note.isSharp || this.note.isFlat) this.domContainer.classList.add('unnatural');else this.domContainer.classList.add('natural');
+
+	//  This is pretty useful for CSS tricks tied to note names (sans octave)
+	//  like say... A RAINBOW ROLL !
+
+	this.domContainer.classList.add('name-index-' + this.note.nameIndex);
+
+	//  Who knows, this might be useful in the future.
+
+	this.domContainer.setAttribute('id', 'trigger-' + this.id);
+
+	//  Every note has a name.
+	//  This note’s name is Robert Paulson.
+	//  HIS NAME IS ROBERT PAULSON.
+
+	this.domNoteName = document.createElement('div');
+	this.domNoteName.classList.add('note-name');
+	this.domNoteName.innerHTML = '<strong>' + this.note.nameSimple + '</strong>' + this.note.octaveIndex;
+	this.domContainer.appendChild(this.domNoteName);
+
+	//  This is the actual visible trigger,
+	//  the primary visual element of a keyboard interface.
+	//  And the target of our mouse / touch events.
+
+	this.domTrigger = document.createElement('div');
+	this.domTrigger.classList.add('trigger');
+	this.domContainer.appendChild(this.domTrigger);
+
+	//  This will house a list of all keyboard inputs
+	//  that trigger this, uh ... Trigger.
+
+	this.domCharsList = document.createElement('div');
+	this.domCharsList.classList.add('chars-list');
+	this.domTrigger.appendChild(this.domCharsList);
+
+	//  We’re either attaching all this DOM baggage to
+	//  a proper Instrument DOM elment
+	//  or straight to the Document Body element!
+
+	if (this.instrument && this.instrument.domTriggers) this.instrument.domTriggers.appendChild(this.domContainer);else document.body.appendChild(this.domContainer);
+
+	//  Add some mouse and touch events.
+
+	this.eventListeners = [];
+	this.domTrigger.addEventListener('mouseenter', function () {
+		that.engage('mouseenter');
+	});
+	this.domTrigger.addEventListener('mouseleave', function () {
+		that.disengage('mouseenter');
+	});
+	this.domTrigger.addEventListener('touchstart', function (event) {
+
+		that.engage('touched');
+		event.preventDefault();
+	});
+	this.domTrigger.addEventListener('touchend', function (event) {
+
+		that.disengage('touched');
+		event.preventDefault();
+	});
+
+	//  Add some MIDI events if the browser supports it.
+	//  Right now that means Chrome 42 behind a dev flag
+	//  and the not-yet-released Chrome 43 proper.
+
+	this.midiNumber = this.note.midiNumber;
+	if (navigator.requestMIDIAccess) {
+
+		navigator.requestMIDIAccess().then(function (midiAccess) {
+
+			midiAccess.inputs.forEach(function (entry) {
+
+				entry.onmidimessage = that.onMidiMessage.bind(that);
+			});
+		});
+	}
+
+	//  Push a reference of this instance into Beep’s library
+	//  so we can access and/or teardown it later.
+
+	Beep.triggers.push(this);
+};
+
+Beep.Trigger.prototype.addEventListener = function (type, action) {
+
+	this.eventListeners.push({
+
+		type: type,
+		action: action
+	});
+	window.addEventListener(type, action);
+};
+Beep.Trigger.prototype.removeEventListener = function (type, action) {
+
+	var i = eventListeners.length - 1;
+
+	for (i = eventListeners.length - 1; i >= 0; i--) {
+
+		if (eventListeners[i].type === type && eventListeners[i].action === action) {
+
+			eventListeners.splice(i, 1);
+		}
+	}
+	window.removeEventListener(type, action);
+};
+Beep.Trigger.prototype.removeEventListeners = function () {
+
+	var eventListener;
+
+	while (eventListener = this.eventListeners.pop()) {
+
+		window.removeEventListener(eventListener.type, eventListener.action);
+	}
+};
+
+//  You can add as many or as few trigger characters you like.
+//  Why would you want to add more?
+//  Try out the default synthesizer and see what happens when
+//  you walk the keys up an octave.
+//  Is the higher C where you expected it to be?
+
+Beep.Trigger.prototype.addTriggerChar = function (trigger) {
+
+	var that = this,
+	    triggerChar,
+	    triggerCharCode;
+
+	if (typeof trigger === 'string') {
+
+		triggerChar = trigger.toUpperCase();
+		triggerCharCode = triggerChar.charCodeAt(0);
+		if (triggerChar === '<') triggerCharCode = 188 // Ad hoc conversion of ASCII to KeyCode.
+		;
+	} else if (typeof trigger === 'number') {
+
+		triggerCharCode = trigger;
+		triggerChar = String.fromCharCode(triggerCharCode);
+		if (triggerCharCode === 188) triggerChar = '<' // Ad hoc conversion of KeyCode to ASCII.
+		;
+	}
+	this.addEventListener('keydown', function (event) {
+
+		var keyCode = event.which || event.keyCode;
+
+		if (Beep.isKeyboarding && keyCode === triggerCharCode && !event.metaKey && !event.ctrlKey) that.engage('keydown-' + triggerCharCode);
+	});
+	this.addEventListener('keyup', function (event) {
+
+		var keyCode = event.which || event.keyCode;
+
+		if (keyCode === triggerCharCode && !event.metaKey && !event.ctrlKey) that.disengage('keydown-' + triggerCharCode);
+	});
+	this.domCharsList.innerHTML += '<br>' + triggerChar;
+	return this;
+};
+
+//  Accept MIDI input as a trigger event.
+
+Beep.Trigger.prototype.onMidiMessage = function (event) {
+
+	//  MIDI data.
+	// 
+	//  Incoming message bytes are formatted like so:
+	// 
+	//  Status  Data1  Data2
+	//  0xAB    0xCC   0xDD
+	// 
+	//     A = Command, range 0–15 (0x0–0xF).
+	//     B = Channel, range 0–15 (0x0–0xF).
+	//    CC = Note number or item, range 0–255 (0x0–0xFF).
+	//    DD = Velcity, range 0–255 (0x0–0xFF).
+	// 
+	//  For additional information see:
+	//  http://en.wikipedia.org/wiki/MIDI
+	//  http://www.gweep.net/~prefect/eng/reference/protocol/midispec.html
+
+	var command = event.data[0] >> 4,
+	    //  Status byte, high nibble.
+	channel = event.data[0] & 15,
+	    //  Status byte, low nibble.
+	item = event.data[1],
+	    //  Data1 byte, often a note number.
+	velocity = event.data[2]; //  Data2 byte, often a velocity.
+
+	if (Beep.verbosity >= 0.7) {
+
+		console.log('\nMIDI Command', command);
+		console.log('MIDI Channel', channel);
+		console.log('MIDI Item', item);
+		console.log('MIDI Velocity', velocity);
+	}
+
+	//  Stop!
+	//  Either we received a Stop command
+	//  or we received a Play command with zero velocity.
+
+	if ((command === 8 || command === 9 && velocity === 0) && item === this.midiNumber) {
+
+		this.disengage('midi');
+	}
+
+	//  Play.
+
+	else if (command === 9 && item === this.midiNumber) {
+
+		this.engage('midi', velocity / 127);
+	}
+
+	//  Control change.
+
+	else if (command === 11) {
+
+		if (item === 1) {} //  Modulator!
+		//@@ TK: Support for ADSR knobs!
+	}
+
+	//  Pitch-bend wheel.
+	//   0–63  = bend the pitch down.
+	//  64–128 = bend the pitch up.
+	//  Oscillator detuning is done in a unit of “cents.”
+	//  There are 1200 cents per 1 octave.
+	//  Here we’re allowing the pitch wheel to
+	//  bend down 1 octave or up 1 octave.
+
+	else if (command === 14) {
+
+		this.voices.forEach(function (voice) {
+
+			if (voice.oscillator) voice.oscillator.detune.value = (velocity - 63) * 1200 / 63;
+		});
+	}
+};
+
+//  This is the default createVoices() function. You can easily override this
+//  by sending your own Function to the Trigger constructor, or even sending
+//  your own Function to Instrument, which will in turn pass it on to each
+//  Trigger instance that it builds.
+// “Down here, it’s our time. It’s our time down here.
+//  That’s all over the second we ride up Troy’s bucket.”
+
+Beep.Trigger.prototype.createVoices = function () {
+
+	this.voices.push(
+
+	//  Let’s call this our “Foundation Voice”
+	//  because it will sing the intended Note.
+
+	new Beep.Voice(this.note, this.audioContext).setOscillatorType('sine').setAttackGain(0.2).setReleaseDuration(0.2),
+
+	//  This Voice will sing 1 octave below the Foundation Voice.
+
+	new Beep.Voice(this.note.hertz / 2, this.audioContext).setOscillatorType('square').setAttackDuration(0.01).setAttackGain(0.3));
+};
+
+//  All-stop. Kill all the voices (in your head).
+
+Beep.Trigger.prototype.teardownVoices = function () {
+
+	var i = this.voices.length;
+
+	while (i--) {
+
+		if (this.voices[i] !== undefined) this.voices[i].teardown();
+		delete this.voices[i];
+	}
+	this.voices = [];
+	this.engaged = false;
+	return this;
+};
+
+//  You may be tempted to call play() and pause() directly.
+//  Don’t be a fool! Thou shalt instead only call engage()
+//  and disengage(). See directly below for details.
+
+Beep.Trigger.prototype.play = function (velocity) {
+
+	this.voices.forEach(function (voice) {
+		voice.play(velocity);
+	});
+};
+Beep.Trigger.prototype.pause = function () {
+
+	this.voices.forEach(function (voice) {
+		voice.pause();
+	});
+};
+
+//  Engage() and disengage() are like wrappers for
+//  play() and pause() respectively
+//  with safety mechanisms and interface feedback.
+
+Beep.Trigger.prototype.engage = function (a, b) {
+
+	var eventType,
+	    velocity = 1;
+
+	if (typeof a === 'string') eventType = a;else if (typeof a === 'number') velocity = a;
+	if (typeof b === 'string') eventType = b;else if (typeof b === 'number') velocity = b;
+
+	if (this.engaged === false) {
+
+		this.engaged = true;
+		this.eventType = eventType;
+		this.domContainer.classList.add('engaged');
+		this.play(velocity);
+	}
+	return this;
+};
+Beep.Trigger.prototype.disengage = function (eventType) {
+
+	if (this.engaged === true && (this.eventType === eventType || this.eventType === 'code')) {
+
+		this.engaged = false;
+		this.pause();
+		this.domContainer.classList.remove('engaged');
+	}
+	return this;
+};
+
+//  If you’re replacing your Instrument’s keyboard
+//  it might be useful to dispose of its Triggers in
+//  a meaningful way.
+
+Beep.Trigger.prototype.teardown = function () {
+
+	this.pause();
+	this.teardownVoices();
+	this.removeEventListeners();
+	this.domContainer.remove();
+};
+
+},{}],354:[function(require,module,exports){
+/*
+
+
+	Beep.Voice
+
+
+
+
+	Requires 
+
+	  1  Beep
+	  2  Beep.Note
+	  3  Beep.Sample
+
+	Description
+
+	  If a Note is merely a mathematical model then Voices are where
+	  the rubber meets the road. Voices contain a Note and an oscillator
+	  so a Voice is a thing that can actually sing!
+	
+	  If our Instruments were monophonic then we’d only need one voice
+	  that could be re-used to play any Note.
+	  But we’re polyphonic -- we can play multiple notes at once!
+
+	  Sending no arguments to a Voice will give you all default params
+	  and results in a playable Concert A.
+
+	  The intended use here is to create a Voice, optionally passing it
+	  a Note to begin with, and then alter its Note dynamically in a loop.
+	  Example: gliding from a Concert A to one octave lower could involve
+	  creating a Voice with no Note argument, calling its play() method, 
+	  then from within a loop assign the Voice a new progressively lower
+	  Note per loop until desired. 
+
+	Example uses
+
+	  voice = new Beep.Voice( 'eb3' )
+	  voice.play()
+	  setTimeout( function(){ voice.pause() }, 500 )
+
+	  voice = new Beep.Voice( '3E♭' ) //  Equivalent to above.
+	    .setOscillatorType( 'square' )//  For that chunky 8-bit sound.
+	    .setAttackGain( 0.3 )         //  0 = No gain. 1 = Full gain.
+	    .setAttackDuration( 0.08 )    //  Attack ramp up duration in seconds.
+	    .setDecayDuration( 0.1 )      //  Decay ramp down duration in seconds.
+	    .setSustainGain( 0.6 )        //  Sustain gain level; percent of attackGain.
+	    .setSustainDuration( 1 )      //  Sustain duration in seconds -- normally Infinity.
+	    .setReleaseDuration( 0.1 )    //  Release ramp down duration in seconds.
+	    .play( 0.5 )                  //  Optionally multiply the attack and sustain gains.
+
+
+*/
+
+//  We’re expecting up to two kinds of optional arguments:
+//  a note-like thing and an audio-connection-like thing.
+//  We can handle several permutations of this.
+//  There’s a hardware limitation of 6 Audio Contexts in total
+//  so we’d like to connect this Voice to an existing one if
+//  possible. But if need be we can create a new one here.
+
+'use strict';
+
+Beep.Voice = function (a, b) {
+
+	//  Remember the ? will be validated by Note()
+	//  so it could be an Object, String, Number, etc.
+	//
+	//      ( AudioContext, Note )
+	//      ( AudioContext, ?    )
+	//      ( GainNode,     Note )
+	//      ( GainNode,     ?    )
+
+	if (a instanceof Beep.AudioContext || a instanceof GainNode) {
+
+		if (a instanceof Beep.AudioContext) {
+
+			this.audioContext = a;
+			this.destination = a.destination;
+		} else if (a instanceof GainNode) {
+
+			this.audioContext = a.audioContext;
+			this.destination = a;
+		}
+		if (b instanceof Beep.Note) this.note = b;else this.note = new Beep.Note(b) //  Still ok if b === undefined.
+		;
+	}
+
+	//  Again, the ? will be validated by Note()
+	//  so it could be an Object, String, Number, etc.
+	//
+	//      ( Note               )
+	//      ( Note, AudioContext )
+	//      ( Note, GainNode     )
+	//      ( ?                  )
+	//      ( ?,    AudioContext )
+	//      ( ?,    GainNode     )
+
+	else {
+
+		if (a instanceof Beep.Note) this.note = a;else this.note = new Beep.Note(a); //  Still ok if a === undefined.
+		if (b instanceof Beep.AudioContext) {
+
+			this.audioContext = b;
+			this.destination = b.destination;
+		} else if (b instanceof GainNode) {
+
+			this.audioContext = b.audioContext;
+			this.destination = b;
+		} else {
+
+			this.audioContext = Beep.audioContext;
+			this.destination = this.audioContext.destination;
+		}
+	}
+
+	//  Now that we have a handle on what the arguments were
+	//  we can run a setup() function. Why make that a separate
+	//  function? So Beep.Sample can re-use it when it inherits
+	//  Voice’s prototypes!
+
+	this.setup();
+
+	//  Push a reference of this instance into Beep’s library
+	//  so we can access and/or teardown it later.
+
+	Beep.voices.push(this);
+};
+
+Beep.Voice.prototype.setup = function () {
+
+	//  Create a Gain Node
+	//  for turning this voice up and down.
+
+	this.gainNode = this.audioContext.createGain();
+	this.gainNode.gain.value = 0;
+	this.gainNode.connect(this.destination);
+
+	/*
+ 
+                     D + ADSR Envelope                      
+ 	  ┌───────┬────────┬───────┬─────────────────┬─────────┐   
+   │ Delay │ Attack │ Decay │     Sustain     │ Release │   
+   │                                                    │  ↑
+   │               •••                                  │   
+   │             ••   •••                               │  G
+   │           ••        •••                            │  A
+   │          •             •••••••••••••••••••         │  I
+   │         •                                 •        │  N
+   │        •                                   •••     │   
+   └••••••••────────┴───────┴─────────────────┴────•••••┘   
+ 	                          TIME →                           
+ 
+ ADSR stands for Attack, Decay, Sustain, and Release. These are all units
+ of duration with the exception of Sustain which instead represents gain
+ rather than time. That exception can easily become a point of confusion, 
+ particularly in this context where you may wish to script the duration of
+ Sustain! For that reason I have named these variables rather verbosely.
+ Additionally I’ve added a Delay duration. For more useful information see
+ http://en.wikipedia.org/wiki/Synthesizer#ADSR_envelope
+ 
+ @@ TO-DO: Support Bezier curves?
+ 	*/
+	this.delayDuration = 0;
+	this.attackGain = 0.15; //  Absolute value between 0 and 1.
+	this.attackDuration = 0.05;
+	this.decayDuration = 0.05;
+	this.sustainGain = 0.8; //  Percetage of attackGain.
+	this.sustainDuration = Infinity;
+	this.releaseDuration = 0.1;
+
+	//  Because of “iOS reasons” we cannot begin playing a sound
+	//  until the user has tripped an event.
+	//  So we’ll use this boolean to trip this.oscillator.start(0)
+	//  on the first use of this Voice instance.
+
+	this.isPlaying = false;
+
+	//  Create an Oscillator
+	//  for generating the sound.
+
+	this.noteEnabled = true;
+	this.oscillator = this.audioContext.createOscillator();
+	this.oscillator.connect(this.gainNode);
+	this.oscillator.type = 'sine';
+	this.oscillator.frequency.value = this.note.hertz;
+
+	//  @@  NEW FEATURE TK SOON ;)
+
+	this.sampleEnabled = false;
+
+	//  Good to know when it’s time to go home.
+
+	this.isTorndown = false;
+};
+
+//  Voices are *always* emitting, so “playing” a Note
+//  is really a matter of turning its amplitude up.
+
+Beep.Voice.prototype.play = function (velocity) {
+
+	var that = this,
+	    timeNow = this.audioContext.currentTime,
+	    gainNow = this.gainNode.gain.value;
+
+	//  Optionally accept a velocity (expecting a value 0 through 1)
+	//  to be multiplied against the attack and sustain gains.
+
+	if (typeof velocity !== 'number') velocity = 0.5;
+
+	//  Just in case we’ve changed the value of Note
+	//  since initialization.
+
+	if (this.noteEnabled) this.oscillator.frequency.value = this.note.hertz;
+
+	//  We might be playing a sample instead of a Note.
+
+	if (this.sampleEnabled) {
+
+		if (this.sampleResetOnPlay) this.sample.currentTime = 0;
+		this.sample.play();
+	}
+
+	//  Cancel all your plans.
+	//  And let’s tween from the current gain value.
+
+	this.gainNode.gain.cancelScheduledValues(timeNow);
+	this.gainNode.gain.setValueAtTime(gainNow, timeNow);
+
+	//  Is there a Delay between when we trigger the Voice and when it Attacks?
+
+	if (this.delayDuration) this.gainNode.gain.setValueAtTime(gainNow, timeNow + this.delayDuration);
+
+	//  Now let’s schedule a ramp up to full gain for the Attack
+	//  and then down to a Sustain level after the Decay.
+
+	this.gainNode.gain.linearRampToValueAtTime(velocity * this.attackGain, timeNow + this.delayDuration + this.attackDuration);
+	this.gainNode.gain.linearRampToValueAtTime(velocity * this.attackGain * this.sustainGain, timeNow + this.delayDuration + this.attackDuration + this.decayDuration);
+
+	//  Oh, iOS. This “wait to play” shtick is for you.
+
+	if (this.isPlaying === false) {
+
+		this.isPlaying = true;
+		if (this.noteEnabled) this.oscillator.start(0);
+	}
+
+	//  Did we set a duration limit on this	Voice?
+
+	if (this.sustainDuration !== Infinity) setTimeout(function () {
+
+		that.pause();
+	}, timeNow + this.delayDuration + this.attackDuration + this.sustainDuration * 1000);
+
+	return this;
+};
+
+//  We don’t want to stop() an oscillator because that would teardown it:
+//  They are not reusable.
+//  Instead we just turn its amplitude down so we can’t hear it.
+
+Beep.Voice.prototype.pause = function () {
+
+	var timeNow = this.audioContext.currentTime;
+
+	//  Cancel all your plans.
+	//  And let’s tween from the current gain value.
+
+	this.gainNode.gain.cancelScheduledValues(timeNow);
+	this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, timeNow);
+
+	//  Now let’s schedule a ramp down to zero gain for the Release.
+
+	this.gainNode.gain.linearRampToValueAtTime(0.0001, timeNow + this.releaseDuration);
+	//this.gainNode.gain.exponentialRampToValueAtTime( 0.0001, timeNow + this.releaseDuration )
+	this.gainNode.gain.setValueAtTime(0, timeNow + this.releaseDuration + 0.0001);
+
+	return this;
+};
+
+//  Or you know what? Maybe we do want to just kill it.
+//  Like sawing off the branch you’re sitting on.
+
+Beep.Voice.prototype.teardown = function () {
+
+	if (this.isTorndown === false) {
+
+		if (this.oscillator) {
+			if (this.isPlaying) this.oscillator.stop(0); // Stop oscillator after 0 seconds.
+			this.oscillator.disconnect();
+		}
+		if (this.source) this.source.disconnect();
+		this.isTorndown = true;
+	}
+	return this;
+}
+
+//  Some convenience getters and setters.
+//
+//  Q: OMG, why? It’s not like we’re protecting private variables.
+//     You can already directly access these properties!
+//  A: Sure, sure. But by creating setters that return “this”
+//     you can easily do function-chaining and never have to create
+//     and set temporary variables, like this:
+//
+//     voices.push(
+//
+// 	       new Beep.Voice( this.note.hertz * 3 / 2, this.audioContext )
+// 	       .setOscillatorType( 'triangle' )
+// 	       .setAttackGain( 0.3 )
+//     )
+//
+//     As for the getters, it just felt rude to create the setters
+//    (thereby leading the expectation that getters would also exist)
+//     without actually having getters.
+
+;['delayDuration', 'attackGain', 'attackDuration', 'decayDuration', 'sustainGain', 'sustainDuration', 'releaseDuration'].forEach(function (propertyName) {
+
+	var propertyNameCased = propertyName.substr(0, 1).toUpperCase() + propertyName.substr(1);
+
+	Beep.Voice.prototype['get' + propertyNameCased] = function () {
+
+		return this[propertyName];
+	};
+	Beep.Voice.prototype['set' + propertyNameCased] = function (x) {
+
+		this[propertyName] = x;
+		return this;
+	};
+});
+Beep.Voice.prototype.getOscillatorType = function () {
+
+	return this.oscillator ? this.oscillator.type : undefined;
+};
+Beep.Voice.prototype.setOscillatorType = function (string) {
+
+	if (this.oscillator) this.oscillator.type = string;
+	return this;
+};
+// Disconnect oscillator so it can be picked up by browser’s garbage collector.
+
+},{}],355:[function(require,module,exports){
+/*
+
+
+	Beep
+
+
+
+
+	Description
+
+	  A JavaScript toolkit for building browser-based synthesizers.
+
+
+*/
+
+'use strict';
+
+var Beep = {
+
+	VERSION: 7,
+
+	//  How much console output should we have, really?
+	//  Expecting a value between 0 and 1 inclusive
+	//  where 0 = nothing and 1 = everything possible.
+
+	verbosity: 0.5,
+
+	//  Chrome, Opera, and Firefox already provide AudioContext()
+	//  but Safari instead provides webkitAudioContext().
+	//  Let’s just standardize this for our own sanity right here:
+
+	AudioContext: window.AudioContext ? window.AudioContext : window.webkitAudioContext,
+
+	//  We’ll keep track of Voices, Triggers, and Instruments
+	// (but not Notes because we just throw those away left and right)
+	//  so we can access and/or teardown them later even if unnamed.
+
+	voices: [],
+	samples: [],
+	triggers: [],
+	instruments: [],
+
+	//  Once the “DOM Content Loaded” event fires we’ll come back
+	//  and set this to either an existing DOM Element with a #beep ID
+	//  or create a new element and append it to the Body.
+
+	domContainer: null,
+
+	//  This will be rather useful for bypassing keyboard Event Listeners.
+	//  @@ Will come back and rename this / improve its functionality
+	//  so that any focus on a text area stops Triggers from firing!
+
+	isKeyboarding: true,
+
+	//  When the system’s ready (ie. DOM content loaded, etc.)
+	//  we may need to perform some setup tasks.
+
+	setupTasks: [function () {
+
+		if (Beep.audioContext === undefined) Beep.audioContext = new Beep.AudioContext();
+	}, function () {
+
+		if (Beep.domContainer === null) Beep.domContainer = document.getElementById('beep');
+	}, function () {
+
+		if (Beep.verbosity > 0) console.log('Beep', Beep.VERSION);
+	}],
+
+	//  Right now just runs Beep.eval() but in the near future
+	//  we might have some more tricks up our sleeve...
+
+	setup: function setup() {
+
+		var task;
+
+		while (task = this.setupTasks.shift()) {
+
+			if (typeof task === 'function') task();
+		}
+	},
+
+	//  Teardown everything. EVERYTHING. DO IT. DO IT NOW.
+
+	teardown: function teardown() {
+
+		while (this.instruments.length) {
+
+			this.instruments.pop().teardown();
+		}
+		while (this.triggers.length) {
+
+			this.triggers.pop().teardown();
+		}
+		while (this.samples.length) {
+
+			this.samples.pop().teardown();
+		}
+		while (this.voices.length) {
+
+			this.voices.pop().teardown();
+		}
+	},
+
+	//  We need to tear everything down.
+	//  Then build it right back up.
+
+	reset: function reset() {
+
+		this.teardown();
+		this.setup();
+	},
+
+	//  JavaScript does not natively support multiline String literals.
+	//  Sure, you can construct a string and include a “\n” or “\r” and
+	//  ok, I admit you can do the “\” + actual line return trick in some cases
+	//  but the most reliable (and forget Internet Explorer) way is to create
+	//  a function which includes multiline *comments* (OMFG!),
+	//  then parse the Function literal itself as a String!
+
+	parseMultilineString: function parseMultilineString(f) {
+
+		f = f.toString();
+
+		var begin = f.indexOf('/*') + 2,
+		    end = f.indexOf('*/', begin);
+
+		return f.substring(begin, end).replace(/\/\+/g, '/*').replace(/\+\//g, '*/');
+	}
+};
+
+//  Once our DOM Content is ready for action
+//  it’s time to GIVE IT ACTION. W000000000000T !
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	Beep.setup();
+});
+
+},{}],356:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -51032,7 +52929,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],351:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51053,7 +52950,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],352:[function(require,module,exports){
+},{}],358:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -51122,7 +53019,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":336,"./components/footer":340,"./components/header":341,"./components/map":344,"./components/music":346,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[352])
+},{"./components/draw":336,"./components/footer":340,"./components/header":341,"./components/map":344,"./components/music":346,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[358])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

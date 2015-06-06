@@ -1,6 +1,13 @@
 let React = require('react');
 let $ = require('jquery');
 
+require('../lib/beep/Beep.js');
+require('../lib/beep/Beep.Note.js');
+require('../lib/beep/Beep.Voice.js');
+require('../lib/beep/Beep.Sample.js');
+require('../lib/beep/Beep.Trigger.js');
+require('../lib/beep/Beep.Instrument.js');
+
 let Keyboard = React.createClass({
   getInitialState: function () {
     return {
@@ -9,21 +16,10 @@ let Keyboard = React.createClass({
   },
 
   componentDidMount: function () {
-    let context = new (window.AudioContext || window.webkitAudioContext)();
-    let oscillator = context.createOscillator();
-    let gain = context.createGain();
-
-    oscillator.type = 'sine';
-    oscillator.frequency.value = 3000;
-    gain.gain.value = 0.5;
-
-    oscillator.connect(gain);
-    gain.connect(context.destination);
+    let voice = new Beep.Voice('2Eb');
 
     this.setState({
-      context: context,
-      oscillator: oscillator,
-      gain: gain
+      voice: voice
     });
 
     $(this.refs.keyInput.getDOMNode()).focus();
@@ -44,14 +40,14 @@ let Keyboard = React.createClass({
 
   playNote: function (ev) {
     if (!this.state.isPlaying) {
-      this.state.oscillator.start();
+      this.state.voice.play();
       this.setState({ isPlaying: true });
     }
   },
 
   stopNote: function (ev) {
     if (this.state.isPlaying) {
-      this.state.oscillator.stop();
+      this.state.voice.pause();
       this.setState({ isPlaying: false });
     }
   }
