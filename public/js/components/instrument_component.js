@@ -3,7 +3,7 @@ let React = require('react');
 let InstrumentComponent = React.createClass({
   getDefaultProps: function () {
     return {
-      frequency: 440,
+      harmonic: 0,
       gain: 0.5,
       type: 'sine'
     }
@@ -11,7 +11,7 @@ let InstrumentComponent = React.createClass({
 
   getInitialState: function () {
     return {
-      frequency: this.props.frequency,
+      harmonic: this.props.harmonic,
       gain: this.props.gain,
       type: this.props.type
     };
@@ -21,11 +21,11 @@ let InstrumentComponent = React.createClass({
     return (
       <div className="component">
         <div className="field">
-          <label htmlFor="frequency">Frequency</label>
+          <label htmlFor="harmonic">Harmonic</label>
           <input type="number"
-                 name="frequency"
-                 value={this.state.frequency}
-                 onChange={this.onFrequencyChange}/>
+                 name="harmonic"
+                 value={this.state.harmonic}
+                 onChange={this.onHarmonicChange}/>
         </div>
 
         <div className="field">
@@ -60,8 +60,8 @@ let InstrumentComponent = React.createClass({
     );
   },
 
-  onFrequencyChange: function (ev) {
-    let newState = { frequency: ev.target.value };
+  onHarmonicChange: function (ev) {
+    let newState = { harmonic: ev.target.value };
     this.setState(newState);
     this.props.onChange(newState, this.props.idx);
   },

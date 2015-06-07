@@ -18,3 +18,25 @@
 .instrument-list .instrument.active {
   background: rgba(255, 255, 255, 0.2);
 }
+
+.edit-instrument .components {
+  display: flex;
+  justify-content: center;
+}
+
+.edit-instrument .component {
+  width: 180px;
+  height: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.edit-instrument .new-component {
+  width: 50px;
+  height: 70px;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0);
+  color: #eee;
+  border: 3px dashed #ddd;
+  font-size: 28px;
+  font-weight: bold;
+}

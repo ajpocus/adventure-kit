@@ -1,5 +1,7 @@
 let React = require('react');
 
+import EditInstrument from './edit_instrument';
+
 let InstrumentList = React.createClass({
   getInitialState: function () {
     return {
@@ -35,16 +37,29 @@ let InstrumentList = React.createClass({
     }
 
     return (
-      <ul className="instrument-list">
+      <div className="instrument-list">
         <h2>Instruments</h2>
-        {instrumentViews}
-      </ul>
+        <button className="new-instrument"
+                onClick={this.newInstrument}>
+          + New Instrument
+        </button>
+        <ul className="instrument-list">
+          {instrumentViews}
+        </ul>
+      </div>
+
     );
   },
 
   handleClick: function (idx) {
     let instrument = this.state.instruments[idx];
     this.setState({ activeInstrument: instrument });
+  },
+
+  newInstrument: function () {
+    React.render(<EditInstrument onInstrumentChange={this.onInstrumentChange}
+                                 onInstrumentSave={this.onInstrumentSave}/>,
+                 document.getElementById('modal-container'));
   }
 });
 

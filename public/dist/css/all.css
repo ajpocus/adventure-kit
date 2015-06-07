@@ -98,6 +98,34 @@ img.pixel {
   -ms-interpolation-mode: nearest-neighbor;
   /* IE8+ */
 }
+
+.modal-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  min-width: 550px;
+  max-width: 50%;
+  margin: 200px auto;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: #222;
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+  padding: 4px;
+  font-face: bold;
+  font-size: 14px;
+}
 #draw {
   display: flex;
   flex-direction: row;
@@ -203,33 +231,6 @@ img.pixel {
   height: 12px;
 }
 
-.modal-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  width: 550px;
-  margin: 200px auto;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  background: #222;
-  position: relative;
-}
-
-.close-modal {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  cursor: pointer;
-  padding: 4px;
-  font-face: bold;
-  font-size: 14px;
-}
-
 .edit-palette .colors {
   display: flex;
   flex-wrap: wrap;
@@ -281,6 +282,28 @@ img.pixel {
 
 .instrument-list .instrument.active {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.edit-instrument .components {
+  display: flex;
+  justify-content: center;
+}
+
+.edit-instrument .component {
+  width: 180px;
+  height: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.edit-instrument .new-component {
+  width: 50px;
+  height: 70px;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0);
+  color: #eee;
+  border: 3px dashed #ddd;
+  font-size: 28px;
+  font-weight: bold;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
