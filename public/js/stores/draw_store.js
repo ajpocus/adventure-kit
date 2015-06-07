@@ -3,6 +3,7 @@ let assign = require('object-assign');
 
 import AppDispatcher from '../dispatcher/app_dispatcher';
 import DrawStoreConstants from '../constants/draw_store_constants';
+import Pixel from '../models/pixel';
 
 let _state = {
   primaryColor: '#000000',
@@ -12,6 +13,11 @@ let _state = {
   totalWidth: 1024,
   totalHeight: 1024,
   zoom: 0.875,
+  totalWidth: 1024,
+  totalHeight: 1024,
+  bgTileSize: 8,
+  minZoom: 0.125,
+  maxZoom: 4,
   activeTool: 'Pencil',
   palettes: {
     'Rainbow': [
@@ -28,6 +34,11 @@ function loadState(data) {
 
 let DrawStore = assign(EventEmitter.prototype, {
   getState: function () {
+    _state.actualWidth = _state.totalWidth * _state.zoom;
+    _state.actualHeight = _state.totalHeight * _state.zoom;
+    _state.tileWidth = _state.actualWidth / _state.width;
+    _state.tileHeight = _state.actualHeight / _state.height;
+
     return _state;
   },
 
@@ -117,6 +128,36 @@ let DrawStore = assign(EventEmitter.prototype, {
 
       case DrawStoreConstants.CLOSE_EDIT:
         _state.isEditingPalette = false;
+        break;
+
+      case DrawStoreConstants.SET_DRAW_CONTEXTS:
+        let contexts = action.data;
+        _state.bgCtx = contexts.bgCtx;
+        _state.drawCtx = contexts.drawCtx;
+        _state.overlayCtx = contexts.overlayCtx;
+
+        let bgTileSize = _state.bgTileSize;
+        _state.bgCtx.scale(bgTileSize, bgTileSize);
+
+        let tileWidth = _state.tileWidth;
+        let tileHeight = _state.tileHeight;
+        _state.drawCtx.scale(tileWidth, tileHeight);
+        _state.overlayCtx.scale(tileWidth, tileHeight);
+
+        break;
+
+      case DrawStoreConstants.INIT_GRID:
+        let grid = [];
+
+        for (let x = 0; x < _state.width; x++) {
+          grid[x] = [];
+
+          for (let y = 0; y < _state.height; y++) {
+            grid[x].push(new Pixel(x, y));
+          }
+        }
+
+        _state.grid = grid;
         break;
 
       default:
