@@ -35,9 +35,6 @@ let PaletteManager = React.createClass({
       );
     }
 
-    let editName = this.props.activePalette;
-    let editPalette = this.props.palettes[editName].slice();
-
     return (
       <div className="palette-manager">
         <h2>Palette</h2>

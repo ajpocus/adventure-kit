@@ -76,6 +76,8 @@ let DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case DrawStoreConstants.EDIT_PALETTE:
+        _state.editPaletteName = _state.activePalette;
+        _state.editPalette = _state.palettes[_state.editPaletteName].slice();
         _state.isEditingPalette = true;
         break;
 

@@ -53086,9 +53086,6 @@ var PaletteManager = React.createClass({
         onClick: this.setPrimaryColor.bind(this, color) }));
     }
 
-    var editName = this.props.activePalette;
-    var editPalette = this.props.palettes[editName].slice();
-
     return React.createElement(
       'div',
       { className: 'palette-manager' },
@@ -53454,6 +53451,8 @@ var DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case _constantsDraw_store_constants2['default'].EDIT_PALETTE:
+        _state.editPaletteName = _state.activePalette;
+        _state.editPalette = _state.palettes[_state.editPaletteName].slice();
         _state.isEditingPalette = true;
         break;
 
