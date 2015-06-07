@@ -12,7 +12,14 @@ let _state = {
   totalWidth: 1024,
   totalHeight: 1024,
   zoom: 0.875,
-  activeTool: 'Pencil'
+  activeTool: 'Pencil',
+  palettes: {
+    'Rainbow': [
+      '#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff',
+      '#ff00ff'
+    ]
+  },
+  activePalette: 'Rainbow'
 };
 
 function loadState(data) {
@@ -54,6 +61,22 @@ let DrawStore = assign(EventEmitter.prototype, {
 
       case DrawStoreConstants.SET_ACTIVE_TOOL:
         _state.activeTool = action.data;
+        break;
+
+      case DrawStoreConstants.SET_PRIMARY_COLOR:
+        _state.primaryColor = action.data;
+        break;
+
+      case DrawStoreConstants.SET_SECONDARY_COLOR:
+        _state.secondaryColor = action.data;
+        break;
+
+      case DrawStoreConstants.NEW_PALETTE:
+        _state.palettes[paletteName] = {};
+        break;
+
+      case DrawStoreConstants.EDIT_PALETTE:
+        _state.isEditingPalette = true;
         break;
 
       default:

@@ -33,8 +33,13 @@ let DrawController = React.createClass({
       <div id="draw">
         <div className="toolbar">
           <DrawToolList activeTool={this.state.activeTool}/>
-          <PaletteManager onPrimaryColorChange={this.onPrimaryColorChange}
-                          onSecondaryColorChange={this.onSecondaryColorChange}/>
+
+          <PaletteManager palettes={this.state.palettes}
+                          activePalette={this.state.activePalette}
+                          isEditingPalette={this.state.isEditingPalette}
+                          editPalette={this.state.editPalette}
+                          editPaletteName={this.state.editPaletteName}/>
+
           <ColorPicker primaryColor={this.state.primaryColor}
                        secondaryColor={this.state.secondaryColor}
                        onPrimaryColorChange={this.onPrimaryColorChange}

@@ -4,9 +4,9 @@ let $ = require('jquery');
 import Transparency from '../lib/transparency';
 
 let EditPalette = React.createClass({
-  getInitialState: function () {
+  getDefaultProps: function () {
     return {
-      palette: this.props.palette
+      palette: []
     };
   },
 

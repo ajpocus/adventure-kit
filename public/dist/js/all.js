@@ -51255,6 +51255,34 @@ var DrawStoreActions = {
       actionType: _constantsDraw_store_constants2['default'].SET_ACTIVE_TOOL,
       data: data
     });
+  },
+
+  setPrimaryColor: function setPrimaryColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].SET_PRIMARY_COLOR,
+      data: data
+    });
+  },
+
+  setSecondaryColor: function setSecondaryColor(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].SET_SECONDARY_COLOR,
+      data: data
+    });
+  },
+
+  newPalette: function newPalette(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].NEW_PALETTE,
+      data: data
+    });
+  },
+
+  editPalette: function editPalette(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].EDIT_PALETTE,
+      data: data
+    });
   }
 };
 
@@ -51379,8 +51407,11 @@ var DrawController = React.createClass({
         'div',
         { className: 'toolbar' },
         React.createElement(_draw_tool_list2['default'], { activeTool: this.state.activeTool }),
-        React.createElement(_palette_manager2['default'], { onPrimaryColorChange: this.onPrimaryColorChange,
-          onSecondaryColorChange: this.onSecondaryColorChange }),
+        React.createElement(_palette_manager2['default'], { palettes: this.state.palettes,
+          activePalette: this.state.activePalette,
+          isEditingPalette: this.state.isEditingPalette,
+          editPalette: this.state.editPalette,
+          editPaletteName: this.state.editPaletteName }),
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
           secondaryColor: this.state.secondaryColor,
           onPrimaryColorChange: this.onPrimaryColorChange,
@@ -52118,9 +52149,9 @@ var $ = require('jquery');
 var EditPalette = React.createClass({
   displayName: 'EditPalette',
 
-  getInitialState: function getInitialState() {
+  getDefaultProps: function getDefaultProps() {
     return {
-      palette: this.props.palette
+      palette: []
     };
   },
 
@@ -53005,6 +53036,10 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _actionsDraw_store_actions = require('../actions/draw_store_actions');
+
+var _actionsDraw_store_actions2 = _interopRequireDefault(_actionsDraw_store_actions);
+
 var _edit_palette = require('./edit_palette');
 
 var _edit_palette2 = _interopRequireDefault(_edit_palette);
@@ -53024,19 +53059,10 @@ var $ = require('jquery');
 var PaletteManager = React.createClass({
   displayName: 'PaletteManager',
 
-  getInitialState: function getInitialState() {
-    return {
-      palettes: {
-        'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#ff00ff']
-      },
-      activePalette: 'Rainbow'
-    };
-  },
-
   render: function render() {
     var paletteOptions = [];
-    for (var paletteName in this.state.palettes) {
-      if (this.state.palettes.hasOwnProperty(paletteName)) {
+    for (var paletteName in this.props.palettes) {
+      if (this.props.palettes.hasOwnProperty(paletteName)) {
         paletteOptions.push(React.createElement(
           'option',
           { value: paletteName, key: paletteName },
@@ -53045,7 +53071,7 @@ var PaletteManager = React.createClass({
       }
     }
 
-    var activePalette = this.state.palettes[this.state.activePalette];
+    var activePalette = this.props.palettes[this.props.activePalette];
     var paletteColors = [];
     for (var i = 0; i < activePalette.length; i++) {
       var color = activePalette[i];
@@ -53060,7 +53086,8 @@ var PaletteManager = React.createClass({
         onClick: this.setPrimaryColor.bind(this, color) }));
     }
 
-    var paletteCopy = activePalette.slice();
+    var editName = this.props.activePalette;
+    var editPalette = this.props.palettes[editName].slice();
 
     return React.createElement(
       'div',
@@ -53078,7 +53105,7 @@ var PaletteManager = React.createClass({
       React.createElement(
         'select',
         { name: 'activePalette', className: 'palette-chooser',
-          value: this.state.activePalette },
+          value: this.props.activePalette },
         paletteOptions
       ),
       React.createElement(
@@ -53094,13 +53121,14 @@ var PaletteManager = React.createClass({
       React.createElement(
         _modal2['default'],
         { isOpen: this.props.isEditingPalette },
-        React.createElement(_edit_palette2['default'], { palette: paletteCopy })
+        React.createElement(_edit_palette2['default'], { palette: this.props.editPalette,
+          name: this.props.editPaletteName })
       )
     );
   },
 
   setPrimaryColor: function setPrimaryColor(color) {
-    this.props.onPrimaryColorChange(color);
+    _actionsDraw_store_actions2['default'].setPrimaryColor(color);
   },
 
   newPalette: function newPalette() {
@@ -53109,26 +53137,20 @@ var PaletteManager = React.createClass({
       return;
     }
 
-    if (this.state.palettes[paletteName]) {
+    if (this.props.palettes[paletteName]) {
       alert('That palette name is already taken.');
     }
 
-    var palettes = this.state.palettes;
-    palettes[paletteName] = {};
-    this.setState({ palettes: palettes });
+    _actionsDraw_store_actions2['default'].newPalette(paletteName);
   },
 
   editPalette: function editPalette() {
-    var name = this.state.activePalette;
-    var palette = this.state.palettes[name].splice(0);
-
-    React.render(React.createElement(_edit_palette2['default'], { palette: palette, name: name,
-      onPaletteChange: this.onPaletteChange }), document.getElementById('modal-container'));
+    _actionsDraw_store_actions2['default'].editPalette();
   },
 
   onPaletteChange: function onPaletteChange(palette) {
-    var name = this.state.activePalette;
-    var palettes = this.state.palettes;
+    var name = this.props.activePalette;
+    var palettes = this.props.palettes;
     palettes[name] = palette;
     this.setState({ palettes: palettes });
   }
@@ -53137,7 +53159,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../lib/transparency":374,"./edit_palette":359,"./modal":367,"jquery":135,"react":336,"tinycolor2":352}],370:[function(require,module,exports){
+},{"../actions/draw_store_actions":353,"../lib/transparency":374,"./edit_palette":359,"./modal":367,"jquery":135,"react":336,"tinycolor2":352}],370:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53279,7 +53301,11 @@ var DrawStoreConstants = keyMirror({
   LOAD_STATE: null,
   ZOOM_IN: null,
   ZOOM_OUT: null,
-  SET_ACTIVE_TOOL: null
+  SET_ACTIVE_TOOL: null,
+  SET_PRIMARY_COLOR: null,
+  SET_SECONDARY_COLOR: null,
+  NEW_PALETTE: null,
+  EDIT_PALETTE: null
 });
 
 exports['default'] = DrawStoreConstants;
@@ -53367,7 +53393,11 @@ var _state = {
   totalWidth: 1024,
   totalHeight: 1024,
   zoom: 0.875,
-  activeTool: 'Pencil'
+  activeTool: 'Pencil',
+  palettes: {
+    'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#ff00ff']
+  },
+  activePalette: 'Rainbow'
 };
 
 function loadState(data) {
@@ -53409,6 +53439,22 @@ var DrawStore = assign(EventEmitter.prototype, {
 
       case _constantsDraw_store_constants2['default'].SET_ACTIVE_TOOL:
         _state.activeTool = action.data;
+        break;
+
+      case _constantsDraw_store_constants2['default'].SET_PRIMARY_COLOR:
+        _state.primaryColor = action.data;
+        break;
+
+      case _constantsDraw_store_constants2['default'].SET_SECONDARY_COLOR:
+        _state.secondaryColor = action.data;
+        break;
+
+      case _constantsDraw_store_constants2['default'].NEW_PALETTE:
+        _state.palettes[paletteName] = {};
+        break;
+
+      case _constantsDraw_store_constants2['default'].EDIT_PALETTE:
+        _state.isEditingPalette = true;
         break;
 
       default:
