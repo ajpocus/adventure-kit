@@ -2,10 +2,16 @@ let React = require('react');
 
 import InstrumentComponent from './instrument_component';
 
-let Instrument = React.createClass({
+let NewInstrument = React.createClass({
   getInitialState: function () {
     return {
-      components: this.props.components
+      components: [
+        {
+          octave: 0,
+          gain: 0.5,
+          type: 'sawtooth'
+        }
+      ]
     };
   },
 
@@ -47,8 +53,7 @@ let Instrument = React.createClass({
 
     components[idx] = component;
     this.setState({ components: components });
-    this.props.onChange(components);
   }
 });
 
-export default Instrument;
+export default NewInstrument;

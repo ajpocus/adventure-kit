@@ -274,6 +274,14 @@ img.pixel {
 .instrument input[type="number"] {
   width: 50px;
 }
+
+.instrument-list {
+  width: 200px;
+}
+
+.instrument-list .instrument.active {
+  background: rgba(255, 255, 255, 0.2);
+}
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)

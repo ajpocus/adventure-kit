@@ -10,24 +10,8 @@ let Keyboard = React.createClass({
       isPlaying: false,
       ctx: new window.AudioContext(),
       oscillators: [],
-      // instrument: this.props.instrument
-      instrument: [
-        {
-          freqMult: 1,
-          gain: 0.3,
-          type: 'sawtooth'
-        },
-        {
-          freqMult: 2,
-          gain: 0.5,
-          type: 'sine'
-        },
-        {
-          freqMult: 4,
-          gain: 0.2,
-          type: 'square'
-        }
-      ]
+      instrument: this.props.instrument,
+      octaveShift: 2
     };
   },
 
@@ -56,19 +40,19 @@ let Keyboard = React.createClass({
 
       let key = this.keyCodeToChar(ev.keyCode);
       let midi = this.keyToNote(key);
-      console.log(midi);
       if (!midi) {
         return;
       }
 
+      midi += this.state.octaveShift * 12
       let note = teoria.note.fromMIDI(midi);
       let freq = note.fq();
 
-      for (let i = 0; i < instrument.length; i++) {
-        let wave = instrument[i];
+      for (let i = 0; i < instrument.components.length; i++) {
+        let wave = instrument.components[i];
 
         let osc = ctx.createOscillator();
-        osc.frequency.value = wave.freqMult * freq;
+        osc.frequency.value = freq * Math.pow(2, wave.harmonic);
         osc.type = wave.type;
 
         let gainNode = ctx.createGain();
