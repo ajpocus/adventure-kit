@@ -4,7 +4,7 @@ import TrackList from './track_list';
 import InstrumentList from './instrument_list';
 import Keyboard from './keyboard';
 
-let Music = React.createClass({
+let MusicController = React.createClass({
   getInitialState: function () {
     return {
       activeInstrument: {
@@ -46,4 +46,4 @@ let Music = React.createClass({
   }
 });
 
-export default Music;
+export default MusicController;

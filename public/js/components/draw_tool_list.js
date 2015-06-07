@@ -1,5 +1,7 @@
 let React = require('react');
 
+import DrawStoreActions from '../actions/draw_store_actions';
+
 let DrawToolList = React.createClass({
   getDefaultProps: function () {
     return {
@@ -24,18 +26,12 @@ let DrawToolList = React.createClass({
     }
   },
 
-  getInitialState: function () {
-    return {
-      activeTool: 'Pencil'
-    }
-  },
-
   render: function () {
     let toolList = [];
     for (let i = 0; i < this.props.tools.length; i++) {
       let tool = this.props.tools[i];
       let className = "btn";
-      if (tool.name === this.state.activeTool) {
+      if (tool.name === this.props.activeTool) {
         className += " active";
       }
 
@@ -63,13 +59,15 @@ let DrawToolList = React.createClass({
   setActiveTool: function (name) {
     switch (name) {
       case 'Zoom In':
+        DrawStoreActions.zoomIn();
         break;
 
       case 'Zoom Out':
+        DrawStoreActions.zoomOut();
         break;
 
       default:
-        this.setState({ activeTool: name });
+        DrawStoreActions.setActiveTool(name);
     }
   },
 });

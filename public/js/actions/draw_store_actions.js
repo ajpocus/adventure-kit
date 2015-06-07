@@ -7,6 +7,27 @@ let DrawStoreActions = {
       actionType: DrawStoreConstants.LOAD_STATE,
       data: data
     });
+  },
+
+  zoomIn: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.ZOOM_IN,
+      data: data
+    });
+  },
+
+  zoomOut: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.ZOOM_OUT,
+      data: data
+    });
+  },
+
+  setActiveTool: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.SET_ACTIVE_TOOL,
+      data: data
+    });
   }
 };
 
