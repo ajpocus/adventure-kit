@@ -1,6 +1,7 @@
 let React = require('react');
 let $ = require('jquery');
 
+import DrawStoreActions from '../actions/draw_store_actions';
 import Transparency from '../lib/transparency';
 
 let EditPalette = React.createClass({
@@ -54,7 +55,9 @@ let EditPalette = React.createClass({
               </ul>
 
               <div className="sidebar">
-                <input type="color" id="palette-color"
+                <input type="color"
+                       id="palette-color"
+                       ref="paletteColor"
                        onChange={this.updatePaletteColor}/>
                 <button className="add btn">Add color</button>
               </div>
@@ -76,43 +79,33 @@ let EditPalette = React.createClass({
   },
 
   componentDidUpdate: function () {
-    document.getElementById('palette-color').value = this.props.activeColor;
+    this.refs.paletteColor.getDOMNode().value = this.props.activePaletteColor;
   },
 
   setActivePaletteColor: function (color) {
-    this.setState({ activePaletteColor: color });
+    DrawStoreActions.setActivePaletteColor(color);
   },
 
   removePaletteColor: function (color) {
-    let palette = this.state.palette;
-    let idx = palette.indexOf(color);
-    palette.splice(idx, 1);
-    this.setState({ palette: palette });
+    DrawStoreActions.removePaletteColor(color);
   },
 
   addPaletteColor: function () {
-    let palette = this.state.palette;
-    let newColor = '#ffffff';
-    palette.push(newColor);
-    this.setState({ palette: palette, activePaletteColor: newColor });
+    DrawStoreACtions.addPaletteColor(color);
   },
 
   updatePaletteColor: function (ev) {
     let color = ev.target.value;
-    let palette = this.state.palette;
-    let idx = palette.indexOf(this.state.activePaletteColor);
-    palette[idx] = color;
-    this.setState({ palette: palette, activePaletteColor: color });
+    DrawStoreActions.updatePaletteColor(color);
   },
 
   savePalette: function () {
-    this.props.onPaletteChange(this.state.palette);
+    DrawStoreActions.savePalette();
     this.closeEdit();
   },
 
   closeEdit: function () {
-    let container = document.getElementById('modal-container');
-    React.unmountComponentAtNode(container);
+    DrawStoreActions.closeEdit();
   }
 });
 

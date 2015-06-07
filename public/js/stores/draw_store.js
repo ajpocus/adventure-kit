@@ -81,6 +81,44 @@ let DrawStore = assign(EventEmitter.prototype, {
         _state.isEditingPalette = true;
         break;
 
+      case DrawStoreConstants.SET_ACTIVE_PALETTE_COLOR:
+        _state.activePaletteColor = action.data;
+        break;
+
+      case DrawStoreConstants.REMOVE_PALETTE_COLOR:
+        let palette = _state.editPalette;
+        let idx = palette.indexOf(action.data);
+        palette.splice(idx, 1);
+        _state.editPalette = palette;
+        break;
+
+      case DrawStoreConstants.ADD_PALETTE_COLOR:
+        let newColor = '#ffffff';
+        _state.editPalette.push(newColor);
+        _state.activePaletteColor = newColor;
+        break;
+
+      case DrawStoreConstants.UPDATE_PALETTE_COLOR:
+        let updatedColor = action.data;
+        let palette = _state.editPalette;
+        let idx = palette.indexOf(_state.activePaletteColor);
+
+        palette[idx] = updatedColor;
+        _state.editPalette = palette;
+        _state.activePaletteColor = updatedColor;
+        break;
+
+      case DrawStoreConstants.SAVE_PALETTE:
+        let name = _state.activePalette;
+        let palettes = _state.palettes;
+        palettes[name] = _state.editPalette;
+        _state.palettes = palettes;
+        break;
+
+      case DrawStoreConstants.CLOSE_EDIT:
+        _state.isEditingPalette = false;
+        break;
+
       default:
         return true;
     }

@@ -56,6 +56,48 @@ let DrawStoreActions = {
       actionType: DrawStoreConstants.EDIT_PALETTE,
       data: data
     });
+  },
+
+  setActivePaletteColor: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.SET_ACTIVE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  removePaletteColor: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.REMOVE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  addPaletteColor: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.ADD_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  updatePaletteColor: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.UPDATE_PALETTE_COLOR,
+      data: data
+    });
+  },
+
+  savePalette: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.SAVE_PALETTE,
+      data: data
+    });
+  },
+
+  closeEdit: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.CLOSE_EDIT,
+      data: data
+    });
   }
 };
 

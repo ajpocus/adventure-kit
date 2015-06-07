@@ -58,7 +58,8 @@ let PaletteManager = React.createClass({
 
         <Modal isOpen={this.props.isEditingPalette}>
           <EditPalette palette={this.props.editPalette}
-                       name={this.props.editPaletteName}/>
+                       name={this.props.editPaletteName}
+                       activePaletteColor={this.props.activePaletteColor}/>
         </Modal>
       </div>
     );
@@ -83,13 +84,6 @@ let PaletteManager = React.createClass({
 
   editPalette: function () {
     DrawStoreActions.editPalette();
-  },
-
-  onPaletteChange: function (palette) {
-    let name = this.props.activePalette;
-    let palettes = this.props.palettes;
-    palettes[name] = palette;
-    this.setState({ palettes: palettes });
   }
 });
 
