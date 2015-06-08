@@ -161,7 +161,7 @@ let DrawSurface = React.createClass({
 
         if (pixel.highlighted) {
           overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-          overlayCtx.fillRect(x, y, 100, 100);
+          overlayCtx.fillRect(x, y, 1, 1);
         }
       }
     }
