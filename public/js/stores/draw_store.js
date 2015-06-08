@@ -72,7 +72,8 @@ let DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case DrawStoreConstants.NEW_PALETTE:
-        _state.palettes[paletteName] = {};
+        let name = action.data
+        _state.palettes[name] = [];
         break;
 
       case DrawStoreConstants.EDIT_PALETTE:
@@ -117,6 +118,10 @@ let DrawStore = assign(EventEmitter.prototype, {
 
       case DrawStoreConstants.CLOSE_EDIT:
         _state.isEditingPalette = false;
+        break;
+
+      case DrawStoreConstants.SET_ACTIVE_PALETTE:
+        _state.activePalette = action.data
         break;
 
       default:

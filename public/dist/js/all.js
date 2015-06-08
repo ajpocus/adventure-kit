@@ -51325,6 +51325,13 @@ var DrawStoreActions = {
       actionType: _constantsDraw_store_constants2['default'].CLOSE_EDIT,
       data: data
     });
+  },
+
+  setActivePalette: function setActivePalette(data) {
+    _dispatcherApp_dispatcher2['default'].handleAction({
+      actionType: _constantsDraw_store_constants2['default'].SET_ACTIVE_PALETTE,
+      data: data
+    });
   }
 };
 
@@ -52194,9 +52201,9 @@ var EditPalette = React.createClass({
   render: function render() {
     var colorList = [];
     for (var i = 0; i < this.props.palette.length; i++) {
-      var _color = this.props.palette[i];
-      var swatchStyle = { background: _color };
-      if (_color === 'rgba(0, 0, 0, 0)') {
+      var color = this.props.palette[i];
+      var swatchStyle = { background: color };
+      if (color === 'rgba(0, 0, 0, 0)') {
         swatchStyle.background = _libTransparency2['default'].background;
       }
 
@@ -52204,11 +52211,11 @@ var EditPalette = React.createClass({
         'li',
         { className: 'color',
           key: i,
-          onClick: this.setActivePaletteColor.bind(this, _color) },
+          onClick: this.setActivePaletteColor.bind(this, color) },
         React.createElement(
           'span',
           { className: 'remove',
-            onClick: this.removePaletteColor.bind(this, _color) },
+            onClick: this.removePaletteColor.bind(this, color) },
           'x'
         ),
         React.createElement('div', { className: 'swatch', style: swatchStyle })
@@ -52307,7 +52314,7 @@ var EditPalette = React.createClass({
   },
 
   addPaletteColor: function addPaletteColor() {
-    DrawStoreACtions.addPaletteColor(color);
+    _actionsDraw_store_actions2['default'].addPaletteColor();
   },
 
   updatePaletteColor: function updatePaletteColor(ev) {
@@ -53124,19 +53131,25 @@ var PaletteManager = React.createClass({
       ),
       React.createElement(
         'button',
-        { className: 'new-palette', onClick: this.newPalette },
-        React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-433-plus.png' })
+        { className: 'new-palette',
+          onClick: this.newPalette },
+        React.createElement('img', { className: 'icon',
+          src: '/img/icons/glyphicons-433-plus.png' })
       ),
       React.createElement(
         'select',
-        { name: 'activePalette', className: 'palette-chooser',
-          value: this.props.activePalette },
+        { name: 'activePalette',
+          className: 'palette-chooser',
+          value: this.props.activePalette,
+          onChange: this.setActivePalette },
         paletteOptions
       ),
       React.createElement(
         'button',
-        { className: 'edit-palette', onClick: this.editPalette },
-        React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-31-pencil.png' })
+        { className: 'edit-palette',
+          onClick: this.editPalette },
+        React.createElement('img', { className: 'icon',
+          src: '/img/icons/glyphicons-31-pencil.png' })
       ),
       React.createElement(
         'ul',
@@ -53172,6 +53185,10 @@ var PaletteManager = React.createClass({
 
   editPalette: function editPalette() {
     _actionsDraw_store_actions2['default'].editPalette();
+  },
+
+  setActivePalette: function setActivePalette(ev) {
+    _actionsDraw_store_actions2['default'].setActivePalette(ev.target.value);
   }
 });
 
@@ -53330,7 +53347,8 @@ var DrawStoreConstants = keyMirror({
   ADD_PALETTE_COLOR: null,
   UPDATE_PALETTE_COLOR: null,
   SAVE_PALETTE: null,
-  CLOSE_EDIT: null
+  CLOSE_EDIT: null,
+  SET_ACTIVE_PALETTE: null
 });
 
 exports['default'] = DrawStoreConstants;
@@ -53475,7 +53493,8 @@ var DrawStore = assign(EventEmitter.prototype, {
         break;
 
       case _constantsDraw_store_constants2['default'].NEW_PALETTE:
-        _state.palettes[paletteName] = {};
+        var name = action.data;
+        _state.palettes[name] = [];
         break;
 
       case _constantsDraw_store_constants2['default'].EDIT_PALETTE:
@@ -53520,6 +53539,10 @@ var DrawStore = assign(EventEmitter.prototype, {
 
       case _constantsDraw_store_constants2['default'].CLOSE_EDIT:
         _state.isEditingPalette = false;
+        break;
+
+      case _constantsDraw_store_constants2['default'].SET_ACTIVE_PALETTE:
+        _state.activePalette = action.data;
         break;
 
       default:

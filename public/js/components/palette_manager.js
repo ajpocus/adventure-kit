@@ -39,17 +39,23 @@ let PaletteManager = React.createClass({
       <div className="palette-manager">
         <h2>Palette</h2>
 
-        <button className="new-palette" onClick={this.newPalette}>
-          <img className="icon" src="/img/icons/glyphicons-433-plus.png"/>
+        <button className="new-palette"
+                onClick={this.newPalette}>
+          <img className="icon"
+               src="/img/icons/glyphicons-433-plus.png"/>
         </button>
 
-        <select name="activePalette" className="palette-chooser"
-                value={this.props.activePalette}>
+        <select name="activePalette"
+                className="palette-chooser"
+                value={this.props.activePalette}
+                onChange={this.setActivePalette}>
           {paletteOptions}
         </select>
 
-        <button className="edit-palette" onClick={this.editPalette}>
-          <img className="icon" src="/img/icons/glyphicons-31-pencil.png"/>
+        <button className="edit-palette"
+                onClick={this.editPalette}>
+          <img className="icon"
+               src="/img/icons/glyphicons-31-pencil.png"/>
         </button>
 
         <ul className="palette">
@@ -84,6 +90,10 @@ let PaletteManager = React.createClass({
 
   editPalette: function () {
     DrawStoreActions.editPalette();
+  },
+
+  setActivePalette: function (ev) {
+    DrawStoreActions.setActivePalette(ev.target.value);
   }
 });
 

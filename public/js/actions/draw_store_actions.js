@@ -98,6 +98,13 @@ let DrawStoreActions = {
       actionType: DrawStoreConstants.CLOSE_EDIT,
       data: data
     });
+  },
+
+  setActivePalette: function (data) {
+    AppDispatcher.handleAction({
+      actionType: DrawStoreConstants.SET_ACTIVE_PALETTE,
+      data: data
+    });
   }
 };
 

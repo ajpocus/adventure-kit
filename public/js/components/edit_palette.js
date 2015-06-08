@@ -91,7 +91,7 @@ let EditPalette = React.createClass({
   },
 
   addPaletteColor: function () {
-    DrawStoreACtions.addPaletteColor(color);
+    DrawStoreActions.addPaletteColor();
   },
 
   updatePaletteColor: function (ev) {
