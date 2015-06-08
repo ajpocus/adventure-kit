@@ -50,17 +50,28 @@ let DrawSurface = React.createClass({
     let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
     let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
 
+    let bgScale = this.props.bgTileSize;
+    bgCtx.scale(bgScale, bgScale);
+
     this.setState({
       bgCtx: bgCtx,
       drawCtx: drawCtx,
       overlayCtx: overlayCtx
     }, function () {
-      this.initGrid();
-      this.update();
+      this.initGrid(function () {
+        this.update();
+      });
     });
   },
 
   componentDidUpdate: function (prevProps, prevState) {
+    if (this.state.bgCtx &&
+        this.state.bgCtx !== prevState.bgCtx &&
+        !prevState.bgCtx) {
+      // contexts have been saved for the first time
+      this.drawBackground();
+    }
+
     if (this.state.actualWidth !== prevState.actualWidth ||
         this.state.actualHeight !== prevState.actualHeight ||
         this.state.width !== prevState.width ||
@@ -138,7 +149,6 @@ let DrawSurface = React.createClass({
     overlayCtx.scale(scaleWidth, scaleHeight);
 
     let grid = this.state.grid;
-    this.drawBackground();
     drawCtx.clearRect(0, 0, this.state.width, this.state.height);
 
     for (let x = 0; x < this.state.width; x++) {
@@ -151,7 +161,7 @@ let DrawSurface = React.createClass({
 
         if (pixel.highlighted) {
           overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-          overlayCtx.fillRect(x, y, 1, 1);
+          overlayCtx.fillRect(x, y, 100, 100);
         }
       }
     }
@@ -292,7 +302,7 @@ let DrawSurface = React.createClass({
     // TODO: export a PNG with the width and height in this.state
   },
 
-  drawBackground: function () {
+  drawBackground: function (callback) {
     let bgCtx = this.state.bgCtx;
     let bgTileSize = this.props.bgTileSize;
     let numTilesH = this.state.actualWidth / bgTileSize;
@@ -307,10 +317,10 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ bgCtx: bgCtx });
+    this.setState({ bgCtx: bgCtx }, callback);
   },
 
-  initGrid: function () {
+  initGrid: function (callback) {
     let grid = [];
 
     for (let x = 0; x < this.state.width; x++) {
@@ -321,7 +331,7 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: grid });
+    this.setState({ grid: grid }, callback);
   },
 
   resizeGrid: function () {
