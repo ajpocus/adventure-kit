@@ -51572,11 +51572,6 @@ var DrawSurface = React.createClass({
     if (this.state.bgCtx && this.state.bgCtx !== prevState.bgCtx && !prevState.bgCtx) {
       this.drawBackground();
     }
-
-    if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
-      this.updateGrid();
-      this.redraw();
-    }
   },
 
   render: function render() {
@@ -51650,7 +51645,7 @@ var DrawSurface = React.createClass({
     overlayCtx.scale(scaleWidth, scaleHeight);
 
     var grid = this.state.grid;
-    this.drawBackground();
+
     drawCtx.clearRect(0, 0, this.state.width, this.state.height);
 
     for (var x = 0; x < this.state.width; x++) {
@@ -51667,6 +51662,8 @@ var DrawSurface = React.createClass({
       bgCtx: bgCtx,
       drawCtx: drawCtx,
       overlayCtx: overlayCtx
+    }, function () {
+      this.drawBackground();
     });
   },
 
@@ -51680,6 +51677,7 @@ var DrawSurface = React.createClass({
 
     var grid = this.state.grid;
     var numPixels = grid.length;
+    console.log(x, y);
     var currentPixel = grid[x][y];
 
     if (!currentPixel.highlighted) {
@@ -51812,7 +51810,7 @@ var DrawSurface = React.createClass({
     var tileHeight = this.state.tileHeight;
     var actualWidth = this.state.actualWidth;
     var actualHeight = this.state.actualHeight;
-    var zoom = this.props.zoom;
+    var zoom = this.state.zoom;
 
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
@@ -51827,6 +51825,10 @@ var DrawSurface = React.createClass({
       tileWidth: tileWidth,
       tileHeight: tileHeight,
       zoom: zoom
+    }, function () {
+      this.updateGrid(function () {
+        this.redraw();
+      });
     });
   },
 
@@ -51895,7 +51897,7 @@ var DrawSurface = React.createClass({
     this.setState({ grid: grid });
   },
 
-  updateGrid: function updateGrid() {
+  updateGrid: function updateGrid(callback) {
     var width = this.state.width;
     var height = this.state.height;
     var oldGrid = this.state.grid;
@@ -51912,7 +51914,7 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: newGrid });
+    this.setState({ grid: newGrid }, callback);
   },
 
   getTileCoordinates: function getTileCoordinates(ev) {
