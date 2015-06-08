@@ -323,36 +323,7 @@ let DrawSurface = React.createClass({
   },
 
   onExportClick: function () {
-    let grid = this.state.grid;
-    let png = new PNG({
-      width: grid.length,
-      height: grid[0].length
-    });
-
-    for (let y = 0; y < png.height; y++) {
-      for (let x = 0; x < png.width; x++) {
-        let idx = (png.width * y + x) << 2;
-        let pixel = grid[x][y];
-        if (!pixel.color) {
-          pixel.color = 'rgba(0, 0, 0, 0)';
-        }
-        let color = tinycolor(pixel.color);
-        let rgb = color.toRgb();
-        let alpha = color.getAlpha() * 255;
-
-        png.data[idx] = rgb.r;
-        png.data[idx+1] = rgb.g;
-        png.data[idx+2] = rgb.b;
-        png.data[idx+3] = alpha;
-      }
-    }
-
-    let reader = new FileReader();
-    reader.onload = function (img) {
-      console.log(img);
-    };
-    png.pack();
-    reader.readAsDataURL(png.pipe());
+    // TODO: export a PNG with the width and height in this.state
   },
 
   drawBackground: function () {

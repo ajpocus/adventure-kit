@@ -51830,38 +51830,7 @@ var DrawSurface = React.createClass({
     });
   },
 
-  onExportClick: function onExportClick() {
-    var grid = this.state.grid;
-    var png = new PNG({
-      width: grid.length,
-      height: grid[0].length
-    });
-
-    for (var y = 0; y < png.height; y++) {
-      for (var x = 0; x < png.width; x++) {
-        var idx = png.width * y + x << 2;
-        var pixel = grid[x][y];
-        if (!pixel.color) {
-          pixel.color = 'rgba(0, 0, 0, 0)';
-        }
-        var color = tinycolor(pixel.color);
-        var rgb = color.toRgb();
-        var alpha = color.getAlpha() * 255;
-
-        png.data[idx] = rgb.r;
-        png.data[idx + 1] = rgb.g;
-        png.data[idx + 2] = rgb.b;
-        png.data[idx + 3] = alpha;
-      }
-    }
-
-    var reader = new FileReader();
-    reader.onload = function (img) {
-      console.log(img);
-    };
-    png.pack();
-    reader.readAsDataURL(png.pipe());
-  },
+  onExportClick: function onExportClick() {},
 
   drawBackground: function drawBackground() {
     var bgCtx = this.state.bgCtx;
@@ -51930,6 +51899,8 @@ var DrawSurface = React.createClass({
 
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
+
+// TODO: export a PNG with the width and height in this.state
 
 },{"../lib/transparency":374,"../models/pixel":375,"./manage_draw_list":365,"./resize_prompt":370,"jquery":135,"pngjs":143,"react":336,"tinycolor2":352}],357:[function(require,module,exports){
 'use strict';
