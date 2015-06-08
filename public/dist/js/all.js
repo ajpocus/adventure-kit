@@ -53181,6 +53181,7 @@ var PaletteManager = React.createClass({
     }
 
     _actionsDraw_store_actions2['default'].newPalette(paletteName);
+    _actionsDraw_store_actions2['default'].setActivePalette(paletteName);
   },
 
   editPalette: function editPalette() {
