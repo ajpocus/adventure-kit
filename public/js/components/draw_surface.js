@@ -50,25 +50,27 @@ let DrawSurface = React.createClass({
     let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
     let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
 
-    let bgScale = this.props.bgTileSize;
-    bgCtx.scale(bgScale, bgScale);
+    let bgTileSize = this.props.bgTileSize;
+    bgCtx.scale(bgTileSize, bgTileSize);
+
+    let tileWidth = this.state.tileWidth;
+    let tileHeight = this.state.tileHeight;
+    drawCtx.scale(tileWidth, tileHeight);
+    overlayCtx.scale(tileWidth, tileHeight);
 
     this.setState({
       bgCtx: bgCtx,
       drawCtx: drawCtx,
       overlayCtx: overlayCtx
-    }, function () {
-      this.initGrid(function () {
-        this.update();
-      });
     });
+
+    this.initGrid();
   },
 
   componentDidUpdate: function (prevProps, prevState) {
     if (this.state.bgCtx &&
         this.state.bgCtx !== prevState.bgCtx &&
         !prevState.bgCtx) {
-      // contexts have been saved for the first time
       this.drawBackground();
     }
 
@@ -76,7 +78,8 @@ let DrawSurface = React.createClass({
         this.state.actualHeight !== prevState.actualHeight ||
         this.state.width !== prevState.width ||
         this.state.height !== prevState.height) {
-      this.resizeGrid();
+      this.updateGrid();
+      this.redraw();
     }
   },
 
@@ -132,9 +135,7 @@ let DrawSurface = React.createClass({
     );
   },
 
-  update: function () {
-    requestAnimationFrame(this.update);
-
+  redraw: function () {
     let bgCtx = this.state.bgCtx;
     let drawCtx = this.state.drawCtx;
     let overlayCtx = this.state.overlayCtx;
@@ -149,6 +150,7 @@ let DrawSurface = React.createClass({
     overlayCtx.scale(scaleWidth, scaleHeight);
 
     let grid = this.state.grid;
+    this.drawBackground();
     drawCtx.clearRect(0, 0, this.state.width, this.state.height);
 
     for (let x = 0; x < this.state.width; x++) {
@@ -157,11 +159,6 @@ let DrawSurface = React.createClass({
         if (pixel.color) {
           drawCtx.fillStyle = pixel.color;
           drawCtx.fillRect(x, y, 1, 1);
-        }
-
-        if (pixel.highlighted) {
-          overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-          overlayCtx.fillRect(x, y, 1, 1);
         }
       }
     }
@@ -174,37 +171,59 @@ let DrawSurface = React.createClass({
   },
 
   highlightPixel: function (ev) {
+    let overlayCtx = this.state.overlayCtx;
     let { x, y } = this.getTileCoordinates(ev);
     let grid = this.state.grid;
-    grid[x][y].highlighted = true;
+    let numPixels = grid.length;
+    let currentPixel = grid[x][y];
+
+    if (!currentPixel.highlighted) {
+      overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      overlayCtx.fillRect(x, y, 1, 1);
+      currentPixel.highlighted = true;
+    }
 
     this.setState({
-      grid: grid
+      grid: grid,
+      overlayCtx: overlayCtx
     });
 
-    // TODO: rewrite to use onDrag (is that name right?)
+    this.clearHighlight(null, currentPixel);
+
     if (this.state.isMouseDown) {
       this.drawPixel(ev);
     }
   },
 
-  clearHighlight: function (ev) {
+  clearHighlight: function (ev, currentPixel) {
+    let overlayCtx = this.state.overlayCtx;
     let grid = this.state.grid;
+
+    overlayCtx.clearRect(0, 0, this.state.width, this.state.height);
+    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    overlayCtx.fillRect(currentPixel.x, currentPixel.y, 1, 1);
 
     for (let x = 0; x < this.state.width; x++) {
       for (let y = 0; y < this.state.height; y++) {
-        grid[x][y].highlighted = false;
+        let pixel = grid[x][y];
+        if (pixel === currentPixel) {
+          continue;
+        }
+
+        pixel.highlighted = false;
       }
     }
 
     this.setState({
-      grid: grid
+      grid: grid,
+      overlayCtx: overlayCtx
     });
   },
 
   drawPixel: function (ev) {
     let {x, y} = this.getTileCoordinates(ev);
     let grid = this.state.grid;
+    let drawCtx = this.state.drawCtx;
 
     let color = this.props.primaryColor;
     let button = ev.which || ev.button;
@@ -213,9 +232,12 @@ let DrawSurface = React.createClass({
     }
 
     grid[x][y].color = color;
+    drawCtx.fillStyle = color;
+    drawCtx.fillRect(x, y, 1, 1);
 
     this.setState({
       grid: grid,
+      drawCtx: drawCtx,
       isMouseDown: true
     });
   },
@@ -256,6 +278,11 @@ let DrawSurface = React.createClass({
       return;
     }
 
+    actualWidth = this.props.totalWidth * zoom;
+    actualHeight = this.props.totalHeight * zoom;
+    tileWidth = actualWidth / this.state.width;
+    tileHeight = actualHeight / this.state.height;
+
     this.setState({
       zoom: zoom,
       actualWidth: actualWidth,
@@ -263,8 +290,6 @@ let DrawSurface = React.createClass({
       tileWidth: tileWidth,
       tileHeight: tileHeight
     });
-
-    this.updateDimensions();
   },
 
   onResizeClick: function () {
@@ -275,34 +300,62 @@ let DrawSurface = React.createClass({
   },
 
   handleResize: function (width, height) {
+    let tileWidth = this.state.tileWidth;
+    let tileHeight = this.state.tileHeight;
+    let actualWidth = this.state.actualWidth;
+    let actualHeight = this.state.actualHeight;
+    let zoom = this.props.zoom;
+
+    actualWidth = this.props.totalWidth * zoom;
+    actualHeight = this.props.totalHeight * zoom;
+    tileWidth = actualWidth / width;
+    tileHeight = actualHeight / height;
+
     this.setState({
       width: width,
-      height: height
-    });
-
-    this.updateDimensions();
-  },
-
-  updateDimensions: function () {
-    let zoom = this.state.zoom;
-    let actualWidth = this.props.totalWidth * zoom;
-    let actualHeight = this.props.totalHeight * zoom;
-    let tileWidth = actualWidth / this.state.width;
-    let tileHeight = actualHeight / this.state.height;
-
-    this.setState({
+      height: height,
       actualWidth: actualWidth,
       actualHeight: actualHeight,
       tileWidth: tileWidth,
-      tileHeight: tileHeight
+      tileHeight: tileHeight,
+      zoom: zoom
     });
   },
 
   onExportClick: function () {
-    // TODO: export a PNG with the width and height in this.state
+    let grid = this.state.grid;
+    let png = new PNG({
+      width: grid.length,
+      height: grid[0].length
+    });
+
+    for (let y = 0; y < png.height; y++) {
+      for (let x = 0; x < png.width; x++) {
+        let idx = (png.width * y + x) << 2;
+        let pixel = grid[x][y];
+        if (!pixel.color) {
+          pixel.color = 'rgba(0, 0, 0, 0)';
+        }
+        let color = tinycolor(pixel.color);
+        let rgb = color.toRgb();
+        let alpha = color.getAlpha() * 255;
+
+        png.data[idx] = rgb.r;
+        png.data[idx+1] = rgb.g;
+        png.data[idx+2] = rgb.b;
+        png.data[idx+3] = alpha;
+      }
+    }
+
+    let reader = new FileReader();
+    reader.onload = function (img) {
+      console.log(img);
+    };
+    png.pack();
+    reader.readAsDataURL(png.pipe());
   },
 
-  drawBackground: function (callback) {
+  drawBackground: function () {
     let bgCtx = this.state.bgCtx;
     let bgTileSize = this.props.bgTileSize;
     let numTilesH = this.state.actualWidth / bgTileSize;
@@ -317,10 +370,10 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ bgCtx: bgCtx }, callback);
+    this.setState({ bgCtx: bgCtx });
   },
 
-  initGrid: function (callback) {
+  initGrid: function () {
     let grid = [];
 
     for (let x = 0; x < this.state.width; x++) {
@@ -331,10 +384,10 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: grid }, callback);
+    this.setState({ grid: grid });
   },
 
-  resizeGrid: function () {
+  updateGrid: function () {
     let width = this.state.width;
     let height = this.state.height;
     let oldGrid = this.state.grid;
