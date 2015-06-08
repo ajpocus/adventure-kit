@@ -51555,18 +51555,13 @@ var DrawSurface = React.createClass({
       bgCtx: bgCtx,
       drawCtx: drawCtx,
       overlayCtx: overlayCtx
+    }, function () {
+      this.initGrid();
+      this.update();
     });
-
-    this.initGrid();
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.state.bgCtx && this.state.bgCtx !== prevState.bgCtx && !prevState.bgCtx) {
-      // contexts have been saved for the first time
-      this.drawBackground();
-      this.update();
-    }
-
     if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
       this.resizeGrid();
     }
