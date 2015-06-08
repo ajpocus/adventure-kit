@@ -98,20 +98,6 @@ let DrawStoreActions = {
       actionType: DrawStoreConstants.CLOSE_EDIT,
       data: data
     });
-  },
-
-  setDrawContexts: function (data) {
-    AppDispatcher.handleAction({
-      actionType: DrawStoreConstants.SET_DRAW_CONTEXTS,
-      data: data
-    });
-  },
-
-  initGrid: function (data) {
-    AppDispatcher.handleAction({
-      actionType: DrawStoreConstants.INIT_GRID,
-      data: data
-    });
   }
 };
 
