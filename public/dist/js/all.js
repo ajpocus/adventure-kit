@@ -51551,14 +51551,6 @@ var DrawSurface = React.createClass({
     var drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
     var overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
 
-    var bgTileSize = this.props.bgTileSize;
-    bgCtx.scale(bgTileSize, bgTileSize);
-
-    var tileWidth = this.state.tileWidth;
-    var tileHeight = this.state.tileHeight;
-    drawCtx.scale(tileWidth, tileHeight);
-    overlayCtx.scale(tileWidth, tileHeight);
-
     this.setState({
       bgCtx: bgCtx,
       drawCtx: drawCtx,
@@ -51570,12 +51562,13 @@ var DrawSurface = React.createClass({
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
     if (this.state.bgCtx && this.state.bgCtx !== prevState.bgCtx && !prevState.bgCtx) {
+      // contexts have been saved for the first time
       this.drawBackground();
+      this.update();
     }
 
     if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
-      this.updateGrid();
-      this.redraw();
+      this.resizeGrid();
     }
   },
 
@@ -51635,7 +51628,9 @@ var DrawSurface = React.createClass({
     );
   },
 
-  redraw: function redraw() {
+  update: function update() {
+    requestAnimationFrame(this.update);
+
     var bgCtx = this.state.bgCtx;
     var drawCtx = this.state.drawCtx;
     var overlayCtx = this.state.overlayCtx;
@@ -51660,6 +51655,11 @@ var DrawSurface = React.createClass({
           drawCtx.fillStyle = pixel.color;
           drawCtx.fillRect(x, y, 1, 1);
         }
+
+        if (pixel.highlighted) {
+          overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+          overlayCtx.fillRect(x, y, 1, 1);
+        }
       }
     }
 
@@ -51671,57 +51671,35 @@ var DrawSurface = React.createClass({
   },
 
   highlightPixel: function highlightPixel(ev) {
-    var overlayCtx = this.state.overlayCtx;
-
     var _getTileCoordinates = this.getTileCoordinates(ev);
 
     var x = _getTileCoordinates.x;
     var y = _getTileCoordinates.y;
 
     var grid = this.state.grid;
-    var numPixels = grid.length;
-    var currentPixel = grid[x][y];
-
-    if (!currentPixel.highlighted) {
-      overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      overlayCtx.fillRect(x, y, 1, 1);
-      currentPixel.highlighted = true;
-    }
+    grid[x][y].highlighted = true;
 
     this.setState({
-      grid: grid,
-      overlayCtx: overlayCtx
+      grid: grid
     });
 
-    this.clearHighlight(null, currentPixel);
-
+    // TODO: rewrite to use onDrag (is that name right?)
     if (this.state.isMouseDown) {
       this.drawPixel(ev);
     }
   },
 
-  clearHighlight: function clearHighlight(ev, currentPixel) {
-    var overlayCtx = this.state.overlayCtx;
+  clearHighlight: function clearHighlight(ev) {
     var grid = this.state.grid;
-
-    overlayCtx.clearRect(0, 0, this.state.width, this.state.height);
-    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-    overlayCtx.fillRect(currentPixel.x, currentPixel.y, 1, 1);
 
     for (var x = 0; x < this.state.width; x++) {
       for (var y = 0; y < this.state.height; y++) {
-        var pixel = grid[x][y];
-        if (pixel === currentPixel) {
-          continue;
-        }
-
-        pixel.highlighted = false;
+        grid[x][y].highlighted = false;
       }
     }
 
     this.setState({
-      grid: grid,
-      overlayCtx: overlayCtx
+      grid: grid
     });
   },
 
@@ -51732,7 +51710,6 @@ var DrawSurface = React.createClass({
     var y = _getTileCoordinates2.y;
 
     var grid = this.state.grid;
-    var drawCtx = this.state.drawCtx;
 
     var color = this.props.primaryColor;
     var button = ev.which || ev.button;
@@ -51741,12 +51718,9 @@ var DrawSurface = React.createClass({
     }
 
     grid[x][y].color = color;
-    drawCtx.fillStyle = color;
-    drawCtx.fillRect(x, y, 1, 1);
 
     this.setState({
       grid: grid,
-      drawCtx: drawCtx,
       isMouseDown: true
     });
   },
@@ -51787,11 +51761,6 @@ var DrawSurface = React.createClass({
       return;
     }
 
-    actualWidth = this.props.totalWidth * zoom;
-    actualHeight = this.props.totalHeight * zoom;
-    tileWidth = actualWidth / this.state.width;
-    tileHeight = actualHeight / this.state.height;
-
     this.setState({
       zoom: zoom,
       actualWidth: actualWidth,
@@ -51799,6 +51768,8 @@ var DrawSurface = React.createClass({
       tileWidth: tileWidth,
       tileHeight: tileHeight
     });
+
+    this.updateDimensions();
   },
 
   onResizeClick: function onResizeClick() {
@@ -51808,25 +51779,26 @@ var DrawSurface = React.createClass({
   },
 
   handleResize: function handleResize(width, height) {
-    var tileWidth = this.state.tileWidth;
-    var tileHeight = this.state.tileHeight;
-    var actualWidth = this.state.actualWidth;
-    var actualHeight = this.state.actualHeight;
-    var zoom = this.props.zoom;
-
-    actualWidth = this.props.totalWidth * zoom;
-    actualHeight = this.props.totalHeight * zoom;
-    tileWidth = actualWidth / width;
-    tileHeight = actualHeight / height;
-
     this.setState({
       width: width,
-      height: height,
+      height: height
+    });
+
+    this.updateDimensions();
+  },
+
+  updateDimensions: function updateDimensions() {
+    var zoom = this.state.zoom;
+    var actualWidth = this.props.totalWidth * zoom;
+    var actualHeight = this.props.totalHeight * zoom;
+    var tileWidth = actualWidth / this.state.width;
+    var tileHeight = actualHeight / this.state.height;
+
+    this.setState({
       actualWidth: actualWidth,
       actualHeight: actualHeight,
       tileWidth: tileWidth,
-      tileHeight: tileHeight,
-      zoom: zoom
+      tileHeight: tileHeight
     });
   },
 
@@ -51864,7 +51836,7 @@ var DrawSurface = React.createClass({
     this.setState({ grid: grid });
   },
 
-  updateGrid: function updateGrid() {
+  resizeGrid: function resizeGrid() {
     var width = this.state.width;
     var height = this.state.height;
     var oldGrid = this.state.grid;
