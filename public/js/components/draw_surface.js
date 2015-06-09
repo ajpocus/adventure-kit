@@ -39,19 +39,14 @@ let DrawSurface = React.createClass({
     return {
       totalWidth: 1024,
       totalHeight: 1024,
-      bgTileSize: 8,
       minZoom: 0.125,
       maxZoom: 4
     };
   },
 
   componentDidMount: function () {
-    let bgCtx = this.refs.bgCanvas.getDOMNode().getContext('2d');
     let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
     let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
-
-    let bgTileSize = this.props.bgTileSize;
-    bgCtx.scale(bgTileSize, bgTileSize);
 
     let tileWidth = this.state.tileWidth;
     let tileHeight = this.state.tileHeight;
@@ -59,7 +54,6 @@ let DrawSurface = React.createClass({
     overlayCtx.scale(tileWidth, tileHeight);
 
     this.setState({
-      bgCtx: bgCtx,
       drawCtx: drawCtx,
       overlayCtx: overlayCtx
     });
@@ -68,12 +62,6 @@ let DrawSurface = React.createClass({
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    if (this.state.bgCtx &&
-        this.state.bgCtx !== prevState.bgCtx &&
-        !prevState.bgCtx) {
-      this.drawBackground();
-    }
-
     if (this.state.actualWidth !== prevState.actualWidth ||
         this.state.actualHeight !== prevState.actualHeight ||
         this.state.width !== prevState.width ||
@@ -106,18 +94,13 @@ let DrawSurface = React.createClass({
                  onContextMenu={this.drawPixel}
                  onMouseUp={this.setMouseUp}
                  onWheel={this.onZoom}>
-              <canvas id="bg-canvas"
-                      className="draw"
-                      ref="bgCanvas"
-                      width={this.state.actualWidth}
-                      height={this.state.actualHeight}>
-              </canvas>
               <canvas id="draw-canvas"
                       className="draw"
                       ref="drawCanvas"
                       width={this.state.actualWidth}
                       height={this.state.actualHeight}>
               </canvas>
+
               <canvas id="overlay-canvas"
                       className="draw"
                       ref="overlayCanvas"
@@ -137,13 +120,9 @@ let DrawSurface = React.createClass({
   },
 
   redraw: function () {
-    let bgCtx = this.state.bgCtx;
     let drawCtx = this.state.drawCtx;
     let overlayCtx = this.state.overlayCtx;
     let zoom = this.state.zoom;
-
-    let bgScale = this.props.bgTileSize;
-    bgCtx.scale(bgScale, bgScale);
 
     let scaleWidth = this.state.tileWidth;
     let scaleHeight = this.state.tileHeight;
@@ -151,7 +130,6 @@ let DrawSurface = React.createClass({
     overlayCtx.scale(scaleWidth, scaleHeight);
 
     let grid = this.state.grid;
-    this.drawBackground();
     drawCtx.clearRect(0, 0, this.state.width, this.state.height);
 
     for (let x = 0; x < this.state.width; x++) {
@@ -165,7 +143,6 @@ let DrawSurface = React.createClass({
     }
 
     this.setState({
-      bgCtx: bgCtx,
       drawCtx: drawCtx,
       overlayCtx: overlayCtx
     });
@@ -354,29 +331,6 @@ let DrawSurface = React.createClass({
     };
     png.pack();
     reader.readAsDataURL(png.pipe());
-  },
-
-  drawBackground: function () {
-    console.log(this.state.actualWidth, this.state.actualHeight);
-    let bgCtx = this.state.bgCtx;
-    let bgTileSize = this.props.bgTileSize;
-    let numTilesH = this.state.actualWidth / bgTileSize;
-    let numTilesV = this.state.actualHeight / bgTileSize;
-
-    let bgWidth = this.state.actualWidth / bgTileSize;
-    let bgHeight = this.state.actualHeight / bgTileSize;
-    bgCtx.scale(bgWidth, bgHeight);
-
-    for (let x = 0; x < numTilesH; x++) {
-      for (let y = 0; y < numTilesV; y++) {
-        let fill = ((x + y) % 2 == 0) ? "#999" : "#777";
-
-        bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, 1, 1);
-      }
-    }
-
-    this.setState({ bgCtx: bgCtx });
   },
 
   initGrid: function () {
