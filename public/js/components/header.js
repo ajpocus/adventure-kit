@@ -10,7 +10,7 @@ let Header = React.createClass({
     let lastRoute = routes[routes.length - 1];
 
     return {
-      activeTab: lastRoute.name
+      activeTab: lastRoute.name || 'draw'
     };
   },
 
