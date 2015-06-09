@@ -15,7 +15,6 @@ let Header = React.createClass({
   },
 
   render: function () {
-    console.log(this.getRoutes());
     let tabs = [];
     let tabNames = ['Draw', 'Map', 'Music'];
     for (let i = 0; i < tabNames.length; i++) {

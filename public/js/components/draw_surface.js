@@ -78,8 +78,9 @@ let DrawSurface = React.createClass({
         this.state.actualHeight !== prevState.actualHeight ||
         this.state.width !== prevState.width ||
         this.state.height !== prevState.height) {
-      this.updateGrid();
-      this.redraw();
+      this.updateGrid(function () {
+        this.redraw();
+      });
     }
   },
 
@@ -162,12 +163,6 @@ let DrawSurface = React.createClass({
         }
       }
     }
-
-    this.setState({
-      bgCtx: bgCtx,
-      drawCtx: drawCtx,
-      overlayCtx: overlayCtx
-    });
   },
 
   highlightPixel: function (ev) {
@@ -215,8 +210,7 @@ let DrawSurface = React.createClass({
     }
 
     this.setState({
-      grid: grid,
-      overlayCtx: overlayCtx
+      grid: grid
     });
   },
 
@@ -237,7 +231,6 @@ let DrawSurface = React.createClass({
 
     this.setState({
       grid: grid,
-      drawCtx: drawCtx,
       isMouseDown: true
     });
   },
@@ -369,8 +362,6 @@ let DrawSurface = React.createClass({
         bgCtx.fillRect(x, y, 1, 1);
       }
     }
-
-    this.setState({ bgCtx: bgCtx });
   },
 
   initGrid: function () {
@@ -387,7 +378,7 @@ let DrawSurface = React.createClass({
     this.setState({ grid: grid });
   },
 
-  updateGrid: function () {
+  updateGrid: function (callback) {
     let width = this.state.width;
     let height = this.state.height;
     let oldGrid = this.state.grid;
@@ -404,7 +395,7 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: newGrid });
+    this.setState({ grid: newGrid }, callback);
   },
 
   getTileCoordinates: function (ev) {

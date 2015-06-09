@@ -51574,8 +51574,9 @@ var DrawSurface = React.createClass({
     }
 
     if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
-      this.updateGrid();
-      this.redraw();
+      this.updateGrid(function () {
+        this.redraw();
+      });
     }
   },
 
@@ -51662,12 +51663,6 @@ var DrawSurface = React.createClass({
         }
       }
     }
-
-    this.setState({
-      bgCtx: bgCtx,
-      drawCtx: drawCtx,
-      overlayCtx: overlayCtx
-    });
   },
 
   highlightPixel: function highlightPixel(ev) {
@@ -51720,8 +51715,7 @@ var DrawSurface = React.createClass({
     }
 
     this.setState({
-      grid: grid,
-      overlayCtx: overlayCtx
+      grid: grid
     });
   },
 
@@ -51746,7 +51740,6 @@ var DrawSurface = React.createClass({
 
     this.setState({
       grid: grid,
-      drawCtx: drawCtx,
       isMouseDown: true
     });
   },
@@ -51877,8 +51870,6 @@ var DrawSurface = React.createClass({
         bgCtx.fillRect(x, y, 1, 1);
       }
     }
-
-    this.setState({ bgCtx: bgCtx });
   },
 
   initGrid: function initGrid() {
@@ -51895,7 +51886,7 @@ var DrawSurface = React.createClass({
     this.setState({ grid: grid });
   },
 
-  updateGrid: function updateGrid() {
+  updateGrid: function updateGrid(callback) {
     var width = this.state.width;
     var height = this.state.height;
     var oldGrid = this.state.grid;
@@ -51912,7 +51903,7 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: newGrid });
+    this.setState({ grid: newGrid }, callback);
   },
 
   getTileCoordinates: function getTileCoordinates(ev) {
@@ -52402,7 +52393,6 @@ var Header = React.createClass({
   },
 
   render: function render() {
-    console.log(this.getRoutes());
     var tabs = [];
     var tabNames = ['Draw', 'Map', 'Music'];
     for (var i = 0; i < tabNames.length; i++) {
