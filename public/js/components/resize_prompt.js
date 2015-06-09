@@ -52,7 +52,8 @@ let ResizePrompt = React.createClass({
   },
 
   handleResize: function () {
-    this.props.handleResize(this.state.width, this.state.height);
+    this.props.handleResize(parseInt(this.state.width, 10),
+                            parseInt(this.state.height, 10));
     this.closePrompt();
   },
 
