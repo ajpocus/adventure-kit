@@ -52390,19 +52390,25 @@ var Link = Router.Link;
 var Header = React.createClass({
   displayName: 'Header',
 
+  mixins: [Router.State],
+
   getInitialState: function getInitialState() {
+    var routes = this.getRoutes();
+    var lastRoute = routes[routes.length - 1];
+
     return {
-      activeTab: 'Draw'
+      activeTab: lastRoute.name
     };
   },
 
   render: function render() {
+    console.log(this.getRoutes());
     var tabs = [];
     var tabNames = ['Draw', 'Map', 'Music'];
     for (var i = 0; i < tabNames.length; i++) {
       var tabName = tabNames[i];
       var className = 'tab';
-      if (tabName === this.state.activeTab) {
+      if (tabName.toLowerCase() === this.state.activeTab) {
         className += ' active';
       }
 
@@ -52412,7 +52418,7 @@ var Header = React.createClass({
         React.createElement(
           Link,
           { to: tabName.toLowerCase(),
-            onClick: this.setActiveTab.bind(this, tabName) },
+            onClick: this.setActiveTab.bind(this, tabName.toLowerCase()) },
           tabName
         )
       ));

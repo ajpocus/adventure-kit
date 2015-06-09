@@ -3,26 +3,32 @@ let Router = require('react-router');
 let Link = Router.Link;
 
 let Header = React.createClass({
+  mixins: [Router.State],
+
   getInitialState: function () {
+    let routes = this.getRoutes();
+    let lastRoute = routes[routes.length - 1];
+
     return {
-      activeTab: 'Draw'
+      activeTab: lastRoute.name
     };
   },
 
   render: function () {
+    console.log(this.getRoutes());
     let tabs = [];
     let tabNames = ['Draw', 'Map', 'Music'];
     for (let i = 0; i < tabNames.length; i++) {
       let tabName = tabNames[i];
       let className = 'tab';
-      if (tabName === this.state.activeTab) {
+      if (tabName.toLowerCase() === this.state.activeTab) {
         className += ' active';
       }
 
       tabs.push(
         <li className={className} key={tabName}>
           <Link to={tabName.toLowerCase()}
-                onClick={this.setActiveTab.bind(this, tabName)}>
+                onClick={this.setActiveTab.bind(this, tabName.toLowerCase())}>
             {tabName}
           </Link>
         </li>
