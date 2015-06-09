@@ -94,18 +94,6 @@
   left: 0;
 }
 
-#bg-canvas {
-  z-index: 0;
-}
-
-#draw-canvas {
-  z-index: 1;
-}
-
-#overlay-canvas {
-  z-index: 2;
-}
-
 .render-container {
   display: flex;
 }

@@ -1,13 +1,12 @@
 let React = require('react');
 let $ = require('jquery');
 
-import DrawStoreActions from '../actions/draw_store_actions';
-import Transparency from '../mixins/transparency';
+import Transparency from '../lib/transparency';
 
 let EditPalette = React.createClass({
-  getDefaultProps: function () {
+  getInitialState: function () {
     return {
-      palette: []
+      palette: this.props.palette
     };
   },
 
@@ -55,9 +54,7 @@ let EditPalette = React.createClass({
               </ul>
 
               <div className="sidebar">
-                <input type="color"
-                       id="palette-color"
-                       ref="paletteColor"
+                <input type="color" id="palette-color"
                        onChange={this.updatePaletteColor}/>
                 <button className="add btn">Add color</button>
               </div>
@@ -79,33 +76,43 @@ let EditPalette = React.createClass({
   },
 
   componentDidUpdate: function () {
-    this.refs.paletteColor.getDOMNode().value = this.props.activePaletteColor;
+    document.getElementById('palette-color').value = this.props.activeColor;
   },
 
   setActivePaletteColor: function (color) {
-    DrawStoreActions.setActivePaletteColor(color);
+    this.setState({ activePaletteColor: color });
   },
 
   removePaletteColor: function (color) {
-    DrawStoreActions.removePaletteColor(color);
+    let palette = this.state.palette;
+    let idx = palette.indexOf(color);
+    palette.splice(idx, 1);
+    this.setState({ palette: palette });
   },
 
   addPaletteColor: function () {
-    DrawStoreActions.addPaletteColor();
+    let palette = this.state.palette;
+    let newColor = '#ffffff';
+    palette.push(newColor);
+    this.setState({ palette: palette, activePaletteColor: newColor });
   },
 
   updatePaletteColor: function (ev) {
     let color = ev.target.value;
-    DrawStoreActions.updatePaletteColor(color);
+    let palette = this.state.palette;
+    let idx = palette.indexOf(this.state.activePaletteColor);
+    palette[idx] = color;
+    this.setState({ palette: palette, activePaletteColor: color });
   },
 
   savePalette: function () {
-    DrawStoreActions.savePalette();
+    this.props.onPaletteChange(this.state.palette);
     this.closeEdit();
   },
 
   closeEdit: function () {
-    DrawStoreActions.closeEdit();
+    let container = document.getElementById('modal-container');
+    React.unmountComponentAtNode(container);
   }
 });
 

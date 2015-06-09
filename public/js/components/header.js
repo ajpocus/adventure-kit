@@ -3,14 +3,9 @@ let Router = require('react-router');
 let Link = Router.Link;
 
 let Header = React.createClass({
-  mixins: [Router.State],
-
   getInitialState: function () {
-    let routes = this.getRoutes();
-    let lastRoute = routes[routes.length - 1];
-
     return {
-      activeTab: lastRoute.name || 'draw'
+      activeTab: 'Draw'
     };
   },
 
@@ -20,14 +15,14 @@ let Header = React.createClass({
     for (let i = 0; i < tabNames.length; i++) {
       let tabName = tabNames[i];
       let className = 'tab';
-      if (tabName.toLowerCase() === this.state.activeTab) {
+      if (tabName === this.state.activeTab) {
         className += ' active';
       }
 
       tabs.push(
         <li className={className} key={tabName}>
           <Link to={tabName.toLowerCase()}
-                onClick={this.setActiveTab.bind(this, tabName.toLowerCase())}>
+                onClick={this.setActiveTab.bind(this, tabName)}>
             {tabName}
           </Link>
         </li>

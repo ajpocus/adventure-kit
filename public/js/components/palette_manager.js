@@ -2,23 +2,34 @@ let React = require('react');
 let tinycolor = require('tinycolor2');
 let $ = require('jquery');
 
-import DrawStoreActions from '../actions/draw_store_actions';
 import EditPalette from './edit_palette';
-import Transparency from '../mixins/transparency';
+import Transparency from '../lib/transparency';
 import Modal from './modal';
 
 let PaletteManager = React.createClass({
+  getInitialState: function () {
+    return {
+      palettes: {
+        'Rainbow': [
+          '#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff',
+          '#ff00ff'
+        ]
+      },
+      activePalette: 'Rainbow'
+    };
+  },
+
   render: function () {
     let paletteOptions = [];
-    for (let paletteName in this.props.palettes) {
-      if (this.props.palettes.hasOwnProperty(paletteName)) {
+    for (let paletteName in this.state.palettes) {
+      if (this.state.palettes.hasOwnProperty(paletteName)) {
         paletteOptions.push(
           <option value={paletteName} key={paletteName}>{paletteName}</option>
         );
       }
     }
 
-    let activePalette = this.props.palettes[this.props.activePalette];
+    let activePalette = this.state.palettes[this.state.activePalette];
     let paletteColors = [];
     for (let i = 0; i < activePalette.length; i++) {
       let color = activePalette[i];
@@ -35,27 +46,23 @@ let PaletteManager = React.createClass({
       );
     }
 
+    let paletteCopy = activePalette.slice();
+
     return (
       <div className="palette-manager">
         <h2>Palette</h2>
 
-        <button className="new-palette"
-                onClick={this.newPalette}>
-          <img className="icon"
-               src="/img/icons/glyphicons-433-plus.png"/>
+        <button className="new-palette" onClick={this.newPalette}>
+          <img className="icon" src="/img/icons/glyphicons-433-plus.png"/>
         </button>
 
-        <select name="activePalette"
-                className="palette-chooser"
-                value={this.props.activePalette}
-                onChange={this.setActivePalette}>
+        <select name="activePalette" className="palette-chooser"
+                value={this.state.activePalette}>
           {paletteOptions}
         </select>
 
-        <button className="edit-palette"
-                onClick={this.editPalette}>
-          <img className="icon"
-               src="/img/icons/glyphicons-31-pencil.png"/>
+        <button className="edit-palette" onClick={this.editPalette}>
+          <img className="icon" src="/img/icons/glyphicons-31-pencil.png"/>
         </button>
 
         <ul className="palette">
@@ -63,16 +70,14 @@ let PaletteManager = React.createClass({
         </ul>
 
         <Modal isOpen={this.props.isEditingPalette}>
-          <EditPalette palette={this.props.editPalette}
-                       name={this.props.editPaletteName}
-                       activePaletteColor={this.props.activePaletteColor}/>
+          <EditPalette palette={paletteCopy}/>
         </Modal>
       </div>
     );
   },
 
   setPrimaryColor: function (color) {
-    DrawStoreActions.setPrimaryColor(color);
+    this.props.onPrimaryColorChange(color);
   },
 
   newPalette: function () {
@@ -81,20 +86,29 @@ let PaletteManager = React.createClass({
       return;
     }
 
-    if (this.props.palettes[paletteName]) {
+    if (this.state.palettes[paletteName]) {
       alert("That palette name is already taken.");
     }
 
-    DrawStoreActions.newPalette(paletteName);
-    DrawStoreActions.setActivePalette(paletteName);
+    let palettes = this.state.palettes;
+    palettes[paletteName] = {};
+    this.setState({ palettes: palettes });
   },
 
   editPalette: function () {
-    DrawStoreActions.editPalette();
+    let name = this.state.activePalette;
+    let palette = this.state.palettes[name].splice(0);
+
+    React.render(<EditPalette palette={palette} name={name}
+                  onPaletteChange={this.onPaletteChange}/>,
+                 document.getElementById('modal-container'));
   },
 
-  setActivePalette: function (ev) {
-    DrawStoreActions.setActivePalette(ev.target.value);
+  onPaletteChange: function (palette) {
+    let name = this.state.activePalette;
+    let palettes = this.state.palettes;
+    palettes[name] = palette;
+    this.setState({ palettes: palettes });
   }
 });
 

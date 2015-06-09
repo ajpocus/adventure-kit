@@ -4,7 +4,7 @@ let AppDispatcher = new Dispatcher();
 
 AppDispatcher.handleAction = function (action) {
   this.dispatch({
-    source: 'VIEW_ACTION',
+    source: 'ACTION',
     action: action
   });
 };
