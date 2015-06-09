@@ -222,10 +222,6 @@ img.pixel {
   left: 0;
 }
 
-#render #draw-canvas {
-  background: #a8a8a8;
-}
-
 .render-container {
   display: flex;
 }
