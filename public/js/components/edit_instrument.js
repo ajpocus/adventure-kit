@@ -32,7 +32,7 @@ let EditInstrument = React.createClass({
                              harmonic={wave.harmonic}
                              gain={wave.gain}
                              type={wave.type}
-                             onChange={this.onChange}/>
+                             onChange={this.handleChange}/>
       );
     }
 
@@ -42,7 +42,7 @@ let EditInstrument = React.createClass({
           <div className="modal-content">
             <div className="header">
               <h3>Edit Instrument</h3>
-              <span className="close"
+              <span className="close-modal"
                     onClick={this.close}>
                     x
               </span>
@@ -50,6 +50,9 @@ let EditInstrument = React.createClass({
 
             <div className="content">
               <div className="instrument">
+                <input name="name"
+                       value={this.state.name}
+                       onChange={this.handleNameChange}/>
                 <div className="components">
                   <button className="new-component undertone"
                           onClick={this.addUndertone}>
@@ -71,7 +74,7 @@ let EditInstrument = React.createClass({
     );
   },
 
-  onChange: function (newState, idx) {
+  handleChange: function (newState, idx) {
     console.log(newState, idx);
 
     let components = this.state.components;
@@ -83,7 +86,17 @@ let EditInstrument = React.createClass({
     }
 
     components[idx] = component;
-    this.setState({ components: components });
+    this.setState({ components: components }, function () {
+      this.props.onInstrumentChange(this.state);
+    });
+  },
+
+  handleNameChange: function (ev) {
+    this.setState({
+      name: ev.target.value
+    }, function () {
+      this.props.onInstrumentChange(this.state);
+    });
   },
 
   addUndertone: function () {

@@ -51611,7 +51611,7 @@ var EditInstrument = React.createClass({
         harmonic: wave.harmonic,
         gain: wave.gain,
         type: wave.type,
-        onChange: this.onChange }));
+        onChange: this.handleChange }));
     }
 
     return React.createElement(
@@ -51633,7 +51633,7 @@ var EditInstrument = React.createClass({
             ),
             React.createElement(
               'span',
-              { className: 'close',
+              { className: 'close-modal',
                 onClick: this.close },
               'x'
             )
@@ -51644,6 +51644,9 @@ var EditInstrument = React.createClass({
             React.createElement(
               'div',
               { className: 'instrument' },
+              React.createElement('input', { name: 'name',
+                value: this.state.name,
+                onChange: this.handleNameChange }),
               React.createElement(
                 'div',
                 { className: 'components' },
@@ -51668,7 +51671,7 @@ var EditInstrument = React.createClass({
     );
   },
 
-  onChange: function onChange(newState, idx) {
+  handleChange: function handleChange(newState, idx) {
     console.log(newState, idx);
 
     var components = this.state.components;
@@ -51680,7 +51683,17 @@ var EditInstrument = React.createClass({
     }
 
     components[idx] = component;
-    this.setState({ components: components });
+    this.setState({ components: components }, function () {
+      this.props.onInstrumentChange(this.state);
+    });
+  },
+
+  handleNameChange: function handleNameChange(ev) {
+    this.setState({
+      name: ev.target.value
+    }, function () {
+      this.props.onInstrumentChange(this.state);
+    });
   },
 
   addUndertone: function addUndertone() {
@@ -52205,8 +52218,28 @@ var InstrumentList = React.createClass({
   },
 
   newInstrument: function newInstrument() {
-    React.render(React.createElement(_edit_instrument2['default'], { onInstrumentChange: this.onInstrumentChange,
-      onInstrumentSave: this.onInstrumentSave }), document.getElementById('modal-container'));
+    var instruments = this.state.instruments;
+    var name = 'New Instrument';
+    instruments.push({ name: name });
+    var idx = instruments.length - 1;
+    var activeInstrument = idx;
+
+    React.render(React.createElement(_edit_instrument2['default'], { onInstrumentChange: this.onInstrumentChange }), document.getElementById('modal-container'));
+
+    this.setState({
+      instruments: instruments,
+      activeInstrument: idx
+    });
+  },
+
+  onInstrumentChange: function onInstrumentChange(instrument) {
+    var instruments = this.state.instruments;
+    var activeInstrument = this.state.activeInstrument;
+    instruments[activeInstrument] = instrument;
+
+    this.setState({
+      instruments: instruments
+    });
   }
 });
 

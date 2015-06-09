@@ -57,9 +57,29 @@ let InstrumentList = React.createClass({
   },
 
   newInstrument: function () {
-    React.render(<EditInstrument onInstrumentChange={this.onInstrumentChange}
-                                 onInstrumentSave={this.onInstrumentSave}/>,
+    let instruments = this.state.instruments;
+    let name = 'New Instrument';
+    instruments.push({ name: name });
+    let idx = instruments.length - 1;
+    let activeInstrument = idx;
+
+    React.render(<EditInstrument onInstrumentChange={this.onInstrumentChange}/>,
                  document.getElementById('modal-container'));
+
+    this.setState({
+      instruments: instruments,
+      activeInstrument: idx
+    });
+  },
+
+  onInstrumentChange: function (instrument) {
+    let instruments = this.state.instruments;
+    let activeInstrument = this.state.activeInstrument;
+    instruments[activeInstrument] = instrument;
+
+    this.setState({
+      instruments: instruments
+    });
   }
 });
 
