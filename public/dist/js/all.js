@@ -51571,7 +51571,7 @@ var DrawSurface = React.createClass({
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
     if (this.state.bgCtx && this.state.bgCtx !== prevState.bgCtx && !prevState.bgCtx) {
-      this.renderCanvas();
+      this.drawBackground();
     }
   },
 
@@ -51631,7 +51631,7 @@ var DrawSurface = React.createClass({
     );
   },
 
-  renderCanvas: function renderCanvas() {
+  redraw: function redraw() {
     var bgCtx = this.state.bgCtx;
     var drawCtx = this.state.drawCtx;
     var overlayCtx = this.state.overlayCtx;
@@ -51691,30 +51691,31 @@ var DrawSurface = React.createClass({
     bgCtx.scale(bgScale, bgScale);
     drawCtx.scale(tileWidth, tileHeight);
     overlayCtx.scale(tileWidth, tileHeight);
-
-    this.setState({
-      bgCtx: bgCtx,
-      drawCtx: drawCtx,
-      overlayCtx: overlayCtx
-    }, callback);
   },
 
   highlightPixel: function highlightPixel(ev) {
+    var overlayCtx = this.state.overlayCtx;
+
     var _getTileCoordinates = this.getTileCoordinates(ev);
 
     var x = _getTileCoordinates.x;
     var y = _getTileCoordinates.y;
 
     var grid = this.state.grid;
+    var numPixels = grid.length;
+    var currentPixel = grid[x][y];
 
-    if (!grid[x][y].highlighted) {
-      grid[x][y].highlighted = true;
-      this.setState({
-        grid: grid
-      }, function () {
-        this.renderCanvas();
-      });
+    if (!currentPixel.highlighted) {
+      overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      overlayCtx.fillRect(x, y, 1, 1);
+      currentPixel.highlighted = true;
     }
+
+    this.setState({
+      grid: grid
+    });
+
+    this.clearHighlight(null, currentPixel);
 
     if (this.state.isMouseDown) {
       this.drawPixel(ev);
@@ -51722,22 +51723,26 @@ var DrawSurface = React.createClass({
   },
 
   clearHighlight: function clearHighlight(ev, currentPixel) {
+    var overlayCtx = this.state.overlayCtx;
     var grid = this.state.grid;
+
+    overlayCtx.clearRect(0, 0, this.state.width, this.state.height);
+    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    overlayCtx.fillRect(currentPixel.x, currentPixel.y, 1, 1);
 
     for (var x = 0; x < this.state.width; x++) {
       for (var y = 0; y < this.state.height; y++) {
-        if (grid[x][y] === currentPixel) {
+        var pixel = grid[x][y];
+        if (pixel === currentPixel) {
           continue;
         }
 
-        grid[x][y].highlighted = false;
+        pixel.highlighted = false;
       }
     }
 
     this.setState({
       grid: grid
-    }, function () {
-      this.renderCanvas();
     });
   },
 
@@ -51748,6 +51753,7 @@ var DrawSurface = React.createClass({
     var y = _getTileCoordinates2.y;
 
     var grid = this.state.grid;
+    var drawCtx = this.state.drawCtx;
 
     var color = this.props.primaryColor;
     var button = ev.which || ev.button;
@@ -51756,12 +51762,12 @@ var DrawSurface = React.createClass({
     }
 
     grid[x][y].color = color;
+    drawCtx.fillStyle = color;
+    drawCtx.fillRect(x, y, 1, 1);
 
     this.setState({
       grid: grid,
       isMouseDown: true
-    }, function () {
-      this.renderCanvas();
     });
   },
 
@@ -51805,7 +51811,7 @@ var DrawSurface = React.createClass({
     this.setState({
       zoom: zoom
     }, function () {
-      this.renderCanvas();
+      this.redraw();
     });
   },
 
@@ -51821,7 +51827,7 @@ var DrawSurface = React.createClass({
       height: height
     }, function () {
       this.updateGrid(function () {
-        this.renderCanvas();
+        this.redraw();
       });
     });
   },
