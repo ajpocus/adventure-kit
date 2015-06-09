@@ -78,8 +78,9 @@ let DrawSurface = React.createClass({
         this.state.actualHeight !== prevState.actualHeight ||
         this.state.width !== prevState.width ||
         this.state.height !== prevState.height) {
-      this.updateGrid();
-      this.redraw();
+      this.updateGrid(function () {
+        this.redraw();
+      });
     }
   },
 
@@ -304,7 +305,7 @@ let DrawSurface = React.createClass({
     let tileHeight = this.state.tileHeight;
     let actualWidth = this.state.actualWidth;
     let actualHeight = this.state.actualHeight;
-    let zoom = this.props.zoom;
+    let zoom = this.state.zoom;
 
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
@@ -356,10 +357,15 @@ let DrawSurface = React.createClass({
   },
 
   drawBackground: function () {
+    console.log(this.state.actualWidth, this.state.actualHeight);
     let bgCtx = this.state.bgCtx;
     let bgTileSize = this.props.bgTileSize;
     let numTilesH = this.state.actualWidth / bgTileSize;
     let numTilesV = this.state.actualHeight / bgTileSize;
+
+    let bgWidth = this.state.actualWidth / bgTileSize;
+    let bgHeight = this.state.actualHeight / bgTileSize;
+    bgCtx.scale(bgWidth, bgHeight);
 
     for (let x = 0; x < numTilesH; x++) {
       for (let y = 0; y < numTilesV; y++) {
@@ -387,7 +393,7 @@ let DrawSurface = React.createClass({
     this.setState({ grid: grid });
   },
 
-  updateGrid: function () {
+  updateGrid: function (callback) {
     let width = this.state.width;
     let height = this.state.height;
     let oldGrid = this.state.grid;
@@ -404,7 +410,7 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: newGrid });
+    this.setState({ grid: newGrid }, callback);
   },
 
   getTileCoordinates: function (ev) {
