@@ -284,7 +284,7 @@ let DrawSurface = React.createClass({
       actualHeight: actualHeight,
       tileWidth: tileWidth,
       tileHeight: tileHeight
-    });
+    }, this.redraw);
   },
 
   onResizeClick: function () {
