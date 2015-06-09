@@ -4,7 +4,7 @@ let $ = require('jquery');
 
 import DrawStoreActions from '../actions/draw_store_actions';
 import EditPalette from './edit_palette';
-import Transparency from '../lib/transparency';
+import Transparency from '../mixins/transparency';
 import Modal from './modal';
 
 let PaletteManager = React.createClass({

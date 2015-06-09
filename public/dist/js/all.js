@@ -51498,9 +51498,9 @@ var _modelsPixel = require('../models/pixel');
 
 var _modelsPixel2 = _interopRequireDefault(_modelsPixel);
 
-var _libTransparency = require('../lib/transparency');
+var _mixinsTransparency = require('../mixins/transparency');
 
-var _libTransparency2 = _interopRequireDefault(_libTransparency);
+var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var React = require('react');
 var $ = require('jquery');
@@ -51542,8 +51542,7 @@ var DrawSurface = React.createClass({
       totalHeight: 1024,
       bgTileSize: 8,
       minZoom: 0.125,
-      maxZoom: 4,
-      zoomDelta: 0.125
+      maxZoom: 4
     };
   },
 
@@ -51572,6 +51571,11 @@ var DrawSurface = React.createClass({
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
     if (this.state.bgCtx && this.state.bgCtx !== prevState.bgCtx && !prevState.bgCtx) {
       this.drawBackground();
+    }
+
+    if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
+      this.updateGrid();
+      this.redraw();
     }
   },
 
@@ -51635,62 +51639,35 @@ var DrawSurface = React.createClass({
     var bgCtx = this.state.bgCtx;
     var drawCtx = this.state.drawCtx;
     var overlayCtx = this.state.overlayCtx;
-
     var zoom = this.state.zoom;
-    var actualWidth = this.props.totalWidth * zoom;
-    var actualHeight = this.props.totalHeight * zoom;
-    var tileWidth = actualWidth / this.state.width;
-    var tileHeight = actualHeight / this.state.height;
+
+    var bgScale = this.props.bgTileSize;
+    bgCtx.scale(bgScale, bgScale);
+
+    var scaleWidth = this.state.tileWidth;
+    var scaleHeight = this.state.tileHeight;
+    drawCtx.scale(scaleWidth, scaleHeight);
+    overlayCtx.scale(scaleWidth, scaleHeight);
+
+    var grid = this.state.grid;
+    this.drawBackground();
+    drawCtx.clearRect(0, 0, this.state.width, this.state.height);
+
+    for (var x = 0; x < this.state.width; x++) {
+      for (var y = 0; y < this.state.height; y++) {
+        var pixel = grid[x][y];
+        if (pixel.color) {
+          drawCtx.fillStyle = pixel.color;
+          drawCtx.fillRect(x, y, 1, 1);
+        }
+      }
+    }
 
     this.setState({
-      actualWidth: actualWidth,
-      actualHeight: actualHeight,
-      tileWidth: tileWidth,
-      tileHeight: tileHeight
+      bgCtx: bgCtx,
+      drawCtx: drawCtx,
+      overlayCtx: overlayCtx
     });
-
-    this.rescale(function () {
-      this.drawBackground(function () {
-        var grid = this.state.grid;
-
-        drawCtx.clearRect(0, 0, this.state.width, this.state.height);
-
-        for (var x = 0; x < this.state.width; x++) {
-          for (var y = 0; y < this.state.height; y++) {
-            var pixel = grid[x][y];
-
-            if (pixel.color) {
-              drawCtx.fillStyle = pixel.color;
-              drawCtx.fillRect(x, y, 1, 1);
-            }
-
-            if (pixel.highlighted) {
-              overlayCtx.fillStyle = '#eeeeee';
-              overlayCtx.fillRect(x, y, 1, 1);
-            }
-          }
-        }
-
-        this.setState({
-          bgCtx: bgCtx,
-          drawCtx: drawCtx,
-          overlayCtx: overlayCtx
-        });
-      });
-    });
-  },
-
-  rescale: function rescale(callback) {
-    var bgCtx = this.state.bgCtx;
-    var drawCtx = this.state.drawCtx;
-    var overlayCtx = this.state.overlayCtx;
-    var bgScale = this.props.bgTileSize;
-    var tileWidth = this.state.tileWidth;
-    var tileHeight = this.state.tileHeight;
-
-    bgCtx.scale(bgScale, bgScale);
-    drawCtx.scale(tileWidth, tileHeight);
-    overlayCtx.scale(tileWidth, tileHeight);
   },
 
   highlightPixel: function highlightPixel(ev) {
@@ -51712,7 +51689,8 @@ var DrawSurface = React.createClass({
     }
 
     this.setState({
-      grid: grid
+      grid: grid,
+      overlayCtx: overlayCtx
     });
 
     this.clearHighlight(null, currentPixel);
@@ -51742,7 +51720,8 @@ var DrawSurface = React.createClass({
     }
 
     this.setState({
-      grid: grid
+      grid: grid,
+      overlayCtx: overlayCtx
     });
   },
 
@@ -51767,6 +51746,7 @@ var DrawSurface = React.createClass({
 
     this.setState({
       grid: grid,
+      drawCtx: drawCtx,
       isMouseDown: true
     });
   },
@@ -51781,14 +51761,13 @@ var DrawSurface = React.createClass({
     var actualHeight = this.state.actualHeight;
     var tileWidth = this.state.tileWidth;
     var tileHeight = this.state.tileHeight;
-    var delta = this.props.zoomDelta;
 
     if (ev) {
       ev.preventDefault();
       if (ev.deltaY > 0) {
-        zoom -= delta;
+        zoom /= 2;
       } else if (ev.deltaY < 0) {
-        zoom += delta;
+        zoom *= 2;
       } else {
         return;
       }
@@ -51808,10 +51787,17 @@ var DrawSurface = React.createClass({
       return;
     }
 
+    actualWidth = this.props.totalWidth * zoom;
+    actualHeight = this.props.totalHeight * zoom;
+    tileWidth = actualWidth / this.state.width;
+    tileHeight = actualHeight / this.state.height;
+
     this.setState({
-      zoom: zoom
-    }, function () {
-      this.redraw();
+      zoom: zoom,
+      actualWidth: actualWidth,
+      actualHeight: actualHeight,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight
     });
   },
 
@@ -51822,19 +51808,62 @@ var DrawSurface = React.createClass({
   },
 
   handleResize: function handleResize(width, height) {
+    var tileWidth = this.state.tileWidth;
+    var tileHeight = this.state.tileHeight;
+    var actualWidth = this.state.actualWidth;
+    var actualHeight = this.state.actualHeight;
+    var zoom = this.props.zoom;
+
+    actualWidth = this.props.totalWidth * zoom;
+    actualHeight = this.props.totalHeight * zoom;
+    tileWidth = actualWidth / width;
+    tileHeight = actualHeight / height;
+
     this.setState({
       width: width,
-      height: height
-    }, function () {
-      this.updateGrid(function () {
-        this.redraw();
-      });
+      height: height,
+      actualWidth: actualWidth,
+      actualHeight: actualHeight,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight,
+      zoom: zoom
     });
   },
 
-  onExportClick: function onExportClick() {},
+  onExportClick: function onExportClick() {
+    var grid = this.state.grid;
+    var png = new PNG({
+      width: grid.length,
+      height: grid[0].length
+    });
 
-  drawBackground: function drawBackground(callback) {
+    for (var y = 0; y < png.height; y++) {
+      for (var x = 0; x < png.width; x++) {
+        var idx = png.width * y + x << 2;
+        var pixel = grid[x][y];
+        if (!pixel.color) {
+          pixel.color = 'rgba(0, 0, 0, 0)';
+        }
+        var color = tinycolor(pixel.color);
+        var rgb = color.toRgb();
+        var alpha = color.getAlpha() * 255;
+
+        png.data[idx] = rgb.r;
+        png.data[idx + 1] = rgb.g;
+        png.data[idx + 2] = rgb.b;
+        png.data[idx + 3] = alpha;
+      }
+    }
+
+    var reader = new FileReader();
+    reader.onload = function (img) {
+      console.log(img);
+    };
+    png.pack();
+    reader.readAsDataURL(png.pipe());
+  },
+
+  drawBackground: function drawBackground() {
     var bgCtx = this.state.bgCtx;
     var bgTileSize = this.props.bgTileSize;
     var numTilesH = this.state.actualWidth / bgTileSize;
@@ -51849,7 +51878,7 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ bgCtx: bgCtx }, callback);
+    this.setState({ bgCtx: bgCtx });
   },
 
   initGrid: function initGrid() {
@@ -51866,7 +51895,7 @@ var DrawSurface = React.createClass({
     this.setState({ grid: grid });
   },
 
-  updateGrid: function updateGrid(callback) {
+  updateGrid: function updateGrid() {
     var width = this.state.width;
     var height = this.state.height;
     var oldGrid = this.state.grid;
@@ -51883,7 +51912,7 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: newGrid }, callback);
+    this.setState({ grid: newGrid });
   },
 
   getTileCoordinates: function getTileCoordinates(ev) {
@@ -51902,9 +51931,7 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-// TODO: export an actual PNG with dimensions matching this.state
-
-},{"../lib/transparency":374,"../models/pixel":375,"./manage_draw_list":365,"./resize_prompt":370,"jquery":135,"pngjs":143,"react":336,"tinycolor2":352}],357:[function(require,module,exports){
+},{"../mixins/transparency":374,"../models/pixel":375,"./manage_draw_list":365,"./resize_prompt":370,"jquery":135,"pngjs":143,"react":336,"tinycolor2":352}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -52155,9 +52182,9 @@ var _actionsDraw_store_actions = require('../actions/draw_store_actions');
 
 var _actionsDraw_store_actions2 = _interopRequireDefault(_actionsDraw_store_actions);
 
-var _libTransparency = require('../lib/transparency');
+var _mixinsTransparency = require('../mixins/transparency');
 
-var _libTransparency2 = _interopRequireDefault(_libTransparency);
+var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var React = require('react');
 var $ = require('jquery');
@@ -52177,7 +52204,7 @@ var EditPalette = React.createClass({
       var color = this.props.palette[i];
       var swatchStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
-        swatchStyle.background = _libTransparency2['default'].background;
+        swatchStyle.background = _mixinsTransparency2['default'].background;
       }
 
       colorList.push(React.createElement(
@@ -52308,7 +52335,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../actions/draw_store_actions":353,"../lib/transparency":374,"jquery":135,"react":336}],360:[function(require,module,exports){
+},{"../actions/draw_store_actions":353,"../mixins/transparency":374,"jquery":135,"react":336}],360:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53052,9 +53079,9 @@ var _edit_palette = require('./edit_palette');
 
 var _edit_palette2 = _interopRequireDefault(_edit_palette);
 
-var _libTransparency = require('../lib/transparency');
+var _mixinsTransparency = require('../mixins/transparency');
 
-var _libTransparency2 = _interopRequireDefault(_libTransparency);
+var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var _modal = require('./modal');
 
@@ -53087,7 +53114,7 @@ var PaletteManager = React.createClass({
       // When transparent, use a checkerboard pattern.
       var liStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
-        liStyle.background = _libTransparency2['default'].background;
+        liStyle.background = _mixinsTransparency2['default'].background;
       }
 
       paletteColors.push(React.createElement('li', { className: 'color', style: liStyle, key: i,
@@ -53169,7 +53196,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../actions/draw_store_actions":353,"../lib/transparency":374,"./edit_palette":359,"./modal":367,"jquery":135,"react":336,"tinycolor2":352}],370:[function(require,module,exports){
+},{"../actions/draw_store_actions":353,"../mixins/transparency":374,"./edit_palette":359,"./modal":367,"jquery":135,"react":336,"tinycolor2":352}],370:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

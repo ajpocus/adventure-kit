@@ -2,7 +2,7 @@ let React = require('react');
 let $ = require('jquery');
 
 import DrawStoreActions from '../actions/draw_store_actions';
-import Transparency from '../lib/transparency';
+import Transparency from '../mixins/transparency';
 
 let EditPalette = React.createClass({
   getDefaultProps: function () {
