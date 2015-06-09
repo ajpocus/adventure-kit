@@ -146,37 +146,40 @@ let DrawSurface = React.createClass({
       tileHeight: tileHeight
     });
 
-    this.rescale();
-    this.drawBackground();
+    this.rescale(function () {
+      this.drawBackground(function () {
+        let grid = this.state.grid;
 
-    let grid = this.state.grid;
+        drawCtx.clearRect(0, 0, this.state.width, this.state.height);
 
-    drawCtx.clearRect(0, 0, this.state.width, this.state.height);
+        for (let x = 0; x < this.state.width; x++) {
+          for (let y = 0; y < this.state.height; y++) {
+            let pixel = grid[x][y];
 
-    for (let x = 0; x < this.state.width; x++) {
-      for (let y = 0; y < this.state.height; y++) {
-        let pixel = grid[x][y];
+            if (pixel.color) {
+              drawCtx.fillStyle = pixel.color;
+              drawCtx.fillRect(x, y, 1, 1);
+            }
 
-        if (pixel.color) {
-          drawCtx.fillStyle = pixel.color;
-          drawCtx.fillRect(x, y, 1, 1);
+            if (pixel.highlighted) {
+              overlayCtx.fillStyle = '#eeeeee';
+              overlayCtx.fillRect(x, y, 1, 1);
+            }
+          }
         }
 
-        if (pixel.highlighted) {
-          overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-          overlayCtx.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-
-    this.setState({
-      bgCtx: bgCtx,
-      drawCtx: drawCtx,
-      overlayCtx: overlayCtx
+        this.setState({
+          bgCtx: bgCtx,
+          drawCtx: drawCtx,
+          overlayCtx: overlayCtx
+        });
+      });
     });
+
+
   },
 
-  rescale: function () {
+  rescale: function (callback) {
     let bgCtx = this.state.bgCtx;
     let drawCtx = this.state.drawCtx;
     let overlayCtx = this.state.overlayCtx;
@@ -192,7 +195,7 @@ let DrawSurface = React.createClass({
       bgCtx: bgCtx,
       drawCtx: drawCtx,
       overlayCtx: overlayCtx
-    });
+    }, callback);
   },
 
   highlightPixel: function (ev) {
