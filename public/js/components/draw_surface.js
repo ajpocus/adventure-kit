@@ -1,6 +1,5 @@
 let React = require('react');
 let $ = require('jquery');
-let PNG = require('pngjs').PNG;
 let tinycolor = require('tinycolor2');
 
 import ManageDrawList from './manage_draw_list';
@@ -141,16 +140,9 @@ let DrawSurface = React.createClass({
     let drawCtx = this.state.drawCtx;
     let overlayCtx = this.state.overlayCtx;
     let zoom = this.state.zoom;
-
-    let bgScale = this.props.bgTileSize;
-    bgCtx.scale(bgScale, bgScale);
-
-    let scaleWidth = this.state.tileWidth;
-    let scaleHeight = this.state.tileHeight;
-    drawCtx.scale(scaleWidth, scaleHeight);
-    overlayCtx.scale(scaleWidth, scaleHeight);
-
     let grid = this.state.grid;
+
+    this.rescale();
     this.drawBackground();
     drawCtx.clearRect(0, 0, this.state.width, this.state.height);
 
@@ -316,36 +308,20 @@ let DrawSurface = React.createClass({
   },
 
   onExportClick: function () {
-    let grid = this.state.grid;
-    let png = new PNG({
-      width: grid.length,
-      height: grid[0].length
-    });
+    // TODO: export the actual PNG represented by grid
+  },
 
-    for (let y = 0; y < png.height; y++) {
-      for (let x = 0; x < png.width; x++) {
-        let idx = (png.width * y + x) << 2;
-        let pixel = grid[x][y];
-        if (!pixel.color) {
-          pixel.color = 'rgba(0, 0, 0, 0)';
-        }
-        let color = tinycolor(pixel.color);
-        let rgb = color.toRgb();
-        let alpha = color.getAlpha() * 255;
+  rescale: function () {
+    let bgCtx = this.state.bgCtx;
+    let drawCtx = this.state.drawCtx;
+    let overlayCtx = this.state.overlayCtx;
+    let bgScale = this.props.bgTileSize;
+    let scaleWidth = this.state.tileWidth;
+    let scaleHeight = this.state.tileHeight;
 
-        png.data[idx] = rgb.r;
-        png.data[idx+1] = rgb.g;
-        png.data[idx+2] = rgb.b;
-        png.data[idx+3] = alpha;
-      }
-    }
-
-    let reader = new FileReader();
-    reader.onload = function (img) {
-      console.log(img);
-    };
-    png.pack();
-    reader.readAsDataURL(png.pipe());
+    bgCtx.scale(bgScale, bgScale);
+    drawCtx.scale(scaleWidth, scaleHeight);
+    overlayCtx.scale(scaleWidth, scaleHeight);
   },
 
   drawBackground: function () {
