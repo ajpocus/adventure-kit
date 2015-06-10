@@ -10,7 +10,8 @@ let EditInstrument = React.createClass({
         {
           harmonic: 0,
           gain: 0.5,
-          type: 'sawtooth'
+          type: 'sawtooth',
+          key: Math.random()
         }
       ]
     };
@@ -26,8 +27,9 @@ let EditInstrument = React.createClass({
 
     for (let i = 0; i < components.length; i++) {
       let wave = components[i];
+      console.log(wave);
       componentViews.push(
-        <InstrumentComponent key={i}
+        <InstrumentComponent key={wave.key}
                              idx={i}
                              harmonic={wave.harmonic}
                              gain={wave.gain}
@@ -76,7 +78,6 @@ let EditInstrument = React.createClass({
 
   handleChange: function (newState, idx) {
     console.log(newState, idx);
-
     let components = this.state.components;
     let component = components[idx];
     for (let prop in newState) {
@@ -102,10 +103,14 @@ let EditInstrument = React.createClass({
   addUndertone: function () {
     let components = this.state.components;
     let firstComponent = components[0];
+    let harmonic = firstComponent.harmonic - 1;
+    let key = Math.random();
+
     components.unshift({
-      harmonic: firstComponent.harmonic - 1,
+      harmonic: harmonic,
       gain: 0.5,
-      type: 'square'
+      type: 'square',
+      key: key
     });
 
     this.setState({ components: components });
@@ -114,10 +119,14 @@ let EditInstrument = React.createClass({
   addOvertone: function () {
     let components = this.state.components;
     let lastComponent = components[components.length - 1];
+    let harmonic = lastComponent.harmonic + 1;
+    let key = Math.random();
+
     components.push({
-      harmonic: lastComponent.harmonic + 1,
+      harmonic: harmonic,
       gain: 0.5,
-      type: 'square'
+      type: 'square',
+      key: key
     });
 
     this.setState({ components: components });

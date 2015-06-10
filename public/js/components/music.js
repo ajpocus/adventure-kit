@@ -13,17 +13,20 @@ let Music = React.createClass({
           {
             harmonic: 0,
             gain: 0.3,
-            type: 'sawtooth'
+            type: 'sawtooth',
+            key: Math.random()
           },
           {
             harmonic: 1,
             gain: 0.5,
-            type: 'sine'
+            type: 'sine',
+            key: Math.random()
           },
           {
             harmonic: 2,
             gain: 0.2,
-            type: 'square'
+            type: 'square',
+            key: Math.random()
           }
         ]
       }

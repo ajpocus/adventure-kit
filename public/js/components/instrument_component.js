@@ -1,14 +1,6 @@
 let React = require('react');
 
 let InstrumentComponent = React.createClass({
-  getDefaultProps: function () {
-    return {
-      harmonic: 0,
-      gain: 0.5,
-      type: 'sine'
-    }
-  },
-
   getInitialState: function () {
     return {
       harmonic: this.props.harmonic,
