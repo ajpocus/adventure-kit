@@ -3,6 +3,7 @@ let React = require('react');
 import TrackList from './track_list';
 import InstrumentList from './instrument_list';
 import Keyboard from './keyboard';
+import VolumeControl from './volume_control';
 
 let Music = React.createClass({
   getInitialState: function () {
@@ -32,7 +33,8 @@ let Music = React.createClass({
           ]
         }
       ],
-      activeInstrument: 0
+      activeInstrument: 0,
+      volume: 0.5
     };
   },
 
@@ -44,13 +46,20 @@ let Music = React.createClass({
         <InstrumentList instruments={this.state.instruments}
                         activeInstrument={this.state.activeInstrument}
                         onUpdate={this.onUpdate}/>
-        <Keyboard instrument={instrument}/>
+        <Keyboard instrument={instrument}
+                  volume={this.state.volume}/>
+        <VolumeControl gain="0.5"
+                       onVolumeChange={this.onVolumeChange}/>
       </div>
     );
   },
 
   onUpdate: function (newState) {
     this.setState(newState);
+  },
+
+  onVolumeChange: function (volume) {
+    this.setState({ volume: volume });
   }
 });
 

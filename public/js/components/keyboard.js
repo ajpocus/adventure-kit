@@ -64,7 +64,7 @@ let Keyboard = React.createClass({
         osc.type = wave.type;
 
         let gainNode = ctx.createGain();
-        gainNode.gain.value = wave.gain;
+        gainNode.gain.value = wave.gain * this.props.volume * 2;
 
         osc.connect(gainNode);
         gainNode.connect(ctx.destination);
@@ -121,23 +121,23 @@ let Keyboard = React.createClass({
       'j': 22,  // A#0
       'm': 23,  // B0
       ',': 24,  // C1
-      'q': 25,  // C1 (again)
-      '2': 26,  // C#1
-      'w': 27,  // D1
-      '3': 28,  // D#1
-      'e': 29,  // E1
-      'r': 30,  // F1
-      '5': 31,  // F#1
-      't': 32,  // G1
-      '6': 33,  // G#1
-      'y': 34,  // A1
-      '7': 35,  // A#1
-      'u': 36,  // B1
-      'i': 37,  // C2
-      '9': 38,  // C#2
-      'o': 39,  // D2
-      '0': 40,  // D#2
-      'p': 41   // E2
+      'q': 24,  // C1 (again)
+      '2': 25,  // C#1
+      'w': 26,  // D1
+      '3': 27,  // D#1
+      'e': 28,  // E1
+      'r': 29,  // F1
+      '5': 30,  // F#1
+      't': 31,  // G1
+      '6': 32,  // G#1
+      'y': 33,  // A1
+      '7': 34,  // A#1
+      'u': 35,  // B1
+      'i': 36,  // C2
+      '9': 37,  // C#2
+      'o': 38,  // D2
+      '0': 39,  // D#2
+      'p': 40   // E2
     };
 
     return keyMap[key];

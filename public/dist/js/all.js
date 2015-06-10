@@ -51480,7 +51480,7 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-},{"../lib/transparency":368,"../models/pixel":369,"./manage_draw_list":361,"./resize_prompt":366,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],353:[function(require,module,exports){
+},{"../lib/transparency":369,"../models/pixel":370,"./manage_draw_list":361,"./resize_prompt":366,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],353:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -51932,7 +51932,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../lib/transparency":368,"jquery":132,"react":333}],356:[function(require,module,exports){
+},{"../lib/transparency":369,"jquery":132,"react":333}],356:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -52347,7 +52347,7 @@ var Keyboard = React.createClass({
         osc.type = wave.type;
 
         var gainNode = ctx.createGain();
-        gainNode.gain.value = wave.gain;
+        gainNode.gain.value = wave.gain * this.props.volume * 2;
 
         osc.connect(gainNode);
         gainNode.connect(ctx.destination);
@@ -52404,23 +52404,23 @@ var Keyboard = React.createClass({
       'j': 22, // A#0
       'm': 23, // B0
       ',': 24, // C1
-      'q': 25, // C1 (again)
-      '2': 26, // C#1
-      'w': 27, // D1
-      '3': 28, // D#1
-      'e': 29, // E1
-      'r': 30, // F1
-      '5': 31, // F#1
-      't': 32, // G1
-      '6': 33, // G#1
-      'y': 34, // A1
-      '7': 35, // A#1
-      'u': 36, // B1
-      'i': 37, // C2
-      '9': 38, // C#2
-      'o': 39, // D2
-      '0': 40, // D#2
-      'p': 41 // E2
+      'q': 24, // C1 (again)
+      '2': 25, // C#1
+      'w': 26, // D1
+      '3': 27, // D#1
+      'e': 28, // E1
+      'r': 29, // F1
+      '5': 30, // F#1
+      't': 31, // G1
+      '6': 32, // G#1
+      'y': 33, // A1
+      '7': 34, // A#1
+      'u': 35, // B1
+      'i': 36, // C2
+      '9': 37, // C#2
+      'o': 38, // D2
+      '0': 39, // D#2
+      'p': 40 // E2
     };
 
     return keyMap[key];
@@ -52643,6 +52643,10 @@ var _keyboard = require('./keyboard');
 
 var _keyboard2 = _interopRequireDefault(_keyboard);
 
+var _volume_control = require('./volume_control');
+
+var _volume_control2 = _interopRequireDefault(_volume_control);
+
 var React = require('react');
 
 var Music = React.createClass({
@@ -52669,7 +52673,8 @@ var Music = React.createClass({
           key: Math.random()
         }]
       }],
-      activeInstrument: 0
+      activeInstrument: 0,
+      volume: 0.5
     };
   },
 
@@ -52682,19 +52687,26 @@ var Music = React.createClass({
       React.createElement(_instrument_list2['default'], { instruments: this.state.instruments,
         activeInstrument: this.state.activeInstrument,
         onUpdate: this.onUpdate }),
-      React.createElement(_keyboard2['default'], { instrument: instrument })
+      React.createElement(_keyboard2['default'], { instrument: instrument,
+        volume: this.state.volume }),
+      React.createElement(_volume_control2['default'], { gain: '0.5',
+        onVolumeChange: this.onVolumeChange })
     );
   },
 
   onUpdate: function onUpdate(newState) {
     this.setState(newState);
+  },
+
+  onVolumeChange: function onVolumeChange(volume) {
+    this.setState({ volume: volume });
   }
 });
 
 exports['default'] = Music;
 module.exports = exports['default'];
 
-},{"./instrument_list":359,"./keyboard":360,"./track_list":367,"react":333}],365:[function(require,module,exports){
+},{"./instrument_list":359,"./keyboard":360,"./track_list":367,"./volume_control":368,"react":333}],365:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -52835,7 +52847,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../lib/transparency":368,"./edit_palette":355,"./modal":363,"jquery":132,"react":333,"tinycolor2":349}],366:[function(require,module,exports){
+},{"../lib/transparency":369,"./edit_palette":355,"./modal":363,"jquery":132,"react":333,"tinycolor2":349}],366:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -52966,6 +52978,61 @@ exports["default"] = TrackList;
 module.exports = exports["default"];
 
 },{"react":333}],368:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var React = require("react");
+
+var VolumeControl = React.createClass({
+  displayName: "VolumeControl",
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      volume: 0.5
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      volume: this.props.volume
+    };
+  },
+
+  render: function render() {
+    return React.createElement(
+      "div",
+      { className: "volume control" },
+      React.createElement("img", { className: "icon",
+        src: "/img/icons/glyphicons-184-volume-down.png" }),
+      React.createElement("input", { type: "range",
+        min: "0",
+        max: "1",
+        step: "0.01",
+        value: this.state.volume,
+        onChange: this.handleChange }),
+      React.createElement("img", { className: "icon",
+        src: "/img/icons/glyphicons-185-volume-up.png" }),
+      React.createElement(
+        "span",
+        { className: "display" },
+        Math.round(this.state.volume * 100)
+      )
+    );
+  },
+
+  handleChange: function handleChange(ev) {
+    var volume = ev.target.value;
+    this.setState({ volume: volume });
+    this.props.onVolumeChange(volume);
+  }
+});
+
+exports["default"] = VolumeControl;
+module.exports = exports["default"];
+
+},{"react":333}],369:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -52978,7 +53045,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],369:[function(require,module,exports){
+},{}],370:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -52999,7 +53066,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],370:[function(require,module,exports){
+},{}],371:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -53068,7 +53135,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":351,"./components/footer":356,"./components/header":357,"./components/map":362,"./components/music":364,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[370])
+},{"./components/draw":351,"./components/footer":356,"./components/header":357,"./components/map":362,"./components/music":364,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[371])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map
