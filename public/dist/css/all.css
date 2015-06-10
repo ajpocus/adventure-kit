@@ -320,26 +320,33 @@ img.pixel {
   position: relative;
 }
 
+#keyboard .key .char {
+  position: absolute;
+  bottom: 12px;
+  left: 25%;
+}
+
 #keyboard .keys {
   position: absolute;
 }
 
 #keyboard .black.keys {
-  left: 52px;
+  left: 41px;
 }
 
 #keyboard .white.key {
-  width: 60px;
-  height: 180px;
+  width: 48px;
+  height: 160px;
   background: #ccc;
+  color: #111;
 }
 
 #keyboard .black.key {
-  width: 19px;
-  height: 90px;
+  width: 18px;
+  height: 80px;
   background: #111;
   z-index: 1;
-  margin-left: 41px;
+  margin-left: 30px;
 }
 
 #keyboard .black.key.first {
