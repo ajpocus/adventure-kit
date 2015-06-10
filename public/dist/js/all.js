@@ -52290,9 +52290,9 @@ var Keyboard = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      isPlaying: false,
+      isPlaying: {},
       ctx: new window.AudioContext(),
-      oscillators: [],
+      oscillators: {},
       octaveShift: 2
     };
   },
@@ -52321,12 +52321,15 @@ var Keyboard = React.createClass({
   },
 
   handleKeyDown: function handleKeyDown(ev) {
-    if (!this.state.isPlaying) {
-      var ctx = this.state.ctx;
-      var instrument = this.props.instrument;
-      var oscillators = [];
+    var key = this.keyCodeToChar(ev.keyCode);
 
-      var key = this.keyCodeToChar(ev.keyCode);
+    if (!this.state.isPlaying[key]) {
+      var ctx = this.state.ctx;
+      var oscillators = this.state.oscillators;
+      var isPlaying = this.state.isPlaying;
+      var instrument = this.props.instrument;
+      oscillators[key] = [];
+
       var midi = this.keyToNote(key);
       if (!midi) {
         return;
@@ -52350,29 +52353,37 @@ var Keyboard = React.createClass({
         gainNode.connect(ctx.destination);
 
         osc.start();
-        oscillators.push(osc);
+        oscillators[key].push(osc);
       }
+
+      isPlaying[key] = true;
 
       this.setState({
         ctx: ctx,
         oscillators: oscillators,
-        isPlaying: true
+        isPlaying: isPlaying
       });
     }
   },
 
   handleKeyUp: function handleKeyUp(ev) {
-    if (this.state.isPlaying) {
+    var key = this.keyCodeToChar(ev.keyCode);
+    var isPlaying = this.state.isPlaying;
+
+    if (isPlaying[key]) {
       var oscillators = this.state.oscillators;
 
-      for (var i = 0; i < oscillators.length; i++) {
-        var osc = oscillators[i];
+      for (var i = 0; i < oscillators[key].length; i++) {
+        var osc = oscillators[key][i];
         osc.stop();
       }
 
+      delete oscillators[key];
+      delete isPlaying[key];
+
       this.setState({
-        oscillators: [],
-        isPlaying: false
+        oscillators: oscillators,
+        isPlaying: isPlaying
       });
     }
   },

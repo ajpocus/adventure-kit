@@ -7,9 +7,9 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 let Keyboard = React.createClass({
   getInitialState: function () {
     return {
-      isPlaying: false,
+      isPlaying: {},
       ctx: new window.AudioContext(),
-      oscillators: [],
+      oscillators: {},
       octaveShift: 2
     };
   },
@@ -38,12 +38,15 @@ let Keyboard = React.createClass({
   },
 
   handleKeyDown: function (ev) {
-    if (!this.state.isPlaying) {
-      let ctx = this.state.ctx;
-      let instrument = this.props.instrument;
-      let oscillators = [];
+    let key = this.keyCodeToChar(ev.keyCode);
 
-      let key = this.keyCodeToChar(ev.keyCode);
+    if (!this.state.isPlaying[key]) {
+      let ctx = this.state.ctx;
+      let oscillators = this.state.oscillators;
+      let isPlaying = this.state.isPlaying;
+      let instrument = this.props.instrument;
+      oscillators[key] = [];
+
       let midi = this.keyToNote(key);
       if (!midi) {
         return;
@@ -67,29 +70,37 @@ let Keyboard = React.createClass({
         gainNode.connect(ctx.destination);
 
         osc.start();
-        oscillators.push(osc);
+        oscillators[key].push(osc);
       }
+
+      isPlaying[key] = true;
 
       this.setState({
         ctx: ctx,
         oscillators: oscillators,
-        isPlaying: true
+        isPlaying: isPlaying
       });
     }
   },
 
   handleKeyUp: function (ev) {
-    if (this.state.isPlaying) {
+    let key = this.keyCodeToChar(ev.keyCode);
+    let isPlaying = this.state.isPlaying;
+
+    if (isPlaying[key]) {
       let oscillators = this.state.oscillators;
 
-      for (let i = 0; i < oscillators.length; i++) {
-        let osc = oscillators[i];
+      for (let i = 0; i < oscillators[key].length; i++) {
+        let osc = oscillators[key][i];
         osc.stop();
       }
 
+      delete oscillators[key];
+      delete isPlaying[key];
+
       this.setState({
-        oscillators: [],
-        isPlaying: false
+        oscillators: oscillators,
+        isPlaying: isPlaying
       });
     }
   },
