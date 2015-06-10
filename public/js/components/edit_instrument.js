@@ -17,7 +17,7 @@ let EditInstrument = React.createClass({
     };
   },
 
-  componentDidMount: function () {
+  componentDidUpdate: function () {
     this.props.onInstrumentChange(this.state);
   },
 
@@ -45,7 +45,7 @@ let EditInstrument = React.createClass({
             <div className="header">
               <h3>Edit Instrument</h3>
               <span className="close-modal"
-                    onClick={this.close}>
+                    onClick={this.handleCancel}>
                     x
               </span>
             </div>
@@ -70,6 +70,18 @@ let EditInstrument = React.createClass({
                 </div>
               </div>
             </div>
+
+            <div className="footer btn">
+              <button className="cancel"
+                      onClick={this.handleCancel}>
+                Cancel
+              </button>
+
+              <button className="save btn"
+                      onClick={this.handleSave}>
+                Save
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -77,7 +89,6 @@ let EditInstrument = React.createClass({
   },
 
   handleChange: function (newState, idx) {
-    console.log(newState, idx);
     let components = this.state.components;
     let component = components[idx];
     for (let prop in newState) {
@@ -132,8 +143,18 @@ let EditInstrument = React.createClass({
     this.setState({ components: components });
   },
 
-  close: function () {
+  handleClose: function () {
     React.unmountComponentAtNode(document.getElementById('modal-container'));
+  },
+
+  handleCancel: function () {
+    // remove the created instrument
+    this.handleClose();
+  },
+
+  handleSave: function () {
+    // save the instrument
+    this.handleClose();
   }
 });
 

@@ -7,45 +7,50 @@ import Keyboard from './keyboard';
 let Music = React.createClass({
   getInitialState: function () {
     return {
-      activeInstrument: {
-        name: '8-bit Synth',
-        components: [
-          {
-            harmonic: 0,
-            gain: 0.3,
-            type: 'sawtooth',
-            key: Math.random()
-          },
-          {
-            harmonic: 1,
-            gain: 0.5,
-            type: 'sine',
-            key: Math.random()
-          },
-          {
-            harmonic: 2,
-            gain: 0.2,
-            type: 'square',
-            key: Math.random()
-          }
-        ]
-      }
+      instruments: [
+        {
+          name: '8-bit Synth',
+          components: [
+            {
+              harmonic: 0,
+              gain: 0.3,
+              type: 'sawtooth',
+              key: Math.random()
+            },
+            {
+              harmonic: 1,
+              gain: 0.5,
+              type: 'sine',
+              key: Math.random()
+            },
+            {
+              harmonic: 2,
+              gain: 0.2,
+              type: 'square',
+              key: Math.random()
+            }
+          ]
+        }
+      ],
+      activeInstrument: 0
     };
   },
 
   render: function () {
+    let instrument = this.state.instruments[this.state.activeInstrument];
     return (
       <div id="music">
         <TrackList/>
-        <InstrumentList activeInstrument={this.state.activeInstrument}
-                        onInstrumentChange={this.onInstrumentChange}/>
-        <Keyboard instrument={this.state.activeInstrument}/>
+        <InstrumentList instruments={this.state.instruments}
+                        activeInstrument={this.state.activeInstrument}
+                        onUpdate={this.onUpdate}/>
+        <Keyboard instrument={instrument}/>
       </div>
     );
   },
 
-  onInstrumentChange: function (instrument) {
-    this.setState({ activeInstrument: instrument });
+  onUpdate: function (newState) {
+    this.setState(newState);
   }
 });
 

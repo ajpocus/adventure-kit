@@ -51597,7 +51597,7 @@ var EditInstrument = React.createClass({
     };
   },
 
-  componentDidMount: function componentDidMount() {
+  componentDidUpdate: function componentDidUpdate() {
     this.props.onInstrumentChange(this.state);
   },
 
@@ -51636,7 +51636,7 @@ var EditInstrument = React.createClass({
             React.createElement(
               'span',
               { className: 'close-modal',
-                onClick: this.close },
+                onClick: this.handleCancel },
               'x'
             )
           ),
@@ -51667,6 +51667,22 @@ var EditInstrument = React.createClass({
                 )
               )
             )
+          ),
+          React.createElement(
+            'div',
+            { className: 'footer btn' },
+            React.createElement(
+              'button',
+              { className: 'cancel',
+                onClick: this.handleCancel },
+              'Cancel'
+            ),
+            React.createElement(
+              'button',
+              { className: 'save btn',
+                onClick: this.handleSave },
+              'Save'
+            )
           )
         )
       )
@@ -51674,7 +51690,6 @@ var EditInstrument = React.createClass({
   },
 
   handleChange: function handleChange(newState, idx) {
-    console.log(newState, idx);
     var components = this.state.components;
     var component = components[idx];
     for (var prop in newState) {
@@ -51729,8 +51744,18 @@ var EditInstrument = React.createClass({
     this.setState({ components: components });
   },
 
-  close: function close() {
+  handleClose: function handleClose() {
     React.unmountComponentAtNode(document.getElementById('modal-container'));
+  },
+
+  handleCancel: function handleCancel() {
+    // remove the created instrument
+    this.handleClose();
+  },
+
+  handleSave: function handleSave() {
+    // save the instrument
+    this.handleClose();
   }
 });
 
@@ -52156,14 +52181,14 @@ var InstrumentList = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      instruments: [this.props.activeInstrument],
+      instruments: this.props.instruments,
       activeInstrument: this.props.activeInstrument
     };
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (prevState.activeInstrument !== this.state.activeInstrument) {
-      this.props.onInstrumentChange(this.state.activeInstrument);
+    if (this.state !== prevState) {
+      this.props.onUpdate(this.state);
     }
   },
 
@@ -52174,7 +52199,7 @@ var InstrumentList = React.createClass({
     for (var i = 0; i < instruments.length; i++) {
       var instrument = instruments[i];
       var className = 'instrument';
-      if (instrument === this.state.activeInstrument) {
+      if (i === this.state.activeInstrument) {
         className += ' active';
       }
 
@@ -52214,8 +52239,7 @@ var InstrumentList = React.createClass({
   },
 
   handleClick: function handleClick(idx) {
-    var instrument = this.state.instruments[idx];
-    this.setState({ activeInstrument: instrument });
+    this.setState({ activeInstrument: idx });
   },
 
   newInstrument: function newInstrument() {
@@ -52241,6 +52265,8 @@ var InstrumentList = React.createClass({
     this.setState({
       instruments: instruments
     });
+
+    this.props.onUpdate(this.state);
   }
 });
 
@@ -52267,13 +52293,18 @@ var Keyboard = React.createClass({
       isPlaying: false,
       ctx: new window.AudioContext(),
       oscillators: [],
-      instrument: this.props.instrument,
       octaveShift: 2
     };
   },
 
   componentDidMount: function componentDidMount() {
-    $(this.refs.keyInput.getDOMNode()).focus();
+    $(document).on('keydown', this.handleKeyDown);
+    $(document).on('keyup', this.handleKeyUp);
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    $(document).off('keydown', this.handleKeyDown);
+    $(document).off('keyup', this.handleKeyUp);
   },
 
   render: function render() {
@@ -52292,7 +52323,7 @@ var Keyboard = React.createClass({
   handleKeyDown: function handleKeyDown(ev) {
     if (!this.state.isPlaying) {
       var ctx = this.state.ctx;
-      var instrument = this.state.instrument;
+      var instrument = this.props.instrument;
       var oscillators = [];
 
       var key = this.keyCodeToChar(ev.keyCode);
@@ -52608,7 +52639,7 @@ var Music = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      activeInstrument: {
+      instruments: [{
         name: '8-bit Synth',
         components: [{
           harmonic: 0,
@@ -52626,23 +52657,26 @@ var Music = React.createClass({
           type: 'square',
           key: Math.random()
         }]
-      }
+      }],
+      activeInstrument: 0
     };
   },
 
   render: function render() {
+    var instrument = this.state.instruments[this.state.activeInstrument];
     return React.createElement(
       'div',
       { id: 'music' },
       React.createElement(_track_list2['default'], null),
-      React.createElement(_instrument_list2['default'], { activeInstrument: this.state.activeInstrument,
-        onInstrumentChange: this.onInstrumentChange }),
-      React.createElement(_keyboard2['default'], { instrument: this.state.activeInstrument })
+      React.createElement(_instrument_list2['default'], { instruments: this.state.instruments,
+        activeInstrument: this.state.activeInstrument,
+        onUpdate: this.onUpdate }),
+      React.createElement(_keyboard2['default'], { instrument: instrument })
     );
   },
 
-  onInstrumentChange: function onInstrumentChange(instrument) {
-    this.setState({ activeInstrument: instrument });
+  onUpdate: function onUpdate(newState) {
+    this.setState(newState);
   }
 });
 

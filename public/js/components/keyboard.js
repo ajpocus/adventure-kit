@@ -10,13 +10,18 @@ let Keyboard = React.createClass({
       isPlaying: false,
       ctx: new window.AudioContext(),
       oscillators: [],
-      instrument: this.props.instrument,
       octaveShift: 2
     };
   },
 
   componentDidMount: function () {
-    $(this.refs.keyInput.getDOMNode()).focus();
+    $(document).on('keydown', this.handleKeyDown);
+    $(document).on('keyup', this.handleKeyUp);
+  },
+
+  componentWillUnmount: function () {
+    $(document).off('keydown', this.handleKeyDown);
+    $(document).off('keyup', this.handleKeyUp);
   },
 
   render: function () {
@@ -35,7 +40,7 @@ let Keyboard = React.createClass({
   handleKeyDown: function (ev) {
     if (!this.state.isPlaying) {
       let ctx = this.state.ctx;
-      let instrument = this.state.instrument;
+      let instrument = this.props.instrument;
       let oscillators = [];
 
       let key = this.keyCodeToChar(ev.keyCode);

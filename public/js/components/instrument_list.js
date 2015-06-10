@@ -5,14 +5,14 @@ import EditInstrument from './edit_instrument';
 let InstrumentList = React.createClass({
   getInitialState: function () {
     return {
-      instruments: [ this.props.activeInstrument ],
+      instruments: this.props.instruments,
       activeInstrument: this.props.activeInstrument
     };
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    if (prevState.activeInstrument !== this.state.activeInstrument) {
-      this.props.onInstrumentChange(this.state.activeInstrument);
+    if (this.state !== prevState) {
+      this.props.onUpdate(this.state);
     }
   },
 
@@ -23,7 +23,7 @@ let InstrumentList = React.createClass({
     for (let i = 0; i < instruments.length; i++) {
       let instrument = instruments[i];
       let className = 'instrument';
-      if (instrument === this.state.activeInstrument) {
+      if (i === this.state.activeInstrument) {
         className += ' active';
       }
 
@@ -31,7 +31,7 @@ let InstrumentList = React.createClass({
         <li className={className}
             key={i}
             onClick={this.handleClick.bind(this, i)}>
-            <span className="name">{instrument.name}</span>
+          <span className="name">{instrument.name}</span>
         </li>
       );
     }
@@ -52,8 +52,7 @@ let InstrumentList = React.createClass({
   },
 
   handleClick: function (idx) {
-    let instrument = this.state.instruments[idx];
-    this.setState({ activeInstrument: instrument });
+    this.setState({ activeInstrument: idx });
   },
 
   newInstrument: function () {
@@ -80,6 +79,8 @@ let InstrumentList = React.createClass({
     this.setState({
       instruments: instruments
     });
+
+    this.props.onUpdate(this.state);
   }
 });
 
