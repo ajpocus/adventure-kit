@@ -305,6 +305,50 @@ img.pixel {
   font-size: 28px;
   font-weight: bold;
 }
+
+#keyboard {
+  display: flex;
+  flex-direction: row;
+  color: #eee;
+  position: relative;
+}
+
+#keyboard .key {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-top: none;
+  float: left;
+  position: relative;
+}
+
+#keyboard .keys {
+  position: absolute;
+}
+
+#keyboard .black.keys {
+  left: 52px;
+}
+
+#keyboard .white.key {
+  width: 60px;
+  height: 180px;
+  background: #ccc;
+}
+
+#keyboard .black.key {
+  width: 19px;
+  height: 90px;
+  background: #111;
+  z-index: 1;
+  margin-left: 41px;
+}
+
+#keyboard .black.key.first {
+  margin-left: 0;
+}
+
+#keyboard .black.spacer {
+  opacity: 0;
+}
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)

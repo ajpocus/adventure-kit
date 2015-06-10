@@ -52311,12 +52311,426 @@ var Keyboard = React.createClass({
     return React.createElement(
       'div',
       { id: 'keyboard' },
-      React.createElement('input', { className: 'key-input',
-        ref: 'keyInput',
-        readOnly: 'true',
-        autofocus: 'true',
-        onKeyDown: this.handleKeyDown,
-        onKeyUp: this.handleKeyUp })
+      React.createElement(
+        'ul',
+        { className: 'white keys' },
+        React.createElement(
+          'li',
+          { className: 'white key c' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'Z'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'C2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key d' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'X'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'D2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key e' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'C'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'E2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key f' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'V'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'F2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key g' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'B'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'G2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key a' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'N'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'A2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key b' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'M'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'B2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key c' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            '<',
+            React.createElement('br', null),
+            'Q'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'C3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key d' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'W'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'D3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key e' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'E'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'E3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key f' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'R'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'F3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key g' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'R'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'G3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key a' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'T'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'A3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key b' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'Y'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'B3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key c' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'U'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'C4'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key d' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'I'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'D4'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'white key e' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'P'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'E4'
+          )
+        )
+      ),
+      React.createElement(
+        'ul',
+        { className: 'black keys' },
+        React.createElement(
+          'li',
+          { className: 'black key first' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'S'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'C#2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'D'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'D#2'
+          )
+        ),
+        React.createElement('li', { className: 'black spacer key' }),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'G'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'F#2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'H'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'G#2'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            'J'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'A#2'
+          )
+        ),
+        React.createElement('li', { className: 'black spacer key' }),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            '2'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'C#3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            '3'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'D#3'
+          )
+        ),
+        React.createElement('li', { className: 'black spacer key' }),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            '5'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'F#3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            '6'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'G#3'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            '7'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'A#3'
+          )
+        ),
+        React.createElement('li', { className: 'black spacer key' }),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            '9'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'C#4'
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'black key' },
+          React.createElement(
+            'div',
+            { className: 'char' },
+            '0'
+          ),
+          React.createElement(
+            'div',
+            { className: 'note' },
+            'D#4'
+          )
+        )
+      )
     );
   },
 
