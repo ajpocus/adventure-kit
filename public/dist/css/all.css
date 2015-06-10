@@ -263,6 +263,22 @@ img.pixel {
 .edit-palette .content {
   display: flex;
 }
+#music {
+  display: flex;
+  flex-direction: column;
+}
+
+#music .top {
+  display: flex;
+  flex-direction: row;
+}
+
+#music .sidebar,
+#music .main {
+  display: flex;
+  flex-direction: column;
+}
+
 .instrument .components {
   display: flex;
 }
@@ -306,11 +322,19 @@ img.pixel {
   font-weight: bold;
 }
 
+#music .track-list .track {
+  height: 80px;
+  width: 850px;
+}
+
 #keyboard {
+  width: 850px;
+  height: 200px;
   display: flex;
   flex-direction: row;
   color: #eee;
   position: relative;
+  align-self: flex-end;
 }
 
 #keyboard .key {
@@ -323,6 +347,18 @@ img.pixel {
 #keyboard .key .char {
   position: absolute;
   bottom: 12px;
+  left: 25%;
+}
+
+#keyboard .key .note {
+  position: absolute;
+  top: -30px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 20px;
+  display: none;
+}
+
+#keyboard .white.key .note {
   left: 25%;
 }
 
@@ -345,6 +381,7 @@ img.pixel {
   width: 18px;
   height: 80px;
   background: #111;
+  color: #eee;
   z-index: 1;
   margin-left: 30px;
 }

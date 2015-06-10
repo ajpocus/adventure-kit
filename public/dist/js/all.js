@@ -51480,7 +51480,7 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-},{"../lib/transparency":369,"../models/pixel":370,"./manage_draw_list":361,"./resize_prompt":366,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],353:[function(require,module,exports){
+},{"../lib/transparency":369,"../models/pixel":371,"./manage_draw_list":361,"./resize_prompt":366,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],353:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -52279,6 +52279,13 @@ module.exports = exports['default'];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _mixinsKey_map_mixin = require('../mixins/key_map_mixin');
+
+var _mixinsKey_map_mixin2 = _interopRequireDefault(_mixinsKey_map_mixin);
+
 var React = require('react');
 var $ = require('jquery');
 var teoria = require('teoria');
@@ -52287,6 +52294,8 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var Keyboard = React.createClass({
   displayName: 'Keyboard',
+
+  mixins: [_mixinsKey_map_mixin2['default']],
 
   getInitialState: function getInitialState() {
     return {
@@ -52308,6 +52317,9 @@ var Keyboard = React.createClass({
   },
 
   render: function render() {
+    var whiteKeys = [];
+    var blackKeys = [];
+
     return React.createElement(
       'div',
       { id: 'keyboard' },
@@ -52476,7 +52488,7 @@ var Keyboard = React.createClass({
           React.createElement(
             'div',
             { className: 'char' },
-            'R'
+            'T'
           ),
           React.createElement(
             'div',
@@ -52490,7 +52502,7 @@ var Keyboard = React.createClass({
           React.createElement(
             'div',
             { className: 'char' },
-            'T'
+            'Y'
           ),
           React.createElement(
             'div',
@@ -52504,7 +52516,7 @@ var Keyboard = React.createClass({
           React.createElement(
             'div',
             { className: 'char' },
-            'Y'
+            'I'
           ),
           React.createElement(
             'div',
@@ -52518,7 +52530,7 @@ var Keyboard = React.createClass({
           React.createElement(
             'div',
             { className: 'char' },
-            'U'
+            'O'
           ),
           React.createElement(
             'div',
@@ -52532,7 +52544,7 @@ var Keyboard = React.createClass({
           React.createElement(
             'div',
             { className: 'char' },
-            'I'
+            'U'
           ),
           React.createElement(
             'div',
@@ -52800,109 +52812,13 @@ var Keyboard = React.createClass({
         isPlaying: isPlaying
       });
     }
-  },
-
-  keyToNote: function keyToNote(key) {
-    // To shift up an octave, add 12. To shift down, subtract 12.
-    var keyMap = {
-      'z': 12, // C0
-      's': 13, // C#0
-      'x': 14, // D0
-      'd': 15, // D#0
-      'c': 16, // E0
-      'v': 17, // F0
-      'g': 18, // F#0
-      'b': 19, // G0
-      'h': 20, // G#0
-      'n': 21, // A0
-      'j': 22, // A#0
-      'm': 23, // B0
-      ',': 24, // C1
-      'q': 24, // C1 (again)
-      '2': 25, // C#1
-      'w': 26, // D1
-      '3': 27, // D#1
-      'e': 28, // E1
-      'r': 29, // F1
-      '5': 30, // F#1
-      't': 31, // G1
-      '6': 32, // G#1
-      'y': 33, // A1
-      '7': 34, // A#1
-      'u': 35, // B1
-      'i': 36, // C2
-      '9': 37, // C#2
-      'o': 38, // D2
-      '0': 39, // D#2
-      'p': 40 // E2
-    };
-
-    return keyMap[key];
-  },
-
-  keyCodeToChar: function keyCodeToChar(keyCode) {
-    var keyCodeMap = {
-      8: 'Backspace',
-      9: 'Tab',
-      13: 'Enter',
-      16: 'Shift',
-      17: 'Ctrl',
-      18: 'Alt',
-      48: '0',
-      49: '1',
-      50: '2',
-      51: '3',
-      54: '4',
-      55: '5',
-      56: '6',
-      57: '7',
-      58: '8',
-      59: '9',
-      65: 'a',
-      66: 'b',
-      67: 'c',
-      68: 'd',
-      69: 'e',
-      70: 'f',
-      71: 'g',
-      72: 'h',
-      73: 'i',
-      74: 'j',
-      75: 'k',
-      76: 'l',
-      77: 'm',
-      78: 'n',
-      79: 'o',
-      80: 'p',
-      81: 'q',
-      82: 'r',
-      83: 's',
-      84: 't',
-      85: 'u',
-      86: 'v',
-      87: 'w',
-      88: 'x',
-      89: 'y',
-      90: 'z',
-      186: ';',
-      187: '=',
-      188: ',',
-      189: '-',
-      190: '.',
-      191: '/',
-      219: '[',
-      221: ']',
-      222: '\''
-    };
-
-    return keyCodeMap[keyCode];
   }
 });
 
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"jquery":132,"react":333,"teoria":334}],361:[function(require,module,exports){
+},{"../mixins/key_map_mixin":370,"jquery":132,"react":333,"teoria":334}],361:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53097,14 +53013,34 @@ var Music = React.createClass({
     return React.createElement(
       'div',
       { id: 'music' },
-      React.createElement(_track_list2['default'], null),
-      React.createElement(_instrument_list2['default'], { instruments: this.state.instruments,
-        activeInstrument: this.state.activeInstrument,
-        onUpdate: this.onUpdate }),
-      React.createElement(_keyboard2['default'], { instrument: instrument,
-        volume: this.state.volume }),
-      React.createElement(_volume_control2['default'], { gain: '0.5',
-        onVolumeChange: this.onVolumeChange })
+      React.createElement(
+        'div',
+        { className: 'top' },
+        React.createElement(
+          'div',
+          { className: 'sidebar' },
+          React.createElement(_instrument_list2['default'], { instruments: this.state.instruments,
+            activeInstrument: this.state.activeInstrument,
+            onUpdate: this.onUpdate }),
+          React.createElement(_volume_control2['default'], { gain: '0.5',
+            onVolumeChange: this.onVolumeChange })
+        ),
+        React.createElement(
+          'div',
+          { className: 'main' },
+          React.createElement(_track_list2['default'], null)
+        )
+      ),
+      React.createElement(
+        'div',
+        { className: 'bottom' },
+        React.createElement(
+          'div',
+          { className: 'controls' },
+          React.createElement(_keyboard2['default'], { instrument: instrument,
+            volume: this.state.volume })
+        )
+      )
     );
   },
 
@@ -53383,6 +53319,10 @@ var TrackList = React.createClass({
     return React.createElement(
       "ul",
       { className: "track-list" },
+      React.createElement("li", { className: "track" }),
+      React.createElement("li", { className: "track" }),
+      React.createElement("li", { className: "track" }),
+      React.createElement("li", { className: "track" }),
       React.createElement("li", { className: "track scratch" })
     );
   }
@@ -53460,6 +53400,113 @@ exports['default'] = Transparency;
 module.exports = exports['default'];
 
 },{}],370:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var KeyMapMixin = {
+  keyToNote: function keyToNote(key) {
+    // To shift up an octave, add 12. To shift down, subtract 12.
+    var keyMap = {
+      'z': 12, // C0
+      's': 13, // C#0
+      'x': 14, // D0
+      'd': 15, // D#0
+      'c': 16, // E0
+      'v': 17, // F0
+      'g': 18, // F#0
+      'b': 19, // G0
+      'h': 20, // G#0
+      'n': 21, // A0
+      'j': 22, // A#0
+      'm': 23, // B0
+      ',': 24, // C1
+      'q': 24, // C1 (again)
+      '2': 25, // C#1
+      'w': 26, // D1
+      '3': 27, // D#1
+      'e': 28, // E1
+      'r': 29, // F1
+      '5': 30, // F#1
+      't': 31, // G1
+      '6': 32, // G#1
+      'y': 33, // A1
+      '7': 34, // A#1
+      'u': 35, // B1
+      'i': 36, // C2
+      '9': 37, // C#2
+      'o': 38, // D2
+      '0': 39, // D#2
+      'p': 40 // E2
+    };
+
+    return keyMap[key];
+  },
+
+  keyCodeToChar: function keyCodeToChar(keyCode) {
+    var keyCodeMap = {
+      8: 'Backspace',
+      9: 'Tab',
+      13: 'Enter',
+      16: 'Shift',
+      17: 'Ctrl',
+      18: 'Alt',
+      48: '0',
+      49: '1',
+      50: '2',
+      51: '3',
+      52: '4',
+      53: '5',
+      54: '6',
+      55: '7',
+      56: '8',
+      57: '9',
+      65: 'a',
+      66: 'b',
+      67: 'c',
+      68: 'd',
+      69: 'e',
+      70: 'f',
+      71: 'g',
+      72: 'h',
+      73: 'i',
+      74: 'j',
+      75: 'k',
+      76: 'l',
+      77: 'm',
+      78: 'n',
+      79: 'o',
+      80: 'p',
+      81: 'q',
+      82: 'r',
+      83: 's',
+      84: 't',
+      85: 'u',
+      86: 'v',
+      87: 'w',
+      88: 'x',
+      89: 'y',
+      90: 'z',
+      186: ';',
+      187: '=',
+      188: ',',
+      189: '-',
+      190: '.',
+      191: '/',
+      219: '[',
+      221: ']',
+      222: '\''
+    };
+
+    return keyCodeMap[keyCode];
+  }
+};
+
+exports['default'] = KeyMapMixin;
+module.exports = exports['default'];
+
+},{}],371:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53480,7 +53527,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],371:[function(require,module,exports){
+},{}],372:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -53549,7 +53596,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":351,"./components/footer":356,"./components/header":357,"./components/map":362,"./components/music":364,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[371])
+},{"./components/draw":351,"./components/footer":356,"./components/header":357,"./components/map":362,"./components/music":364,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[372])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

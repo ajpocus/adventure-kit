@@ -42,14 +42,27 @@ let Music = React.createClass({
     let instrument = this.state.instruments[this.state.activeInstrument];
     return (
       <div id="music">
-        <TrackList/>
-        <InstrumentList instruments={this.state.instruments}
-                        activeInstrument={this.state.activeInstrument}
-                        onUpdate={this.onUpdate}/>
-        <Keyboard instrument={instrument}
-                  volume={this.state.volume}/>
-        <VolumeControl gain="0.5"
-                       onVolumeChange={this.onVolumeChange}/>
+        <div className="top">
+          <div className="sidebar">
+            <InstrumentList instruments={this.state.instruments}
+                            activeInstrument={this.state.activeInstrument}
+                            onUpdate={this.onUpdate}/>
+
+            <VolumeControl gain="0.5"
+                           onVolumeChange={this.onVolumeChange}/>
+          </div>
+
+          <div className="main">
+            <TrackList/>
+          </div>
+        </div>
+
+        <div className="bottom">
+          <div className="controls">
+            <Keyboard instrument={instrument}
+                      volume={this.state.volume}/>
+          </div>
+        </div>
       </div>
     );
   },
