@@ -53076,7 +53076,7 @@ var DrawToolList = React.createClass({
 
       toolList.push(React.createElement(
         'li',
-        { className: 'tool', key: tool.name },
+        { className: 'tool', key: tool.name, title: tool.name },
         React.createElement(
           'button',
           { className: className,
@@ -53863,13 +53863,6 @@ var Keyboard = React.createClass({
     $(document).on('keyup', this.handleKeyUp);
   },
 
-  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.state.recording.length !== prevState.recording.length) {
-      console.log(this.state.recording, prevState.recording);
-      this.props.onRecordingUpdate(this.state.recording);
-    }
-  },
-
   componentWillUnmount: function componentWillUnmount() {
     $(document).off('keydown', this.handleKeyDown);
     $(document).off('keyup', this.handleKeyUp);
@@ -54354,6 +54347,8 @@ var Keyboard = React.createClass({
         oscillators: oscillators,
         isPlaying: isPlaying,
         recording: recording
+      }, function () {
+        this.props.onRecordingUpdate(this.state.recording);
       });
     }
   },
@@ -54381,6 +54376,8 @@ var Keyboard = React.createClass({
         oscillators: oscillators,
         isPlaying: isPlaying,
         recording: recording
+      }, function () {
+        this.props.onRecordingUpdate(this.state.recording);
       });
     }
   }
@@ -54626,7 +54623,6 @@ var Music = React.createClass({
   },
 
   onRecordingUpdate: function onRecordingUpdate(recording) {
-    console.log(recording);
     this.setState({ recording: recording });
   }
 });

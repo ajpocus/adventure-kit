@@ -25,13 +25,6 @@ let Keyboard = React.createClass({
     $(document).on('keyup', this.handleKeyUp);
   },
 
-  componentDidUpdate: function (prevProps, prevState) {
-    if (this.state.recording.length !== prevState.recording.length) {
-      console.log(this.state.recording, prevState.recording);
-      this.props.onRecordingUpdate(this.state.recording);
-    }
-  },
-
   componentWillUnmount: function () {
     $(document).off('keydown', this.handleKeyDown);
     $(document).off('keyup', this.handleKeyUp);
@@ -252,6 +245,8 @@ let Keyboard = React.createClass({
         oscillators: oscillators,
         isPlaying: isPlaying,
         recording: recording
+      }, function () {
+        this.props.onRecordingUpdate(this.state.recording);
       });
     }
   },
@@ -279,6 +274,8 @@ let Keyboard = React.createClass({
         oscillators: oscillators,
         isPlaying: isPlaying,
         recording: recording
+      }, function () {
+        this.props.onRecordingUpdate(this.state.recording);
       });
     }
   }

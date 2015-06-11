@@ -78,7 +78,6 @@ let Music = React.createClass({
   },
 
   onRecordingUpdate: function (recording) {
-    console.log(recording);
     this.setState({ recording: recording });
   }
 });
