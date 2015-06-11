@@ -1,21 +1,26 @@
 var React = require('react/addons');
-var PaletteManager = require('../public/js/components/palette_manager');
+var PaletteManager = require('../../public/js/components/palette_manager');
 var TestUtils = React.addons.TestUtils;
 
 describe('PaletteManager', function () {
   it('changes the primary color on click', function () {
-    var changeMock = jest.genMockFunction();
-    var onPrimaryColorChange = new changeMock();
-    var onSecondaryColorChange = new changeMock();
+    var onPrimaryColorChange = jest.genMockFunction();
+    var onSecondaryColorChange = jest.genMockFunction();
 
     var paletteManager = TestUtils.renderIntoDocument(
       <PaletteManager onPrimaryColorChange={onPrimaryColorChange}
                       onSecondaryColorChange={onSecondaryColorChange}/>
     );
 
-    var colorNode = TestUtils.findRenderedDOMComponentWithTag(
-      paletteManager, 'li');
+    var colorNode = TestUtils.scryRenderedDOMComponentsWithClass(
+      paletteManager, 'color')[0];
+    var color = colorNode.props.style.background;
+
     TestUtils.Simulate.click(colorNode);
-    expect(onPrimaryColorChange.mock.calls.length).toBe(2);
+
+    // should make call to set primary color
+    expect(onPrimaryColorChange.mock.calls.length).toBe(1);
+    // should pass the color as the only parameter
+    expect(onPrimaryColorChange.mock.calls[0][0]).toBe(color);
   });
 });

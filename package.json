@@ -2,8 +2,12 @@
   "name": "hiro",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "^0.10"
+  },
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "jest"
   },
   "dependencies": {
     "body-parser": "^1.12.0",
@@ -13,7 +17,6 @@
     "debug": "^2.1.1",
     "ejs": "^2.3.1",
     "express": "^4.12.2",
-    "flux": "^2.0.3",
     "jquery": "^2.1.4",
     "lame": "^1.2.2",
     "morgan": "^1.5.1",
@@ -22,7 +25,6 @@
     "pixi.js": "^3.0.6",
     "pngjs": "^0.4.0",
     "react": "^0.13.3",
-    "react-colorpicker": "^0.3.13",
     "react-router": "^0.13.3",
     "serve-favicon": "^2.2.0",
     "teoria": "^1.9.0",
@@ -36,17 +38,29 @@
     "browserify": "^10.2.0",
     "gulp": "^3.8.11",
     "gulp-concat-css": "^2.2.0",
-    "gulp-jest": "^0.4.0",
     "gulp-nodemon": "^2.0.3",
     "gulp-sass": "^2.0.1",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.2.0",
     "gulp-util": "^3.0.4",
-    "harmonize": "^1.4.2",
     "jest-cli": "^0.4.11",
     "react-tools": "^0.13.3",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.2.1"
+  },
+  "jest": {
+    "scriptPreprocessor": "node_modules/babel-jest",
+    "unmockedModulePathPatterns": [
+      "node_modules/react",
+      "public/js"
+    ],
+    "testPathIgnorePatterns": [
+      "__tests__/support",
+      "node_modules"
+    ],
+    "moduleFileExtensions": [
+      "js"
+    ]
   }
 }

@@ -395,22 +395,19 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
     , proto = C && C.prototype
     , O     = {};
   function fixMethod(KEY){
-    if($.FW){
-      var fn = proto[KEY];
-      require('./$.redef')(proto, KEY,
-        KEY == 'delete' ? function(a){ return fn.call(this, a === 0 ? 0 : a); }
-        : KEY == 'has' ? function has(a){ return fn.call(this, a === 0 ? 0 : a); }
-        : KEY == 'get' ? function get(a){ return fn.call(this, a === 0 ? 0 : a); }
-        : KEY == 'add' ? function add(a){ fn.call(this, a === 0 ? 0 : a); return this; }
-        : function set(a, b){ fn.call(this, a === 0 ? 0 : a, b); return this; }
-      );
-    }
+    var fn = proto[KEY];
+    require('./$.redef')(proto, KEY,
+      KEY == 'delete' ? function(a){ return fn.call(this, a === 0 ? 0 : a); }
+      : KEY == 'has' ? function has(a){ return fn.call(this, a === 0 ? 0 : a); }
+      : KEY == 'get' ? function get(a){ return fn.call(this, a === 0 ? 0 : a); }
+      : KEY == 'add' ? function add(a){ fn.call(this, a === 0 ? 0 : a); return this; }
+      : function set(a, b){ fn.call(this, a === 0 ? 0 : a, b); return this; }
+    );
   }
   if(!$.isFunction(C) || !(IS_WEAK || !BUGGY && proto.forEach && proto.entries)){
     // create collection constructor
     C = common.getConstructor(wrapper, NAME, IS_MAP, ADDER);
     require('./$.mix')(C.prototype, methods);
-    C.prototype.constructor = C;
   } else {
     var inst  = new C
       , chain = inst[ADDER](IS_WEAK ? {} : -0, 1)
@@ -424,7 +421,7 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
         return that;
       });
       C.prototype = proto;
-      if($.FW)proto.constructor = C;
+      proto.constructor = C;
     }
     IS_WEAK || inst.forEach(function(val, key){
       buggyZero = 1 / key === -Infinity;
@@ -646,7 +643,7 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE)
     if($.FW && $.has(proto, FF_ITERATOR))$iter.set(IteratorPrototype, $.that);
   }
   // Define iterator
-  if($.FW)$iter.set(proto, _default);
+  if($.FW || FORCE)$iter.set(proto, _default);
   // Plug for library
   Iterators[NAME] = _default;
   Iterators[TAG]  = $.that;
@@ -1127,11 +1124,10 @@ uid.safe = require('./$').g.Symbol || uid;
 module.exports = uid;
 },{"./$":23}],40:[function(require,module,exports){
 // 22.1.3.31 Array.prototype[@@unscopables]
-var $           = require('./$')
-  , UNSCOPABLES = require('./$.wks')('unscopables');
-if($.FW && !(UNSCOPABLES in []))$.hide(Array.prototype, UNSCOPABLES, {});
+var UNSCOPABLES = require('./$.wks')('unscopables');
+if(!(UNSCOPABLES in []))require('./$').hide(Array.prototype, UNSCOPABLES, {});
 module.exports = function(key){
-  if($.FW)[][UNSCOPABLES][key] = true;
+  [][UNSCOPABLES][key] = true;
 };
 },{"./$":23,"./$.wks":41}],41:[function(require,module,exports){
 var global = require('./$').g
@@ -1745,17 +1741,20 @@ $def($def.S, 'Math', {
     var sum  = 0
       , i    = 0
       , len  = arguments.length
-      , args = Array(len)
       , larg = 0
-      , arg;
+      , arg, div;
     while(i < len){
-      arg = args[i] = abs(arguments[i++]);
-      if(arg == Infinity)return Infinity;
-      if(arg > larg)larg = arg;
+      arg = abs(arguments[i++]);
+      if(larg < arg){
+        div  = larg / arg;
+        sum  = sum * div * div + 1;
+        larg = arg;
+      } else if(arg > 0){
+        div  = arg / larg;
+        sum += div * div;
+      } else sum += arg;
     }
-    larg = larg || 1;
-    while(len--)sum += pow(args[len] / larg, 2);
-    return larg * sqrt(sum);
+    return larg === Infinity ? Infinity : larg * sqrt(sum);
   },
   // 20.2.2.18 Math.imul(x, y)
   imul: function imul(x, y){
@@ -1983,6 +1982,14 @@ var useNative = function(){
     if(!(P2.resolve(5).then(function(){}) instanceof P2)){
       works = false;
     }
+    // actual V8 bug, https://code.google.com/p/v8/issues/detail?id=4162
+    if(works && $.DESC){
+      var thenableThenGotten = false;
+      P.resolve($.setDesc({}, 'then', {
+        get: function(){ thenableThenGotten = true; }
+      }));
+      works = thenableThenGotten;
+    }
   } catch(e){ works = false; }
   return works;
 }();
@@ -2068,21 +2075,27 @@ function $reject(value){
 }
 function $resolve(value){
   var record = this
-    , then, wrapper;
+    , then;
   if(record.d)return;
   record.d = true;
   record = record.r || record; // unwrap
   try {
     if(then = isThenable(value)){
-      wrapper = {r: record, d: false}; // wrap
-      then.call(value, ctx($resolve, wrapper, 1), ctx($reject, wrapper, 1));
+      asap(function(){
+        var wrapper = {r: record, d: false}; // wrap
+        try {
+          then.call(value, ctx($resolve, wrapper, 1), ctx($reject, wrapper, 1));
+        } catch(e){
+          $reject.call(wrapper, e);
+        }
+      });
     } else {
       record.v = value;
       record.s = 1;
       notify(record);
     }
-  } catch(err){
-    $reject.call(wrapper || {r: record, d: false}, err); // wrap
+  } catch(e){
+    $reject.call({r: record, d: false}, e); // wrap
   }
 }
 
@@ -2736,7 +2749,7 @@ var $WeakMap = require('./$.collection')('WeakMap', function(get){
 }, weak, true, true);
 
 // IE11 WeakMap frozen keys fix
-if($.FW && new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
+if(new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
   $.each.call(['delete', 'has', 'get', 'set'], function(key){
     var proto  = $WeakMap.prototype
       , method = proto[key];
@@ -3978,7 +3991,7 @@ exports.assign = function (obj /*from1, from2, from3, ...*/) {
     var source = sources.shift();
     if (!source) { continue; }
 
-    if (typeof(source) !== 'object') {
+    if (typeof source !== 'object') {
       throw new TypeError(source + 'must be non-object');
     }
 
@@ -4009,7 +4022,7 @@ var fnTyped = {
       return;
     }
     // Fallback to ordinary array
-    for(var i=0; i<len; i++) {
+    for (var i=0; i<len; i++) {
       dest[dest_offs + i] = src[src_offs + i];
     }
   },
@@ -4038,7 +4051,7 @@ var fnTyped = {
 
 var fnUntyped = {
   arraySet: function (dest, src, src_offs, len, dest_offs) {
-    for(var i=0; i<len; i++) {
+    for (var i=0; i<len; i++) {
       dest[dest_offs + i] = src[src_offs + i];
     }
   },
@@ -4066,6 +4079,7 @@ exports.setTyped = function (on) {
 };
 
 exports.setTyped(TYPED_OK);
+
 },{}],97:[function(require,module,exports){
 'use strict';
 
@@ -4074,9 +4088,9 @@ exports.setTyped(TYPED_OK);
 // Small size is preferable.
 
 function adler32(adler, buf, len, pos) {
-  var s1 = (adler & 0xffff) |0
-    , s2 = ((adler >>> 16) & 0xffff) |0
-    , n = 0;
+  var s1 = (adler & 0xffff) |0,
+      s2 = ((adler >>> 16) & 0xffff) |0,
+      n = 0;
 
   while (len !== 0) {
     // Set limit ~ twice less than 5552, to keep
@@ -4099,6 +4113,7 @@ function adler32(adler, buf, len, pos) {
 
 
 module.exports = adler32;
+
 },{}],98:[function(require,module,exports){
 module.exports = {
 
@@ -4147,6 +4162,7 @@ module.exports = {
   Z_DEFLATED:               8
   //Z_NULL:                 null // Use -1 or null inline, depending on var type
 };
+
 },{}],99:[function(require,module,exports){
 'use strict';
 
@@ -4159,9 +4175,9 @@ module.exports = {
 function makeTable() {
   var c, table = [];
 
-  for(var n =0; n < 256; n++){
+  for (var n =0; n < 256; n++) {
     c = n;
-    for(var k =0; k < 8; k++){
+    for (var k =0; k < 8; k++) {
       c = ((c&1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
     }
     table[n] = c;
@@ -4175,12 +4191,12 @@ var crcTable = makeTable();
 
 
 function crc32(crc, buf, len, pos) {
-  var t = crcTable
-    , end = pos + len;
+  var t = crcTable,
+      end = pos + len;
 
   crc = crc ^ (-1);
 
-  for (var i = pos; i < end; i++ ) {
+  for (var i = pos; i < end; i++) {
     crc = (crc >>> 8) ^ t[(crc ^ buf[i]) & 0xFF];
   }
 
@@ -4189,6 +4205,7 @@ function crc32(crc, buf, len, pos) {
 
 
 module.exports = crc32;
+
 },{}],100:[function(require,module,exports){
 'use strict';
 
@@ -5726,7 +5743,7 @@ function deflate(strm, flush) {
         put_byte(s, val);
       } while (val !== 0);
 
-      if (s.gzhead.hcrc && s.pending > beg){
+      if (s.gzhead.hcrc && s.pending > beg) {
         strm.adler = crc32(strm.adler, s.pending_buf, s.pending - beg, beg);
       }
       if (val === 0) {
@@ -5955,6 +5972,7 @@ exports.deflatePending = deflatePending;
 exports.deflatePrime = deflatePrime;
 exports.deflateTune = deflateTune;
 */
+
 },{"../utils/common":96,"./adler32":97,"./crc32":99,"./messages":104,"./trees":105}],101:[function(require,module,exports){
 'use strict';
 
@@ -7786,6 +7804,7 @@ exports.inflateSync = inflateSync;
 exports.inflateSyncPoint = inflateSyncPoint;
 exports.inflateUndermine = inflateUndermine;
 */
+
 },{"../utils/common":96,"./adler32":97,"./crc32":99,"./inffast":101,"./inftrees":103}],103:[function(require,module,exports){
 'use strict';
 
@@ -7983,18 +8002,20 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
   // poor man optimization - use if-else instead of switch,
   // to avoid deopts in old v8
   if (type === CODES) {
-      base = extra = work;    /* dummy value--not used */
-      end = 19;
+    base = extra = work;    /* dummy value--not used */
+    end = 19;
+
   } else if (type === LENS) {
-      base = lbase;
-      base_index -= 257;
-      extra = lext;
-      extra_index -= 257;
-      end = 256;
+    base = lbase;
+    base_index -= 257;
+    extra = lext;
+    extra_index -= 257;
+    end = 256;
+
   } else {                    /* DISTS */
-      base = dbase;
-      extra = dext;
-      end = -1;
+    base = dbase;
+    extra = dext;
+    end = -1;
   }
 
   /* initialize opts for loop */
@@ -8127,6 +8148,7 @@ module.exports = {
   '-5':   'buffer error',        /* Z_BUF_ERROR     (-5) */
   '-6':   'incompatible version' /* Z_VERSION_ERROR (-6) */
 };
+
 },{}],105:[function(require,module,exports){
 'use strict';
 
@@ -8561,7 +8583,7 @@ function tr_static_init() {
   }
   //Assert (dist == 256, "tr_static_init: dist != 256");
   dist >>= 7; /* from now on, all distances are divided by 128 */
-  for ( ; code < D_CODES; code++) {
+  for (; code < D_CODES; code++) {
     base_dist[code] = dist << 7;
     for (n = 0; n < (1<<(extra_dbits[code]-7)); n++) {
       _dist_code[256 + dist++] = code;
@@ -9327,6 +9349,7 @@ exports._tr_stored_block = _tr_stored_block;
 exports._tr_flush_block  = _tr_flush_block;
 exports._tr_tally = _tr_tally;
 exports._tr_align = _tr_align;
+
 },{"../utils/common":96}],106:[function(require,module,exports){
 'use strict';
 
@@ -9357,6 +9380,7 @@ function ZStream() {
 }
 
 module.exports = ZStream;
+
 },{}],107:[function(require,module,exports){
 (function (process,Buffer){
 var msg = require('pako/lib/zlib/messages');
@@ -11757,14 +11781,14 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 },{}],111:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = isLE ? (nBytes - 1) : 0,
-      d = isLE ? -1 : 1,
-      s = buffer[offset + i]
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
   i += d
 
@@ -11790,14 +11814,14 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 }
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = isLE ? 0 : (nBytes - 1),
-      d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
   value = Math.abs(value)
 
@@ -52445,6 +52469,80 @@ else {
 },{}],351:[function(require,module,exports){
 'use strict';
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _componentsHeader = require('./components/header');
+
+var _componentsHeader2 = _interopRequireDefault(_componentsHeader);
+
+var _componentsFooter = require('./components/footer');
+
+var _componentsFooter2 = _interopRequireDefault(_componentsFooter);
+
+var _componentsDraw = require('./components/draw');
+
+var _componentsDraw2 = _interopRequireDefault(_componentsDraw);
+
+var _componentsVector = require('./components/vector');
+
+var _componentsVector2 = _interopRequireDefault(_componentsVector);
+
+var _componentsMap = require('./components/map');
+
+var _componentsMap2 = _interopRequireDefault(_componentsMap);
+
+var _componentsMusic = require('./components/music');
+
+var _componentsMusic2 = _interopRequireDefault(_componentsMusic);
+
+require('babel/polyfill');
+
+var $ = require('jquery');
+var React = require('react');
+var Router = require('react-router');
+
+var DefaultRoute = Router.DefaultRoute;
+var Route = Router.Route;
+var RouteHandler = Router.RouteHandler;
+
+$(function () {
+  var App = React.createClass({
+    displayName: 'App',
+
+    render: function render() {
+      return React.createElement(
+        'div',
+        { id: 'root' },
+        React.createElement(_componentsHeader2['default'], null),
+        React.createElement(
+          'div',
+          { id: 'content' },
+          React.createElement(RouteHandler, null)
+        ),
+        React.createElement('div', { id: 'modal-container' }),
+        React.createElement(_componentsFooter2['default'], null)
+      );
+    }
+  });
+
+  var routes = React.createElement(
+    Route,
+    { name: 'app', path: '/', handler: App },
+    React.createElement(Route, { name: 'draw', handler: _componentsDraw2['default'] }),
+    React.createElement(Route, { name: 'vector', handler: _componentsVector2['default'] }),
+    React.createElement(Route, { name: 'map', handler: _componentsMap2['default'] }),
+    React.createElement(Route, { name: 'music', handler: _componentsMusic2['default'] }),
+    React.createElement(DefaultRoute, { handler: _componentsDraw2['default'] })
+  );
+
+  Router.run(routes, function (Handler) {
+    React.render(React.createElement(Handler, null), document.body);
+  });
+});
+
+},{"./components/draw":353,"./components/footer":358,"./components/header":359,"./components/map":364,"./components/music":366,"./components/vector":370,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}],352:[function(require,module,exports){
+'use strict';
+
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -52497,7 +52595,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"jquery":132,"react":333}],352:[function(require,module,exports){
+},{"jquery":132,"react":333}],353:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -52576,7 +52674,7 @@ var Draw = React.createClass({
 exports['default'] = Draw;
 module.exports = exports['default'];
 
-},{"./color_picker":351,"./draw_surface":353,"./draw_tool_list":354,"./palette_manager":366,"react":333}],353:[function(require,module,exports){
+},{"./color_picker":352,"./draw_surface":354,"./draw_tool_list":355,"./palette_manager":367,"react":333}],354:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53025,12 +53123,13 @@ var DrawSurface = React.createClass({
     var tileY = Math.floor(y / this.state.tileHeight);
 
     return { x: tileX, y: tileY };
-  } });
+  }
+});
 
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-},{"../lib/transparency":371,"../models/pixel":373,"./manage_draw_list":362,"./resize_prompt":367,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],354:[function(require,module,exports){
+},{"../lib/transparency":372,"../models/pixel":374,"./manage_draw_list":363,"./resize_prompt":368,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],355:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53130,12 +53229,13 @@ var DrawToolList = React.createClass({
       default:
         this.setState({ activeTool: name });
     }
-  } });
+  }
+});
 
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"./vector":369,"react":333,"react-router":165}],355:[function(require,module,exports){
+},{"./vector":370,"react":333,"react-router":165}],356:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53330,7 +53430,7 @@ var EditInstrument = React.createClass({
 exports['default'] = EditInstrument;
 module.exports = exports['default'];
 
-},{"./instrument_component":359,"react":333}],356:[function(require,module,exports){
+},{"./instrument_component":360,"react":333}],357:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53500,7 +53600,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../lib/transparency":371,"jquery":132,"react":333}],357:[function(require,module,exports){
+},{"../lib/transparency":372,"jquery":132,"react":333}],358:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53542,7 +53642,7 @@ var Footer = React.createClass({
 exports["default"] = Footer;
 module.exports = exports["default"];
 
-},{"react":333}],358:[function(require,module,exports){
+},{"react":333}],359:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53611,7 +53711,7 @@ var Header = React.createClass({
 exports['default'] = Header;
 module.exports = exports['default'];
 
-},{"react":333,"react-router":165}],359:[function(require,module,exports){
+},{"react":333,"react-router":165}],360:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53729,7 +53829,7 @@ var InstrumentComponent = React.createClass({
 exports["default"] = InstrumentComponent;
 module.exports = exports["default"];
 
-},{"react":333}],360:[function(require,module,exports){
+},{"react":333}],361:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53841,7 +53941,7 @@ var InstrumentList = React.createClass({
 exports['default'] = InstrumentList;
 module.exports = exports['default'];
 
-},{"./edit_instrument":355,"react":333}],361:[function(require,module,exports){
+},{"./edit_instrument":356,"react":333}],362:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54404,7 +54504,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../mixins/key_map_mixin":372,"jquery":132,"react":333,"teoria":334,"underscore":350}],362:[function(require,module,exports){
+},{"../mixins/key_map_mixin":373,"jquery":132,"react":333,"teoria":334,"underscore":350}],363:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54479,7 +54579,7 @@ var ManageDrawList = React.createClass({
 exports['default'] = ManageDrawList;
 module.exports = exports['default'];
 
-},{"react":333}],363:[function(require,module,exports){
+},{"react":333}],364:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -54506,7 +54606,7 @@ var MapController = React.createClass({
 exports["default"] = MapController;
 module.exports = exports["default"];
 
-},{"react":333}],364:[function(require,module,exports){
+},{"react":333}],365:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54538,7 +54638,7 @@ var Modal = React.createClass({
 exports['default'] = Modal;
 module.exports = exports['default'];
 
-},{"react":333}],365:[function(require,module,exports){
+},{"react":333}],366:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54648,7 +54748,7 @@ var Music = React.createClass({
 exports['default'] = Music;
 module.exports = exports['default'];
 
-},{"./instrument_list":360,"./keyboard":361,"./track_list":368,"./volume_control":370,"react":333}],366:[function(require,module,exports){
+},{"./instrument_list":361,"./keyboard":362,"./track_list":369,"./volume_control":371,"react":333}],367:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54789,7 +54889,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../lib/transparency":371,"./edit_palette":356,"./modal":364,"jquery":132,"react":333,"tinycolor2":349}],367:[function(require,module,exports){
+},{"../lib/transparency":372,"./edit_palette":357,"./modal":365,"jquery":132,"react":333,"tinycolor2":349}],368:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -54896,7 +54996,7 @@ var ResizePrompt = React.createClass({
 exports["default"] = ResizePrompt;
 module.exports = exports["default"];
 
-},{"react":333}],368:[function(require,module,exports){
+},{"react":333}],369:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54974,7 +55074,7 @@ var TrackList = React.createClass({
 exports['default'] = TrackList;
 module.exports = exports['default'];
 
-},{"react":333}],369:[function(require,module,exports){
+},{"react":333}],370:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -54997,7 +55097,7 @@ var Vector = React.createClass({
 exports["default"] = Vector;
 module.exports = exports["default"];
 
-},{"react":333}],370:[function(require,module,exports){
+},{"react":333}],371:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -55052,7 +55152,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":333}],371:[function(require,module,exports){
+},{"react":333}],372:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55065,7 +55165,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],372:[function(require,module,exports){
+},{}],373:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55172,7 +55272,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],373:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -55193,81 +55293,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],374:[function(require,module,exports){
-'use strict';
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _componentsHeader = require('./components/header');
-
-var _componentsHeader2 = _interopRequireDefault(_componentsHeader);
-
-var _componentsFooter = require('./components/footer');
-
-var _componentsFooter2 = _interopRequireDefault(_componentsFooter);
-
-var _componentsDraw = require('./components/draw');
-
-var _componentsDraw2 = _interopRequireDefault(_componentsDraw);
-
-var _componentsVector = require('./components/vector');
-
-var _componentsVector2 = _interopRequireDefault(_componentsVector);
-
-var _componentsMap = require('./components/map');
-
-var _componentsMap2 = _interopRequireDefault(_componentsMap);
-
-var _componentsMusic = require('./components/music');
-
-var _componentsMusic2 = _interopRequireDefault(_componentsMusic);
-
-require('babel/polyfill');
-
-var $ = require('jquery');
-var React = require('react');
-var Router = require('react-router');
-
-var DefaultRoute = Router.DefaultRoute;
-var Route = Router.Route;
-var RouteHandler = Router.RouteHandler;
-
-$(function () {
-  var App = React.createClass({
-    displayName: 'App',
-
-    render: function render() {
-      return React.createElement(
-        'div',
-        { id: 'root' },
-        React.createElement(_componentsHeader2['default'], null),
-        React.createElement(
-          'div',
-          { id: 'content' },
-          React.createElement(RouteHandler, null)
-        ),
-        React.createElement('div', { id: 'modal-container' }),
-        React.createElement(_componentsFooter2['default'], null)
-      );
-    }
-  });
-
-  var routes = React.createElement(
-    Route,
-    { name: 'app', path: '/', handler: App },
-    React.createElement(Route, { name: 'draw', handler: _componentsDraw2['default'] }),
-    React.createElement(Route, { name: 'vector', handler: _componentsVector2['default'] }),
-    React.createElement(Route, { name: 'map', handler: _componentsMap2['default'] }),
-    React.createElement(Route, { name: 'music', handler: _componentsMusic2['default'] }),
-    React.createElement(DefaultRoute, { handler: _componentsDraw2['default'] })
-  );
-
-  Router.run(routes, function (Handler) {
-    React.render(React.createElement(Handler, null), document.body);
-  });
-});
-
-},{"./components/draw":352,"./components/footer":357,"./components/header":358,"./components/map":363,"./components/music":365,"./components/vector":369,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[374])
+},{}]},{},[351])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map
