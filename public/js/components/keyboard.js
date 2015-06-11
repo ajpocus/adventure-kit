@@ -1,6 +1,7 @@
 let React = require('react');
 let $ = require('jquery');
 let teoria = require('teoria');
+let _ = require('underscore');
 
 import KeyMapMixin from '../mixins/key_map_mixin';
 
@@ -14,13 +15,21 @@ let Keyboard = React.createClass({
       isPlaying: {},
       ctx: new window.AudioContext(),
       oscillators: {},
-      octaveShift: 2
+      octaveShift: 2,
+      recording: []
     };
   },
 
   componentDidMount: function () {
     $(document).on('keydown', this.handleKeyDown);
     $(document).on('keyup', this.handleKeyUp);
+  },
+
+  componentDidUpdate: function (prevProps, prevState) {
+    if (this.state.recording.length !== prevState.recording.length) {
+      console.log(this.state.recording, prevState.recording);
+      this.props.onRecordingUpdate(this.state.recording);
+    }
   },
 
   componentWillUnmount: function () {
@@ -232,10 +241,17 @@ let Keyboard = React.createClass({
 
       isPlaying[key] = true;
 
+      let recording = this.state.recording;
+      recording.push({
+        midi: midi,
+        startTime: Number(new Date())
+      });
+
       this.setState({
         ctx: ctx,
         oscillators: oscillators,
-        isPlaying: isPlaying
+        isPlaying: isPlaying,
+        recording: recording
       });
     }
   },
@@ -255,9 +271,14 @@ let Keyboard = React.createClass({
       delete oscillators[key];
       delete isPlaying[key];
 
+      let recording = this.state.recording;
+      let lastIdx = recording.length - 1;
+      recording[lastIdx].stopTime = Number(new Date());
+
       this.setState({
         oscillators: oscillators,
-        isPlaying: isPlaying
+        isPlaying: isPlaying,
+        recording: recording
       });
     }
   }

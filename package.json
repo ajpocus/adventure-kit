@@ -26,7 +26,8 @@
     "react-router": "^0.13.3",
     "serve-favicon": "^2.2.0",
     "teoria": "^1.9.0",
-    "tinycolor2": "^1.1.2"
+    "tinycolor2": "^1.1.2",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel": "^5.4.7",

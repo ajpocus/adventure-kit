@@ -57,8 +57,10 @@
 }
 
 #music .track-list .track {
-  height: 80px;
   width: 850px;
+  height: 80px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #bebebe;
 }
 
 #keyboard {
