@@ -11,6 +11,7 @@ let RouteHandler = Router.RouteHandler;
 import Header from './components/header';
 import Footer from './components/footer';
 import Draw from './components/draw';
+import Vector from './components/vector';
 import Map from './components/map';
 import Music from './components/music';
 
@@ -36,6 +37,7 @@ $(function () {
   let routes = (
     <Route name="app" path="/" handler={App}>
       <Route name="draw" handler={Draw}/>
+      <Route name="vector" handler={Vector}/>
       <Route name="map" handler={Map}/>
       <Route name="music" handler={Music}/>
       <DefaultRoute handler={Draw}/>

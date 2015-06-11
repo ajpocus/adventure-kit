@@ -1,4 +1,8 @@
 let React = require('react');
+let Router = require('react-router');
+let Link = Router.Link;
+
+import Vector from './vector';
 
 let DrawToolList = React.createClass({
   getDefaultProps: function () {
@@ -54,6 +58,11 @@ let DrawToolList = React.createClass({
     return (
       <div className="draw-tools">
         <ul className="tool-list">
+          <li className="mode-switch">
+            <Link to="vector">
+              Vector Mode
+            </Link>
+          </li>
           {toolList}
         </ul>
       </div>

@@ -11,6 +11,7 @@ var gutil = require('gulp-util');
 var concatCss = require('gulp-concat-css');
 var sass = require('gulp-sass');
 var nodemon = require('gulp-nodemon');
+var jest = require('gulp-jest');
 
 gulp.task('default', ['serve']);
 
@@ -57,4 +58,22 @@ gulp.task('serve', ['js', 'css'], function () {
     tasks: ['css'],
     ext: 'css scss ejs'
   });
+});
+
+gulp.task('jest', function () {
+  return gulp.src('__tests__').pipe(jest({
+    scriptPreprocessor: '../node_modules/babel-jest',
+    unmockedModulePathPatterns: [
+      'node_modules/react',
+      'public/js'
+    ],
+    testPathIgnorePatterns: [
+      '__tests__/support'
+    ],
+    moduleFileExtensions: [
+      'js',
+      'json',
+      'react'
+    ]
+  }));
 });

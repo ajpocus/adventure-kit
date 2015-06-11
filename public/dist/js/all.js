@@ -53030,13 +53030,22 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-},{"../lib/transparency":370,"../models/pixel":372,"./manage_draw_list":362,"./resize_prompt":367,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],354:[function(require,module,exports){
+},{"../lib/transparency":371,"../models/pixel":373,"./manage_draw_list":362,"./resize_prompt":367,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],354:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _vector = require('./vector');
+
+var _vector2 = _interopRequireDefault(_vector);
+
 var React = require('react');
+var Router = require('react-router');
+var Link = Router.Link;
 
 var DrawToolList = React.createClass({
   displayName: 'DrawToolList',
@@ -53096,6 +53105,15 @@ var DrawToolList = React.createClass({
       React.createElement(
         'ul',
         { className: 'tool-list' },
+        React.createElement(
+          'li',
+          { className: 'mode-switch' },
+          React.createElement(
+            Link,
+            { to: 'vector' },
+            'Vector Mode'
+          )
+        ),
         toolList
       )
     );
@@ -53117,7 +53135,7 @@ var DrawToolList = React.createClass({
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"react":333}],355:[function(require,module,exports){
+},{"./vector":369,"react":333,"react-router":165}],355:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53482,7 +53500,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../lib/transparency":370,"jquery":132,"react":333}],357:[function(require,module,exports){
+},{"../lib/transparency":371,"jquery":132,"react":333}],357:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -54386,7 +54404,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../mixins/key_map_mixin":371,"jquery":132,"react":333,"teoria":334,"underscore":350}],362:[function(require,module,exports){
+},{"../mixins/key_map_mixin":372,"jquery":132,"react":333,"teoria":334,"underscore":350}],362:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54630,7 +54648,7 @@ var Music = React.createClass({
 exports['default'] = Music;
 module.exports = exports['default'];
 
-},{"./instrument_list":360,"./keyboard":361,"./track_list":368,"./volume_control":369,"react":333}],366:[function(require,module,exports){
+},{"./instrument_list":360,"./keyboard":361,"./track_list":368,"./volume_control":370,"react":333}],366:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54771,7 +54789,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../lib/transparency":370,"./edit_palette":356,"./modal":364,"jquery":132,"react":333,"tinycolor2":349}],367:[function(require,module,exports){
+},{"../lib/transparency":371,"./edit_palette":356,"./modal":364,"jquery":132,"react":333,"tinycolor2":349}],367:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -54964,6 +54982,29 @@ Object.defineProperty(exports, "__esModule", {
 });
 var React = require("react");
 
+var Vector = React.createClass({
+  displayName: "Vector",
+
+  render: function render() {
+    return React.createElement(
+      "div",
+      { id: "vector" },
+      React.createElement("div", { id: "render" })
+    );
+  }
+});
+
+exports["default"] = Vector;
+module.exports = exports["default"];
+
+},{"react":333}],370:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var React = require("react");
+
 var VolumeControl = React.createClass({
   displayName: "VolumeControl",
 
@@ -55011,7 +55052,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":333}],370:[function(require,module,exports){
+},{"react":333}],371:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55024,7 +55065,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],371:[function(require,module,exports){
+},{}],372:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55131,7 +55172,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],372:[function(require,module,exports){
+},{}],373:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -55152,7 +55193,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],373:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -55168,6 +55209,10 @@ var _componentsFooter2 = _interopRequireDefault(_componentsFooter);
 var _componentsDraw = require('./components/draw');
 
 var _componentsDraw2 = _interopRequireDefault(_componentsDraw);
+
+var _componentsVector = require('./components/vector');
+
+var _componentsVector2 = _interopRequireDefault(_componentsVector);
 
 var _componentsMap = require('./components/map');
 
@@ -55211,6 +55256,7 @@ $(function () {
     Route,
     { name: 'app', path: '/', handler: App },
     React.createElement(Route, { name: 'draw', handler: _componentsDraw2['default'] }),
+    React.createElement(Route, { name: 'vector', handler: _componentsVector2['default'] }),
     React.createElement(Route, { name: 'map', handler: _componentsMap2['default'] }),
     React.createElement(Route, { name: 'music', handler: _componentsMusic2['default'] }),
     React.createElement(DefaultRoute, { handler: _componentsDraw2['default'] })
@@ -55221,7 +55267,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":352,"./components/footer":357,"./components/header":358,"./components/map":363,"./components/music":365,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[373])
+},{"./components/draw":352,"./components/footer":357,"./components/header":358,"./components/map":363,"./components/music":365,"./components/vector":369,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}]},{},[374])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map
