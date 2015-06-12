@@ -52564,21 +52564,25 @@ var ColorPicker = React.createClass({
     return React.createElement(
       'div',
       { className: 'color-picker' },
-      React.createElement('input', { type: 'color', id: 'primary-color',
+      React.createElement('input', { type: 'color',
+        ref: 'primaryColor',
+        id: 'primary-color',
         onChange: this.handlePrimaryColorChange }),
-      React.createElement('input', { type: 'color', id: 'secondary-color',
+      React.createElement('input', { type: 'color',
+        ref: 'secondaryColor',
+        id: 'secondary-color',
         onChange: this.handleSecondaryColorChange })
     );
   },
 
   componentDidMount: function componentDidMount() {
-    document.getElementById('primary-color').value = this.props.primaryColor;
-    document.getElementById('secondary-color').value = this.props.secondaryColor;
+    this.refs.primaryColor.getDOMNode().value = this.props.primaryColor;
+    this.refs.secondaryColor.getDOMNode().value = this.props.secondaryColor;
   },
 
   componentDidUpdate: function componentDidUpdate() {
-    document.getElementById('primary-color').value = this.props.primaryColor;
-    document.getElementById('secondary-color').value = this.props.secondaryColor;
+    this.refs.primaryColor.getDOMNode().value = this.props.primaryColor;
+    this.refs.secondaryColor.getDOMNode().value = this.props.secondaryColor;
   },
 
   handlePrimaryColorChange: function handlePrimaryColorChange(ev) {
