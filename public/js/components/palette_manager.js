@@ -15,7 +15,8 @@ let PaletteManager = React.createClass({
           '#ff00ff'
         ]
       },
-      activePalette: 'Rainbow'
+      activePalette: 'Rainbow',
+      isEditingPalette: false
     };
   },
 
@@ -61,13 +62,19 @@ let PaletteManager = React.createClass({
           {paletteOptions}
         </select>
 
-        <button className="edit-palette-btn" onClick={this.editPalette}>
+        <button className="edit-palette btn" onClick={this.editPalette}>
           <img className="icon" src="/img/icons/glyphicons-31-pencil.png"/>
         </button>
 
         <ul className="palette">
           {paletteColors}
         </ul>
+
+        <Modal isOpen={this.state.isEditingPalette}>
+          <EditPalette palette={paletteCopy}
+                       name={this.state.activePalette}
+                       onPaletteChange={this.onPaletteChange}/>
+        </Modal>
       </div>
     );
   },
@@ -92,13 +99,7 @@ let PaletteManager = React.createClass({
   },
 
   editPalette: function () {
-    let name = this.state.activePalette;
-    let palette = this.state.palettes[name].splice(0);
-
-    React.render(<EditPalette palette={palette}
-                              name={name}
-                              onPaletteChange={this.onPaletteChange}/>,
-                 document.getElementById('modal-container'));
+    this.setState({ isEditingPalette: true });
   },
 
   onPaletteChange: function (palette) {

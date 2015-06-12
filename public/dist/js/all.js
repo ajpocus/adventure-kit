@@ -53465,7 +53465,8 @@ var EditPalette = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      palette: this.props.palette
+      palette: this.props.palette,
+      activePaletteColor: this.props.palette[0]
     };
   },
 
@@ -53542,7 +53543,10 @@ var EditPalette = React.createClass({
             React.createElement(
               'div',
               { className: 'sidebar' },
-              React.createElement('input', { type: 'color', id: 'palette-color',
+              React.createElement('input', { type: 'color',
+                ref: 'paletteColor',
+                id: 'palette-color',
+                value: this.state.activeColor,
                 onChange: this.updatePaletteColor }),
               React.createElement(
                 'button',
@@ -53571,7 +53575,7 @@ var EditPalette = React.createClass({
   },
 
   componentDidUpdate: function componentDidUpdate() {
-    document.getElementById('palette-color').value = this.props.activeColor;
+    this.refs.paletteColor.getDOMNode().value = this.state.activeColor;
   },
 
   setActivePaletteColor: function setActivePaletteColor(color) {
@@ -54795,7 +54799,8 @@ var PaletteManager = React.createClass({
       palettes: {
         'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#ff00ff']
       },
-      activePalette: 'Rainbow'
+      activePalette: 'Rainbow',
+      isEditingPalette: false
     };
   },
 
@@ -54849,13 +54854,20 @@ var PaletteManager = React.createClass({
       ),
       React.createElement(
         'button',
-        { className: 'edit-palette-btn', onClick: this.editPalette },
+        { className: 'edit-palette btn', onClick: this.editPalette },
         React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-31-pencil.png' })
       ),
       React.createElement(
         'ul',
         { className: 'palette' },
         paletteColors
+      ),
+      React.createElement(
+        _modal2['default'],
+        { isOpen: this.state.isEditingPalette },
+        React.createElement(_edit_palette2['default'], { palette: paletteCopy,
+          name: this.state.activePalette,
+          onPaletteChange: this.onPaletteChange })
       )
     );
   },
@@ -54880,12 +54892,7 @@ var PaletteManager = React.createClass({
   },
 
   editPalette: function editPalette() {
-    var name = this.state.activePalette;
-    var palette = this.state.palettes[name].splice(0);
-
-    React.render(React.createElement(_edit_palette2['default'], { palette: palette,
-      name: name,
-      onPaletteChange: this.onPaletteChange }), document.getElementById('modal-container'));
+    this.setState({ isEditingPalette: true });
   },
 
   onPaletteChange: function onPaletteChange(palette) {

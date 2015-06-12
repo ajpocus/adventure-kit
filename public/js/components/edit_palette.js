@@ -6,7 +6,8 @@ import Transparency from '../lib/transparency';
 let EditPalette = React.createClass({
   getInitialState: function () {
     return {
-      palette: this.props.palette
+      palette: this.props.palette,
+      activePaletteColor: this.props.palette[0]
     };
   },
 
@@ -54,7 +55,10 @@ let EditPalette = React.createClass({
               </ul>
 
               <div className="sidebar">
-                <input type="color" id="palette-color"
+                <input type="color"
+                       ref="paletteColor"
+                       id="palette-color"
+                       value={this.state.activeColor}
                        onChange={this.updatePaletteColor}/>
                 <button className="add btn">Add color</button>
               </div>
@@ -76,7 +80,7 @@ let EditPalette = React.createClass({
   },
 
   componentDidUpdate: function () {
-    document.getElementById('palette-color').value = this.props.activeColor;
+    this.refs.paletteColor.getDOMNode().value = this.state.activeColor;
   },
 
   setActivePaletteColor: function (color) {

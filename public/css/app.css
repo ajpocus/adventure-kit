@@ -105,6 +105,7 @@ img.pixel {
   border: 2px solid rgba(255, 255, 255, 0.5);
   background: #222;
   position: relative;
+  z-index: 10;
 }
 
 .close-modal {

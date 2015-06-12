@@ -41,7 +41,13 @@ describe('PaletteManager', function () {
   });
 
   it('shows an EditPalette window on click', function () {
-    // NOTE: #modal-container is creating problems. Maybe I can pass a ref...
+    var editButton = TestUtils.findRenderedDOMComponentWithClass(
+                       paletteManager, 'edit-palette btn');
+    TestUtils.Simulate.click(editButton);
+    expect(paletteManager.state.isEditingPalette).toBe(true);
+    var editPalette = TestUtils.findRenderedDOMComponentWithClass(
+                        paletteManager, 'edit-palette modal');
+    expect(editPalette).toNotBe(null);
   });
 
   afterEach(function () {
