@@ -3,28 +3,48 @@ var PaletteManager = require('../../public/js/components/palette_manager');
 var TestUtils = React.addons.TestUtils;
 
 describe('PaletteManager', function () {
-  it('changes the primary color on click', function () {
-    var onPrimaryColorChange = jest.genMockFunction();
-    var onSecondaryColorChange = jest.genMockFunction();
+  var onPrimaryColorChange;
+  var onSecondaryColorChange;
+  var paletteManager;
+  var activePalette;
+  var palette;
+  var color;
 
-    var paletteManager = TestUtils.renderIntoDocument(
+  beforeEach(function () {
+    onPrimaryColorChange = jest.genMockFunction();
+    onSecondaryColorChange = jest.genMockFunction();
+
+    paletteManager = TestUtils.renderIntoDocument(
       <PaletteManager onPrimaryColorChange={onPrimaryColorChange}
-                      onSecondaryColorChange={onSecondaryColorChange}/>
+                      onSecondaryColorChange={onSecondaryColorChange}
+                      isEditingPalette={false}/>
     );
 
-    var activePalette = 'Rainbow';
-    var palette = paletteManager.state.palettes[activePalette];
-    var color = palette[0];
+    activePalette = 'Rainbow';
+    palette = paletteManager.state.palettes[activePalette];
+    color = palette[0];
+  });
 
+  it('changes the primary color on click', function () {
     expect(paletteManager.state.activePalette).toEqual(activePalette);
     var colorNode = TestUtils.scryRenderedDOMComponentsWithClass(
       paletteManager, 'color')[0];
 
     TestUtils.Simulate.click(colorNode);
 
-    // should make call to set primary color
     expect(onPrimaryColorChange.mock.calls.length).toBe(1);
-    // should pass the color as the only parameter
     expect(onPrimaryColorChange.mock.calls[0][0]).toBe(color);
+  });
+
+  it('allows the user to create a new palette', function () {
+    // NOTE: jsdom doesn't implement window.prompt as of 2015/06/12
+  });
+
+  it('shows an EditPalette window on click', function () {
+    // NOTE: #modal-container is creating problems. Maybe I can pass a ref...
+  });
+
+  afterEach(function () {
+    React.unmountComponentAtNode(document.body);
   });
 });

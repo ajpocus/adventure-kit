@@ -54849,18 +54849,13 @@ var PaletteManager = React.createClass({
       ),
       React.createElement(
         'button',
-        { className: 'edit-palette', onClick: this.editPalette },
+        { className: 'edit-palette-btn', onClick: this.editPalette },
         React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-31-pencil.png' })
       ),
       React.createElement(
         'ul',
         { className: 'palette' },
         paletteColors
-      ),
-      React.createElement(
-        _modal2['default'],
-        { isOpen: this.props.isEditingPalette },
-        React.createElement(_edit_palette2['default'], { palette: paletteCopy })
       )
     );
   },
@@ -54888,7 +54883,8 @@ var PaletteManager = React.createClass({
     var name = this.state.activePalette;
     var palette = this.state.palettes[name].splice(0);
 
-    React.render(React.createElement(_edit_palette2['default'], { palette: palette, name: name,
+    React.render(React.createElement(_edit_palette2['default'], { palette: palette,
+      name: name,
       onPaletteChange: this.onPaletteChange }), document.getElementById('modal-container'));
   },
 
