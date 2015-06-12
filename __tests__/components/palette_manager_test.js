@@ -12,9 +12,13 @@ describe('PaletteManager', function () {
                       onSecondaryColorChange={onSecondaryColorChange}/>
     );
 
+    var activePalette = 'Rainbow';
+    var palette = paletteManager.state.palettes[activePalette];
+    var color = palette[0];
+
+    expect(paletteManager.state.activePalette).toEqual(activePalette);
     var colorNode = TestUtils.scryRenderedDOMComponentsWithClass(
       paletteManager, 'color')[0];
-    var color = colorNode.props.style.background;
 
     TestUtils.Simulate.click(colorNode);
 
