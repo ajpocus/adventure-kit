@@ -9,19 +9,19 @@ var TestUtils = React.addons.TestUtils;
   */
 
 describe('ColorPicker', function () {
+  var primaryColor = '#000000';
+  var secondaryColor = '#ffffff';
+  var onPrimaryColorChange = jest.genMockFunction();
+  var onSecondaryColorChange = jest.genMockFunction();
+
+  var colorPicker = TestUtils.renderIntoDocument(
+    <ColorPicker primaryColor={primaryColor}
+                 secondaryColor={secondaryColor}
+                 onPrimaryColorChange={onPrimaryColorChange}
+                 onSecondaryColorChange={onSecondaryColorChange}/>
+  );
+
   it('sets a primary color', function () {
-    var primaryColor = '#000000';
-    var secondaryColor = '#ffffff';
-    var onPrimaryColorChange = jest.genMockFunction();
-    var onSecondaryColorChange = jest.genMockFunction();
-
-    var colorPicker = TestUtils.renderIntoDocument(
-      <ColorPicker primaryColor={primaryColor}
-                   secondaryColor={secondaryColor}
-                   onPrimaryColorChange={onPrimaryColorChange}
-                   onSecondaryColorChange={onSecondaryColorChange}/>
-    );
-
     var primaryNode = colorPicker.refs.primaryColor.getDOMNode();
     TestUtils.Simulate.change(primaryNode, {
       target: {
@@ -32,18 +32,6 @@ describe('ColorPicker', function () {
   });
 
   it('sets a secondary color', function () {
-    var primaryColor = '#000000';
-    var secondaryColor = '#ffffff';
-    var onPrimaryColorChange = jest.genMockFunction();
-    var onSecondaryColorChange = jest.genMockFunction();
-
-    var colorPicker = TestUtils.renderIntoDocument(
-      <ColorPicker primaryColor={primaryColor}
-                   secondaryColor={secondaryColor}
-                   onPrimaryColorChange={onPrimaryColorChange}
-                   onSecondaryColorChange={onSecondaryColorChange}/>
-    );
-
     var secondaryNode = colorPicker.refs.secondaryColor.getDOMNode();
     TestUtils.Simulate.change(secondaryNode, {
       target: {

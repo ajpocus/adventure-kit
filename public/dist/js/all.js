@@ -52553,13 +52553,6 @@ window.$ = $;
 var ColorPicker = React.createClass({
   displayName: 'ColorPicker',
 
-  getInitialState: function getInitialState() {
-    return {
-      primaryColor: this.props.primaryColor,
-      secondaryColor: this.props.secondaryColor
-    };
-  },
-
   render: function render() {
     return React.createElement(
       'div',

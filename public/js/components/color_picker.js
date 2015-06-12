@@ -3,13 +3,6 @@ let $ = require('jquery');
 window.$ = $;
 
 let ColorPicker = React.createClass({
-  getInitialState: function () {
-    return {
-      primaryColor: this.props.primaryColor,
-      secondaryColor: this.props.secondaryColor
-    };
-  },
-
   render: function () {
     return (
       <div className="color-picker">
