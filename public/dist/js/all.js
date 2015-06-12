@@ -52553,6 +52553,13 @@ window.$ = $;
 var ColorPicker = React.createClass({
   displayName: 'ColorPicker',
 
+  getInitialState: function getInitialState() {
+    return {
+      primaryColor: this.props.primaryColor,
+      secondaryColor: this.props.secondaryColor
+    };
+  },
+
   render: function render() {
     return React.createElement(
       'div',
@@ -52560,10 +52567,12 @@ var ColorPicker = React.createClass({
       React.createElement('input', { type: 'color',
         ref: 'primaryColor',
         id: 'primary-color',
+        value: this.state.primaryColor,
         onChange: this.handlePrimaryColorChange }),
       React.createElement('input', { type: 'color',
         ref: 'secondaryColor',
         id: 'secondary-color',
+        value: this.state.secondaryColor,
         onChange: this.handleSecondaryColorChange })
     );
   },
@@ -52580,12 +52589,20 @@ var ColorPicker = React.createClass({
 
   handlePrimaryColorChange: function handlePrimaryColorChange(ev) {
     var color = ev.target.value;
-    this.props.onPrimaryColorChange(color);
+    this.setState({
+      primaryColor: color
+    }, function () {
+      this.props.onPrimaryColorChange(color);
+    });
   },
 
   handleSecondaryColorChange: function handleSecondaryColorChange(ev) {
     var color = ev.target.value;
-    this.props.onSecondaryColorChange(color);
+    this.setState({
+      secondaryColor: color
+    }, function () {
+      this.props.onSecondaryColorChange(color);
+    });
   }
 });
 

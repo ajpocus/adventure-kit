@@ -3,16 +3,25 @@ let $ = require('jquery');
 window.$ = $;
 
 let ColorPicker = React.createClass({
+  getInitialState: function () {
+    return {
+      primaryColor: this.props.primaryColor,
+      secondaryColor: this.props.secondaryColor
+    };
+  },
+
   render: function () {
     return (
       <div className="color-picker">
         <input type="color"
                ref="primaryColor"
                id="primary-color"
+               value={this.state.primaryColor}
                onChange={this.handlePrimaryColorChange}/>
         <input type="color"
                ref="secondaryColor"
                id="secondary-color"
+               value={this.state.secondaryColor}
                onChange={this.handleSecondaryColorChange}/>
       </div>
     );
@@ -30,12 +39,20 @@ let ColorPicker = React.createClass({
 
   handlePrimaryColorChange: function (ev) {
     let color = ev.target.value;
-    this.props.onPrimaryColorChange(color);
+    this.setState({
+      primaryColor: color
+    }, function () {
+      this.props.onPrimaryColorChange(color);
+    });
   },
 
   handleSecondaryColorChange: function (ev) {
     let color = ev.target.value;
-    this.props.onSecondaryColorChange(color);
+    this.setState({
+      secondaryColor: color
+    }, function () {
+      this.props.onSecondaryColorChange(color);
+    });
   }
 });
 
