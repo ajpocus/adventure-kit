@@ -9,17 +9,25 @@ var TestUtils = React.addons.TestUtils;
   */
 
 describe('ColorPicker', function () {
-  var primaryColor = '#000000';
-  var secondaryColor = '#ffffff';
-  var onPrimaryColorChange = jest.genMockFunction();
-  var onSecondaryColorChange = jest.genMockFunction();
+  var primaryColor;
+  var secondaryColor;
+  var onPrimaryColorChange;
+  var onSecondaryColorChange;
+  var colorPicker;
 
-  var colorPicker = TestUtils.renderIntoDocument(
-    <ColorPicker primaryColor={primaryColor}
-                 secondaryColor={secondaryColor}
-                 onPrimaryColorChange={onPrimaryColorChange}
-                 onSecondaryColorChange={onSecondaryColorChange}/>
-  );
+  beforeEach(function () {
+    primaryColor = '#000000';
+    secondaryColor = '#ffffff';
+    onPrimaryColorChange = jest.genMockFunction();
+    onSecondaryColorChange = jest.genMockFunction();
+
+    colorPicker = TestUtils.renderIntoDocument(
+      <ColorPicker primaryColor={primaryColor}
+                   secondaryColor={secondaryColor}
+                   onPrimaryColorChange={onPrimaryColorChange}
+                   onSecondaryColorChange={onSecondaryColorChange}/>
+    );
+  });
 
   it('sets a primary color', function () {
     var primaryNode = colorPicker.refs.primaryColor.getDOMNode();
@@ -39,5 +47,15 @@ describe('ColorPicker', function () {
       }
     });
     expect(onSecondaryColorChange.mock.calls.length).toEqual(1);
+  });
+
+  afterEach(function () {
+    primaryColor = undefined;
+    secondaryColor = undefined;
+    onPrimaryColorChange = undefined;
+    onSecondaryColorChange = undefined;
+    colorPicker = undefined;
+
+    React.unmountComponentAtNode(document.body);
   });
 });
