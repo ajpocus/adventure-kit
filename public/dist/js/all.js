@@ -53470,10 +53470,18 @@ var EditPalette = React.createClass({
     };
   },
 
+  componentDidMount: function componentDidMount() {
+    this.refs.paletteColor.getDOMNode().value = this.state.activePaletteColor;
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    this.refs.paletteColor.getDOMNode().value = this.state.activePaletteColor;
+  },
+
   render: function render() {
     var colorList = [];
-    for (var i = 0; i < this.props.palette.length; i++) {
-      var color = this.props.palette[i];
+    for (var i = 0; i < this.state.palette.length; i++) {
+      var color = this.state.palette[i];
       var swatchStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
         swatchStyle.background = _libTransparency2['default'].background;
@@ -53546,7 +53554,6 @@ var EditPalette = React.createClass({
               React.createElement('input', { type: 'color',
                 ref: 'paletteColor',
                 id: 'palette-color',
-                value: this.state.activeColor,
                 onChange: this.updatePaletteColor }),
               React.createElement(
                 'button',
@@ -53572,10 +53579,6 @@ var EditPalette = React.createClass({
         )
       )
     );
-  },
-
-  componentDidUpdate: function componentDidUpdate() {
-    this.refs.paletteColor.getDOMNode().value = this.state.activeColor;
   },
 
   setActivePaletteColor: function setActivePaletteColor(color) {
@@ -53610,8 +53613,7 @@ var EditPalette = React.createClass({
   },
 
   closeEdit: function closeEdit() {
-    var container = document.getElementById('modal-container');
-    React.unmountComponentAtNode(container);
+    this.props.closeEditPalette();
   }
 });
 
@@ -54867,7 +54869,8 @@ var PaletteManager = React.createClass({
         { isOpen: this.state.isEditingPalette },
         React.createElement(_edit_palette2['default'], { palette: paletteCopy,
           name: this.state.activePalette,
-          onPaletteChange: this.onPaletteChange })
+          onPaletteChange: this.onPaletteChange,
+          closeEditPalette: this.closeEditPalette })
       )
     );
   },
@@ -54899,7 +54902,14 @@ var PaletteManager = React.createClass({
     var name = this.state.activePalette;
     var palettes = this.state.palettes;
     palettes[name] = palette;
-    this.setState({ palettes: palettes });
+    this.setState({
+      palettes: palettes,
+      isEditingPalette: false
+    });
+  },
+
+  closeEditPalette: function closeEditPalette() {
+    this.setState({ isEditingPalette: false });
   }
 });
 

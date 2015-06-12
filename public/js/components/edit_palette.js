@@ -11,10 +11,18 @@ let EditPalette = React.createClass({
     };
   },
 
+  componentDidMount: function () {
+    this.refs.paletteColor.getDOMNode().value = this.state.activePaletteColor;
+  },
+
+  componentDidUpdate: function () {
+    this.refs.paletteColor.getDOMNode().value = this.state.activePaletteColor;
+  },
+
   render: function () {
     let colorList = [];
-    for (let i = 0; i < this.props.palette.length; i++) {
-      let color = this.props.palette[i];
+    for (let i = 0; i < this.state.palette.length; i++) {
+      let color = this.state.palette[i];
       let swatchStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
         swatchStyle.background = Transparency.background;
@@ -58,7 +66,6 @@ let EditPalette = React.createClass({
                 <input type="color"
                        ref="paletteColor"
                        id="palette-color"
-                       value={this.state.activeColor}
                        onChange={this.updatePaletteColor}/>
                 <button className="add btn">Add color</button>
               </div>
@@ -79,9 +86,6 @@ let EditPalette = React.createClass({
     );
   },
 
-  componentDidUpdate: function () {
-    this.refs.paletteColor.getDOMNode().value = this.state.activeColor;
-  },
 
   setActivePaletteColor: function (color) {
     this.setState({ activePaletteColor: color });
@@ -115,8 +119,7 @@ let EditPalette = React.createClass({
   },
 
   closeEdit: function () {
-    let container = document.getElementById('modal-container');
-    React.unmountComponentAtNode(container);
+    this.props.closeEditPalette();
   }
 });
 

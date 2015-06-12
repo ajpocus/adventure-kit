@@ -73,7 +73,8 @@ let PaletteManager = React.createClass({
         <Modal isOpen={this.state.isEditingPalette}>
           <EditPalette palette={paletteCopy}
                        name={this.state.activePalette}
-                       onPaletteChange={this.onPaletteChange}/>
+                       onPaletteChange={this.onPaletteChange}
+                       closeEditPalette={this.closeEditPalette}/>
         </Modal>
       </div>
     );
@@ -106,7 +107,14 @@ let PaletteManager = React.createClass({
     let name = this.state.activePalette;
     let palettes = this.state.palettes;
     palettes[name] = palette;
-    this.setState({ palettes: palettes });
+    this.setState({
+      palettes: palettes,
+      isEditingPalette: false
+    });
+  },
+
+  closeEditPalette: function () {
+    this.setState({ isEditingPalette: false });
   }
 });
 
