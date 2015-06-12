@@ -1,3 +1,5 @@
+require('../support/testdom')('<html><body></body></html>');
+
 var React = require('react/addons');
 var PaletteManager = require('../../public/js/components/palette_manager');
 var TestUtils = React.addons.TestUtils;

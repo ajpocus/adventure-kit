@@ -1,3 +1,5 @@
+require('../support/testdom')('<html><body></body></html>');
+
 var React = require('react/addons');
 var ColorPicker = require('../../public/js/components/color_picker');
 var TestUtils = React.addons.TestUtils;
