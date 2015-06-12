@@ -1,8 +1,10 @@
-require('../support/testdom')('<html><body></body></html>');
+require('../testdom')('<html><body></body></html>');
 
 var React = require('react/addons');
 var ColorPicker = require('../../public/js/components/color_picker');
 var TestUtils = React.addons.TestUtils;
+var assert = require('assert');
+var sinon = require('sinon');
 
 /**
   * Since there's no standard way to select or manipulate the color window
@@ -22,14 +24,15 @@ describe('ColorPicker', function () {
     primaryColor = '#000000';
     secondaryColor = '#ffffff';
     newColor = '#dedbef';
-    onPrimaryColorChange = jest.genMockFunction();
-    onSecondaryColorChange = jest.genMockFunction();
+    onPrimaryColorChange = sinon.spy();
+    onSecondaryColorChange = sinon.spy();
 
-    colorPicker = TestUtils.renderIntoDocument(
+    colorPicker = React.render(
       <ColorPicker primaryColor={primaryColor}
                    secondaryColor={secondaryColor}
                    onPrimaryColorChange={onPrimaryColorChange}
-                   onSecondaryColorChange={onSecondaryColorChange}/>
+                   onSecondaryColorChange={onSecondaryColorChange}/>,
+      document.body
     );
   });
 
@@ -41,8 +44,8 @@ describe('ColorPicker', function () {
       }
     });
 
-    expect(primaryNode.value).toBe(newColor);
-    expect(onPrimaryColorChange.mock.calls.length).toEqual(1);
+    assert.equal(primaryNode.value, newColor);
+    assert.equal(onPrimaryColorChange.called, true);
   });
 
   it('sets a secondary color', function () {
@@ -53,8 +56,8 @@ describe('ColorPicker', function () {
       }
     });
 
-    expect(secondaryNode.value).toBe(newColor);
-    expect(onSecondaryColorChange.mock.calls.length).toEqual(1);
+    assert.equal(secondaryNode.value, newColor);
+    assert.equal(onSecondaryColorChange.called, true);
   });
 
   afterEach(function () {
