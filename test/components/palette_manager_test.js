@@ -3,7 +3,7 @@ require('../testdom')('<html><body></body></html>');
 var React = require('react/addons');
 var PaletteManager = require('../../public/js/components/palette_manager');
 var TestUtils = React.addons.TestUtils;
-var assert = require('assert');
+var expect = require('chai').expect;
 var sinon = require('sinon');
 
 describe('PaletteManager', function () {
@@ -31,14 +31,14 @@ describe('PaletteManager', function () {
   });
 
   it('changes the primary color on click', function () {
-    assert.equal(paletteManager.state.activePalette, activePalette);
+    expect(paletteManager.state.activePalette).to.equal(activePalette);
     var colorNode = TestUtils.scryRenderedDOMComponentsWithClass(
       paletteManager, 'color')[0];
 
     TestUtils.Simulate.click(colorNode);
 
-    assert.equal(onPrimaryColorChange.called, true);
-    assert.equal(onPrimaryColorChange.calledWith(color), true);
+    expect(onPrimaryColorChange.called).to.be.true;
+    expect(onPrimaryColorChange.calledWith(color)).to.be.true;
   });
 
   it('allows the user to create a new palette', function () {
@@ -48,9 +48,9 @@ describe('PaletteManager', function () {
   it('shows an EditPalette window on click', function () {
     var editButton = document.querySelector('.edit-palette.btn');
     TestUtils.Simulate.click(editButton);
-    assert.equal(paletteManager.state.isEditingPalette, true);
+    expect(paletteManager.state.isEditingPalette).to.be.true;
     var editPalette = document.querySelector('.edit-palette.modal');
-    assert.ok(editPalette);
+    expect(editPalette).to.be.ok;
   });
 
 
@@ -68,7 +68,7 @@ describe('PaletteManager', function () {
     var cancelButton = document.querySelector('.edit-palette .cancel.btn');
     TestUtils.Simulate.click(cancelButton);
     var currentPalette = paletteManager.state.palettes[activePalette];
-    assert.equal(currentPalette.length, originalLen);
+    expect(currentPalette.length).to.equal(originalLen);
   });
 
   it('saves the edited palette on Save click', function () {
@@ -85,7 +85,7 @@ describe('PaletteManager', function () {
     var saveBtn = document.querySelector('.edit-palette .save.btn');
     TestUtils.Simulate.click(saveBtn);
     var currentPalette = paletteManager.state.palettes[activePalette];
-    assert.equal(currentPalette.length, originalLen + 1);
+    expect(currentPalette.length).to.equal(originalLen + 1);
   });
 
 

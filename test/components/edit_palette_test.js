@@ -3,7 +3,7 @@ require('../testdom')('<html><body></body></html>');
 var React = require('react/addons');
 var EditPalette = require('../../public/js/components/edit_palette');
 var TestUtils = React.addons.TestUtils;
-var assert = require('assert');
+var expect = require('chai').expect;
 var sinon = require('sinon');
 var tinycolor = require('tinycolor2');
 
@@ -37,12 +37,12 @@ describe('EditPalette', function () {
     var len = palette.length;
     TestUtils.Simulate.click(newColorBtn);
 
-    assert.equal(palette.length, len + 1);
-    assert.equal(palette[len], '#ffffff');
+    expect(palette.length).to.equal(len + 1);
+    expect(palette[len]).to.equal('#ffffff');
 
     var colors = document.querySelectorAll('.color');
 
-    assert.equal(colors.length, palette.length + 1); // +1 for new color button
+    expect(colors.length).to.equal(palette.length + 1); // +1 for new color
   });
 
   it('removes a color', function () {
@@ -50,14 +50,14 @@ describe('EditPalette', function () {
     var originalLen = palette.length;
 
     TestUtils.Simulate.click(removeBtn);
-    assert.equal(palette.length, originalLen - 1);
+    expect(palette.length).to.equal(originalLen - 1);
   });
 
   it('sets the active color on click', function () {
     var secondColor = document.querySelectorAll('.color')[1];
     TestUtils.Simulate.click(secondColor);
 
-    assert.equal(editPalette.state.activePaletteColor, palette[1]);
+    expect(editPalette.state.activePaletteColor).to.equal(palette[1]);
   });
 
   it('edits the active color', function () {
@@ -74,8 +74,8 @@ describe('EditPalette', function () {
 
     var colorSwatch = document.querySelector('.color .swatch');
     var bgColor = tinycolor(colorSwatch.style.background);
-    assert.equal(editPalette.state.activePaletteColor, newColor);
-    assert.equal(bgColor.toHexString(), newColor);
+    expect(editPalette.state.activePaletteColor).to.equal(newColor);
+    expect(bgColor.toHexString()).to.equal(newColor);
   });
 
   afterEach(function () {

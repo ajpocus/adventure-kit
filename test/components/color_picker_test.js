@@ -3,7 +3,7 @@ require('../testdom')('<html><body></body></html>');
 var React = require('react/addons');
 var ColorPicker = require('../../public/js/components/color_picker');
 var TestUtils = React.addons.TestUtils;
-var assert = require('assert');
+var expect = require('chai').expect;
 var sinon = require('sinon');
 
 /**
@@ -44,8 +44,8 @@ describe('ColorPicker', function () {
       }
     });
 
-    assert.equal(primaryNode.value, newColor);
-    assert.equal(onPrimaryColorChange.called, true);
+    expect(primaryNode.value).to.equal(newColor);
+    expect(onPrimaryColorChange.called).to.be.true;
   });
 
   it('sets a secondary color', function () {
@@ -56,8 +56,8 @@ describe('ColorPicker', function () {
       }
     });
 
-    assert.equal(secondaryNode.value, newColor);
-    assert.equal(onSecondaryColorChange.called, true);
+    expect(secondaryNode.value).to.equal(newColor);
+    expect(onSecondaryColorChange.called).to.be.true;
   });
 
   afterEach(function () {

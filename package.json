@@ -36,6 +36,8 @@
     "babel-jest": "^5.2.0",
     "babelify": "^6.1.1",
     "browserify": "^10.2.0",
+    "canvas": "^1.2.3",
+    "chai": "^3.0.0",
     "gulp": "^3.8.11",
     "gulp-concat-css": "^2.2.0",
     "gulp-mocha": "^2.1.1",
