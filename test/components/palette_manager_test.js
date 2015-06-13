@@ -53,6 +53,42 @@ describe('PaletteManager', function () {
     assert.ok(editPalette);
   });
 
+
+  it('cancels the edited palette on Cancel click', function () {
+    var editButton = document.querySelector('.edit-palette.btn');
+    TestUtils.Simulate.click(editButton);
+
+    var newButton = document.querySelector('.edit-palette .new.color');
+    TestUtils.Simulate.click(newButton);
+
+    var activePalette = paletteManager.state.activePalette;
+    var originalPalette = paletteManager.state.palettes[activePalette];
+    var originalLen = originalPalette.length;
+
+    var cancelButton = document.querySelector('.edit-palette .cancel.btn');
+    TestUtils.Simulate.click(cancelButton);
+    var currentPalette = paletteManager.state.palettes[activePalette];
+    assert.equal(currentPalette.length, originalLen);
+  });
+
+  it('saves the edited palette on Save click', function () {
+    var editButton = document.querySelector('.edit-palette.btn');
+    TestUtils.Simulate.click(editButton);
+
+    var newButton = document.querySelector('.edit-palette .new.color');
+    TestUtils.Simulate.click(newButton);
+
+    var activePalette = paletteManager.state.activePalette;
+    var originalPalette = paletteManager.state.palettes[activePalette];
+    var originalLen = originalPalette.length;
+
+    var saveBtn = document.querySelector('.edit-palette .save.btn');
+    TestUtils.Simulate.click(saveBtn);
+    var currentPalette = paletteManager.state.palettes[activePalette];
+    assert.equal(currentPalette.length, originalLen + 1);
+  });
+
+
   afterEach(function () {
     React.unmountComponentAtNode(document.body);
   });

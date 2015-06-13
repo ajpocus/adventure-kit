@@ -32,7 +32,7 @@ describe('EditPalette', function () {
     );
   });
 
-  it('should add a color', function () {
+  it('adds a color', function () {
     var newColorBtn = document.querySelector('.new.color');
     var len = palette.length;
     TestUtils.Simulate.click(newColorBtn);
@@ -45,15 +45,15 @@ describe('EditPalette', function () {
     assert.equal(colors.length, palette.length + 1); // +1 for new color button
   });
 
-  it('should remove a color', function () {
+  it('removes a color', function () {
     var removeBtn = document.querySelector('.remove');
-    var len = palette.length;
+    var originalLen = palette.length;
 
     TestUtils.Simulate.click(removeBtn);
-    assert.equal(palette.length, len - 1);
+    assert.equal(palette.length, originalLen - 1);
   });
 
-  it('should set the active color on click', function () {
+  it('sets the active color on click', function () {
     var secondColor = document.querySelectorAll('.color')[1];
     TestUtils.Simulate.click(secondColor);
 
@@ -77,10 +77,6 @@ describe('EditPalette', function () {
     assert.equal(editPalette.state.activePaletteColor, newColor);
     assert.equal(bgColor.toHexString(), newColor);
   });
-
-  it('should cancel the palette changes on Cancel click');
-
-  it('should save the palette changes on Save click');
 
   afterEach(function () {
     React.unmountComponentAtNode(document.body);
