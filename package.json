@@ -2,9 +2,6 @@
   "name": "hiro",
   "version": "0.0.0",
   "private": true,
-  "engines": {
-    "node": "^0.12"
-  },
   "scripts": {
     "start": "node ./bin/www",
     "test": "mocha -w --compilers js:babel/register test/**/*test.js"

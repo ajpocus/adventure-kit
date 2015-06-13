@@ -53149,16 +53149,7 @@ module.exports = exports['default'];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _vector = require('./vector');
-
-var _vector2 = _interopRequireDefault(_vector);
-
 var React = require('react');
-var Router = require('react-router');
-var Link = Router.Link;
 
 var DrawToolList = React.createClass({
   displayName: 'DrawToolList',
@@ -53218,15 +53209,6 @@ var DrawToolList = React.createClass({
       React.createElement(
         'ul',
         { className: 'tool-list' },
-        React.createElement(
-          'li',
-          { className: 'mode-switch' },
-          React.createElement(
-            Link,
-            { to: 'vector' },
-            'Vector Mode'
-          )
-        ),
         toolList
       )
     );
@@ -53249,7 +53231,7 @@ var DrawToolList = React.createClass({
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"./vector":370,"react":333,"react-router":165}],356:[function(require,module,exports){
+},{"react":333}],356:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
