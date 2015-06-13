@@ -5,6 +5,7 @@ var EditPalette = require('../../public/js/components/edit_palette');
 var TestUtils = React.addons.TestUtils;
 var assert = require('assert');
 var sinon = require('sinon');
+var tinycolor = require('tinycolor2');
 
 describe('EditPalette', function () {
   var palette;
@@ -59,7 +60,23 @@ describe('EditPalette', function () {
     assert.equal(editPalette.state.activePaletteColor, palette[1]);
   });
 
-  it('should edit an existing color');
+  it('should edit an existing color', function () {
+    var secondColor = document.querySelector('.color');
+    var picker = editPalette.refs.paletteColor.getDOMNode();
+    var newColor = '#beebee';
+
+    TestUtils.Simulate.click(secondColor);
+    TestUtils.Simulate.change(picker, {
+      target: {
+        value: newColor
+      }
+    });
+
+    var colorSwatch = document.querySelector('.color .swatch');
+    var bgColor = tinycolor(colorSwatch.style.background);
+    assert.equal(editPalette.state.activePaletteColor, newColor);
+    assert.equal(bgColor.toHexString(), newColor);
+  });
 
   it('should cancel the palette changes on Cancel click');
 
