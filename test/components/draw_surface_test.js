@@ -1,4 +1,4 @@
-require('canvas');
+var Canvas = require('canvas');
 require('../testdom')('<html><body></body></html>');
 
 var React = require('react/addons');
@@ -13,13 +13,15 @@ describe('DrawSurface', function () {
   var secondaryColor = '#ffffff';
 
   beforeEach(function () {
-    drawSurface = React.render(<DrawSurface primaryColor={primaryColor}
-                                            secondaryColor={secondaryColor}/>,
-                               document.body);
+    drawSurface = React.render(
+      <DrawSurface primaryColor={primaryColor}
+                   secondaryColor={secondaryColor}/>,
+      document.body
+    );
   });
 
   it('draws a checkered background', function () {
-    expect(drawSurface.bgCtx).to.be.ok;
+    expect(drawSurface.state.bgCtx).to.be.ok;
   });
 
   afterEach(function () {
