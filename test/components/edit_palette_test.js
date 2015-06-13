@@ -60,7 +60,7 @@ describe('EditPalette', function () {
     assert.equal(editPalette.state.activePaletteColor, palette[1]);
   });
 
-  it('should edit an existing color', function () {
+  it('edits the active color', function () {
     var secondColor = document.querySelector('.color');
     var picker = editPalette.refs.paletteColor.getDOMNode();
     var newColor = '#beebee';
