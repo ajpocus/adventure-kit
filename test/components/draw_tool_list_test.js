@@ -22,6 +22,13 @@ describe('DrawToolList', function () {
     assert.ok(activeTool);
   });
 
+  it('sets the active tool on click', function () {
+    var originalActiveTool = drawToolList.state.activeTool;
+    var newActiveToolBtn = document.querySelectorAll('.tool .btn')[1];
+    TestUtils.Simulate.click(newActiveToolBtn);
+    assert.notEqual(originalActiveTool, drawToolList.state.activeTool);
+  });
+
   afterEach(function () {
     React.unmountComponentAtNode(document.body);
   });
