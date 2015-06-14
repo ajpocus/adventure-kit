@@ -52914,7 +52914,7 @@ var DrawSurface = React.createClass({
     this.clearHighlight(null, currentPixel);
 
     if (this.state.isMouseDown) {
-      this.drawPixel(ev);
+      this.draw(ev);
     }
   },
 
@@ -52957,8 +52957,6 @@ var DrawSurface = React.createClass({
     if (button === 2) {
       color = this.props.secondaryColor;
     }
-
-    console.log(this.props.activeTool);
 
     switch (this.props.activeTool) {
       case 'Pencil':
@@ -53011,16 +53009,17 @@ var DrawSurface = React.createClass({
           }
         })(x, y);
 
-        this.setState({
-          grid: grid,
-          drawCtx: drawCtx,
-          isMouseDown: true
-        });
         break;
 
       default:
         return;
     }
+
+    this.setState({
+      grid: grid,
+      drawCtx: drawCtx,
+      isMouseDown: true
+    });
   },
 
   setMouseUp: function setMouseUp(ev) {
