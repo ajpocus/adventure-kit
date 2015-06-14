@@ -101,8 +101,8 @@ let DrawSurface = React.createClass({
                  style={surfaceStyle}
                  onMouseMove={this.highlightPixel}
                  onMouseOut={this.clearHighlight}
-                 onMouseDown={this.drawPixel}
-                 onContextMenu={this.drawPixel}
+                 onMouseDown={this.draw}
+                 onContextMenu={this.draw}
                  onMouseUp={this.setMouseUp}
                  onWheel={this.onZoom}>
               <canvas id="bg-canvas"
@@ -220,7 +220,7 @@ let DrawSurface = React.createClass({
     });
   },
 
-  drawPixel: function (ev) {
+  draw: function (ev) {
     let {x, y} = this.getTileCoordinates(ev);
     let grid = this.state.grid;
     let drawCtx = this.state.drawCtx;
@@ -231,15 +231,71 @@ let DrawSurface = React.createClass({
       color = this.props.secondaryColor;
     }
 
-    grid[x][y].color = color;
-    drawCtx.fillStyle = color;
-    drawCtx.fillRect(x, y, 1, 1);
+    console.log(this.props.activeTool);
 
-    this.setState({
-      grid: grid,
-      drawCtx: drawCtx,
-      isMouseDown: true
-    });
+    switch (this.props.activeTool) {
+      case 'Pencil':
+        grid[x][y].color = color;
+        drawCtx.fillStyle = color;
+        drawCtx.fillRect(x, y, 1, 1);
+
+        this.setState({
+          grid: grid,
+          drawCtx: drawCtx,
+          isMouseDown: true
+        });
+
+        break;
+
+      case 'Bucket':
+        let originalColor = grid[x][y].color;
+        grid[x][y].color = color;
+        drawCtx.fillStyle = color;
+        drawCtx.fillRect(x, y, 1, 1);
+
+        var seen = {};
+        (function drawNeighbors(x, y) {
+          if (seen[x] && seen[x][y]) {
+            return;
+          } else {
+            seen[x] || (seen[x] = {});
+            seen[x][y] = true;
+          }
+
+          let neighbors = [
+            { x: x + 1, y: y },
+            { x: x - 1, y: y },
+            { x: x, y: y + 1 },
+            { x: x, y: y - 1 }
+          ];
+
+          for (let i = 0; i < neighbors.length; i++) {
+            let {x, y} = neighbors[i];
+
+            if (x < 0 || y < 0 || x >= grid.length || y >= grid[0].length) {
+              continue;
+            }
+
+            let px = grid[x][y];
+            if (px.color === originalColor) {
+              grid[x][y].color = color;
+              drawCtx.fillRect(x, y, 1, 1);
+            }
+
+            drawNeighbors(x, y);
+          }
+        })(x, y);
+
+        this.setState({
+          grid: grid,
+          drawCtx: drawCtx,
+          isMouseDown: true
+        });
+        break;
+
+      default:
+        return;
+    }
   },
 
   setMouseUp: function (ev) {
@@ -323,36 +379,7 @@ let DrawSurface = React.createClass({
   },
 
   onExportClick: function () {
-    let grid = this.state.grid;
-    let png = new PNG({
-      width: grid.length,
-      height: grid[0].length
-    });
-
-    for (let y = 0; y < png.height; y++) {
-      for (let x = 0; x < png.width; x++) {
-        let idx = (png.width * y + x) << 2;
-        let pixel = grid[x][y];
-        if (!pixel.color) {
-          pixel.color = 'rgba(0, 0, 0, 0)';
-        }
-        let color = tinycolor(pixel.color);
-        let rgb = color.toRgb();
-        let alpha = color.getAlpha() * 255;
-
-        png.data[idx] = rgb.r;
-        png.data[idx+1] = rgb.g;
-        png.data[idx+2] = rgb.b;
-        png.data[idx+3] = alpha;
-      }
-    }
-
-    let reader = new FileReader();
-    reader.onload = function (img) {
-      console.log(img);
-    };
-    png.pack();
-    reader.readAsDataURL(png.pipe());
+    // TODO: post image data to server and download the response as image/png
   },
 
   drawBackground: function () {

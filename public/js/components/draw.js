@@ -14,7 +14,8 @@ let Draw = React.createClass({
       height: 32,
       totalWidth: 1024,
       totalHeight: 1024,
-      zoom: 0.875
+      zoom: 0.875,
+      activeTool: 'Pencil'
     };
   },
 
@@ -27,7 +28,8 @@ let Draw = React.createClass({
     return (
       <div id="draw">
         <div className="toolbar">
-          <DrawToolList/>
+          <DrawToolList activeTool={this.state.activeTool}
+                        onSetActiveTool={this.onSetActiveTool}/>
           <PaletteManager onPrimaryColorChange={this.onPrimaryColorChange}
                           onSecondaryColorChange={this.onSecondaryColorChange}/>
           <ColorPicker primaryColor={this.state.primaryColor}
@@ -37,7 +39,8 @@ let Draw = React.createClass({
         </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}
-                     secondaryColor={this.state.secondaryColor}/>
+                     secondaryColor={this.state.secondaryColor}
+                     activeTool={this.state.activeTool}/>
       </div>
     );
   },
@@ -48,6 +51,10 @@ let Draw = React.createClass({
 
   onSecondaryColorChange: function (color) {
     this.setState({ secondaryColor: color });
+  },
+
+  onSetActiveTool: function (name) {
+    this.setState({ activeTool: name });
   }
 });
 

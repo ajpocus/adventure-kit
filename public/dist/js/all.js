@@ -52647,7 +52647,8 @@ var Draw = React.createClass({
       height: 32,
       totalWidth: 1024,
       totalHeight: 1024,
-      zoom: 0.875
+      zoom: 0.875,
+      activeTool: 'Pencil'
     };
   },
 
@@ -52663,7 +52664,8 @@ var Draw = React.createClass({
       React.createElement(
         'div',
         { className: 'toolbar' },
-        React.createElement(_draw_tool_list2['default'], null),
+        React.createElement(_draw_tool_list2['default'], { activeTool: this.state.activeTool,
+          onSetActiveTool: this.onSetActiveTool }),
         React.createElement(_palette_manager2['default'], { onPrimaryColorChange: this.onPrimaryColorChange,
           onSecondaryColorChange: this.onSecondaryColorChange }),
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
@@ -52672,7 +52674,8 @@ var Draw = React.createClass({
           onSecondaryColorChange: this.onSecondaryColorChange })
       ),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
-        secondaryColor: this.state.secondaryColor })
+        secondaryColor: this.state.secondaryColor,
+        activeTool: this.state.activeTool })
     );
   },
 
@@ -52682,6 +52685,10 @@ var Draw = React.createClass({
 
   onSecondaryColorChange: function onSecondaryColorChange(color) {
     this.setState({ secondaryColor: color });
+  },
+
+  onSetActiveTool: function onSetActiveTool(name) {
+    this.setState({ activeTool: name });
   }
 });
 
@@ -52815,8 +52822,8 @@ var DrawSurface = React.createClass({
               style: surfaceStyle,
               onMouseMove: this.highlightPixel,
               onMouseOut: this.clearHighlight,
-              onMouseDown: this.drawPixel,
-              onContextMenu: this.drawPixel,
+              onMouseDown: this.draw,
+              onContextMenu: this.draw,
               onMouseUp: this.setMouseUp,
               onWheel: this.onZoom },
             React.createElement('canvas', { id: 'bg-canvas',
@@ -52936,7 +52943,7 @@ var DrawSurface = React.createClass({
     });
   },
 
-  drawPixel: function drawPixel(ev) {
+  draw: function draw(ev) {
     var _getTileCoordinates2 = this.getTileCoordinates(ev);
 
     var x = _getTileCoordinates2.x;
@@ -52951,15 +52958,68 @@ var DrawSurface = React.createClass({
       color = this.props.secondaryColor;
     }
 
-    grid[x][y].color = color;
-    drawCtx.fillStyle = color;
-    drawCtx.fillRect(x, y, 1, 1);
+    console.log(this.props.activeTool);
 
-    this.setState({
-      grid: grid,
-      drawCtx: drawCtx,
-      isMouseDown: true
-    });
+    switch (this.props.activeTool) {
+      case 'Pencil':
+        grid[x][y].color = color;
+        drawCtx.fillStyle = color;
+        drawCtx.fillRect(x, y, 1, 1);
+
+        this.setState({
+          grid: grid,
+          drawCtx: drawCtx,
+          isMouseDown: true
+        });
+
+        break;
+
+      case 'Bucket':
+        var originalColor = grid[x][y].color;
+        grid[x][y].color = color;
+        drawCtx.fillStyle = color;
+        drawCtx.fillRect(x, y, 1, 1);
+
+        var seen = {};
+        (function drawNeighbors(x, y) {
+          if (seen[x] && seen[x][y]) {
+            return;
+          } else {
+            seen[x] || (seen[x] = {});
+            seen[x][y] = true;
+          }
+
+          var neighbors = [{ x: x + 1, y: y }, { x: x - 1, y: y }, { x: x, y: y + 1 }, { x: x, y: y - 1 }];
+
+          for (var i = 0; i < neighbors.length; i++) {
+            var _neighbors$i = neighbors[i];
+            var _x = _neighbors$i.x;
+            var _y = _neighbors$i.y;
+
+            if (_x < 0 || _y < 0 || _x >= grid.length || _y >= grid[0].length) {
+              continue;
+            }
+
+            var px = grid[_x][_y];
+            if (px.color === originalColor) {
+              grid[_x][_y].color = color;
+              drawCtx.fillRect(_x, _y, 1, 1);
+            }
+
+            drawNeighbors(_x, _y);
+          }
+        })(x, y);
+
+        this.setState({
+          grid: grid,
+          drawCtx: drawCtx,
+          isMouseDown: true
+        });
+        break;
+
+      default:
+        return;
+    }
   },
 
   setMouseUp: function setMouseUp(ev) {
@@ -53041,38 +53101,7 @@ var DrawSurface = React.createClass({
     });
   },
 
-  onExportClick: function onExportClick() {
-    var grid = this.state.grid;
-    var png = new PNG({
-      width: grid.length,
-      height: grid[0].length
-    });
-
-    for (var y = 0; y < png.height; y++) {
-      for (var x = 0; x < png.width; x++) {
-        var idx = png.width * y + x << 2;
-        var pixel = grid[x][y];
-        if (!pixel.color) {
-          pixel.color = 'rgba(0, 0, 0, 0)';
-        }
-        var color = tinycolor(pixel.color);
-        var rgb = color.toRgb();
-        var alpha = color.getAlpha() * 255;
-
-        png.data[idx] = rgb.r;
-        png.data[idx + 1] = rgb.g;
-        png.data[idx + 2] = rgb.b;
-        png.data[idx + 3] = alpha;
-      }
-    }
-
-    var reader = new FileReader();
-    reader.onload = function (img) {
-      console.log(img);
-    };
-    png.pack();
-    reader.readAsDataURL(png.pipe());
-  },
+  onExportClick: function onExportClick() {},
 
   drawBackground: function drawBackground() {
     var bgCtx = this.state.bgCtx;
@@ -53143,6 +53172,8 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
+// TODO: post image data to server and download the response as image/png
+
 },{"../lib/transparency":372,"../models/pixel":374,"./manage_draw_list":363,"./resize_prompt":368,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],355:[function(require,module,exports){
 'use strict';
 
@@ -53172,18 +53203,12 @@ var DrawToolList = React.createClass({
     };
   },
 
-  getInitialState: function getInitialState() {
-    return {
-      activeTool: 'Pencil'
-    };
-  },
-
   render: function render() {
     var toolList = [];
     for (var i = 0; i < this.props.tools.length; i++) {
       var tool = this.props.tools[i];
       var className = 'btn';
-      if (tool.name === this.state.activeTool) {
+      if (tool.name === this.props.activeTool) {
         className += ' active';
       }
 
@@ -53215,16 +53240,7 @@ var DrawToolList = React.createClass({
   },
 
   setActiveTool: function setActiveTool(name) {
-    switch (name) {
-      case 'Zoom In':
-        break;
-
-      case 'Zoom Out':
-        break;
-
-      default:
-        this.setState({ activeTool: name });
-    }
+    this.props.onSetActiveTool(name);
   }
 });
 

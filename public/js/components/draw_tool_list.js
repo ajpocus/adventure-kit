@@ -24,18 +24,12 @@ let DrawToolList = React.createClass({
     }
   },
 
-  getInitialState: function () {
-    return {
-      activeTool: 'Pencil'
-    }
-  },
-
   render: function () {
     let toolList = [];
     for (let i = 0; i < this.props.tools.length; i++) {
       let tool = this.props.tools[i];
       let className = "btn";
-      if (tool.name === this.state.activeTool) {
+      if (tool.name === this.props.activeTool) {
         className += " active";
       }
 
@@ -61,16 +55,7 @@ let DrawToolList = React.createClass({
   },
 
   setActiveTool: function (name) {
-    switch (name) {
-      case 'Zoom In':
-        break;
-
-      case 'Zoom Out':
-        break;
-
-      default:
-        this.setState({ activeTool: name });
-    }
+    this.props.onSetActiveTool(name);
   },
 });
 
