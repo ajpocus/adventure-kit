@@ -55086,7 +55086,7 @@ var TrackList = React.createClass({
       }
 
       var x = note.startTime - timeZero;
-      var y = note.midi;
+      var y = 100 - note.midi;
       var width = (note.endTime - note.startTime) * 10;
 
       console.log(x, y, width);
