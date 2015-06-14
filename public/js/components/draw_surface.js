@@ -277,11 +277,12 @@ let DrawSurface = React.createClass({
             }
 
             let px = grid[x][y];
-            if (px.color === originalColor) {
-              grid[x][y].color = color;
-              drawCtx.fillRect(x, y, 1, 1);
+            if (px.color !== originalColor) {
+              continue;
             }
 
+            grid[x][y].color = color;
+            drawCtx.fillRect(x, y, 1, 1);
             drawNeighbors(x, y);
           }
         })(x, y);
