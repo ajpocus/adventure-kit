@@ -14,6 +14,7 @@ import Draw from './components/draw';
 import Vector from './components/vector';
 import Map from './components/map';
 import Music from './components/music';
+import Play from './components/play';
 
 $(function () {
   let App = React.createClass({
@@ -40,6 +41,7 @@ $(function () {
       <Route name="vector" handler={Vector}/>
       <Route name="map" handler={Map}/>
       <Route name="music" handler={Music}/>
+      <Route name="play" handler={Play}/>
       <DefaultRoute handler={Draw}/>
     </Route>
   );

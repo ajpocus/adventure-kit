@@ -11,7 +11,7 @@ let Header = React.createClass({
 
   render: function () {
     let tabs = [];
-    let tabNames = ['Draw', 'Map', 'Music'];
+    let tabNames = ['Draw', 'Map', 'Music', 'Play'];
     for (let i = 0; i < tabNames.length; i++) {
       let tabName = tabNames[i];
       let className = 'tab';

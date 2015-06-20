@@ -31,7 +31,8 @@ let DrawSurface = React.createClass({
       actualWidth: actualWidth,
       actualHeight: actualHeight,
       tileWidth: tileWidth,
-      tileHeight: tileHeight
+      tileHeight: tileHeight,
+      title: 'Untitled'
     };
   },
 
@@ -95,6 +96,13 @@ let DrawSurface = React.createClass({
 
     return (
       <div className="render-container">
+        <div className="title">
+          <input name="title"
+                 ref="title"
+                 value={this.state.title}
+                 onChange={this.onTitleChange}/>
+        </div>
+
         <div id="render">
           <div className="background">
             <div className="surface"
@@ -129,7 +137,8 @@ let DrawSurface = React.createClass({
 
         <div className="manage-surface">
           <ManageDrawList onResizeClick={this.onResizeClick}
-                          onExportClick={this.onExportClick}/>
+                          onExportClick={this.onExportClick}
+                          onSaveClick={this.onSaveClick}/>
         </div>
       </div>
     );
@@ -348,6 +357,10 @@ let DrawSurface = React.createClass({
     });
   },
 
+  onTitleChange: function (ev) {
+    this.setState({ title: ev.target.value });
+  },
+
   onResizeClick: function () {
     React.render(<ResizePrompt width={this.state.width}
                                height={this.state.height}
@@ -380,6 +393,16 @@ let DrawSurface = React.createClass({
 
   onExportClick: function () {
     // TODO: post image data to server and download the response as image/png
+  },
+
+  onSaveClick: function () {
+    // TODO: save image to local store
+    let images = JSON.parse(localStorage.getItem('images')) || {};
+    let dataUrl = this.refs.drawCanvas.getDOMNode().toDataURL('image/png');
+    dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
+    images[this.state.title] = dataUrl;
+    localStorage.setItem('images', JSON.stringify(images));
+    console.log(localStorage.getItem('images'));
   },
 
   drawBackground: function () {

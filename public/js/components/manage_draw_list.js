@@ -11,6 +11,10 @@ let ManageDrawList = React.createClass({
         {
           name: 'Export',
           imgUrl: '/img/icons/glyphicons-420-disk-export.png'
+        },
+        {
+          name: 'Save',
+          imgUrl: '/img/icons/glyphicons-447-floppy-save.png'
         }
       ]
     };
@@ -51,6 +55,10 @@ let ManageDrawList = React.createClass({
 
       case 'Export':
         this.props.onExportClick();
+        break;
+
+      case 'Save':
+        this.props.onSaveClick();
         break;
 
       default:
