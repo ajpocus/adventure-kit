@@ -52540,7 +52540,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":353,"./components/footer":358,"./components/header":359,"./components/map":364,"./components/music":366,"./components/vector":370,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}],352:[function(require,module,exports){
+},{"./components/draw":353,"./components/footer":358,"./components/header":359,"./components/map":364,"./components/music":366,"./components/vector":371,"babel/polyfill":93,"jquery":132,"react":333,"react-router":165}],352:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53174,7 +53174,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../lib/transparency":372,"../models/pixel":374,"./manage_draw_list":363,"./resize_prompt":368,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],355:[function(require,module,exports){
+},{"../lib/transparency":373,"../models/pixel":375,"./manage_draw_list":363,"./resize_prompt":368,"jquery":132,"pngjs":140,"react":333,"tinycolor2":349}],355:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53618,7 +53618,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../lib/transparency":372,"jquery":132,"react":333}],358:[function(require,module,exports){
+},{"../lib/transparency":373,"jquery":132,"react":333}],358:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -54522,7 +54522,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../mixins/key_map_mixin":373,"jquery":132,"react":333,"teoria":334,"underscore":350}],363:[function(require,module,exports){
+},{"../mixins/key_map_mixin":374,"jquery":132,"react":333,"teoria":334,"underscore":350}],363:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54709,7 +54709,8 @@ var Music = React.createClass({
       }],
       activeInstrument: 0,
       volume: 0.5,
-      recording: []
+      recording: [],
+      tracks: []
     };
   },
 
@@ -54726,14 +54727,13 @@ var Music = React.createClass({
           { className: 'sidebar' },
           React.createElement(_instrument_list2['default'], { instruments: this.state.instruments,
             activeInstrument: this.state.activeInstrument,
-            onUpdate: this.onUpdate }),
-          React.createElement(_volume_control2['default'], { gain: '0.5',
-            onVolumeChange: this.onVolumeChange })
+            onUpdate: this.onUpdate })
         ),
         React.createElement(
           'div',
           { className: 'main' },
-          React.createElement(_track_list2['default'], { recording: this.state.recording })
+          React.createElement(_track_list2['default'], { tracks: this.state.tracks,
+            recording: this.state.recording })
         )
       ),
       React.createElement(
@@ -54742,6 +54742,8 @@ var Music = React.createClass({
         React.createElement(
           'div',
           { className: 'controls' },
+          React.createElement(_volume_control2['default'], { gain: '0.5',
+            onVolumeChange: this.onVolumeChange }),
           React.createElement(_keyboard2['default'], { instrument: instrument,
             volume: this.state.volume,
             onRecordingUpdate: this.onRecordingUpdate })
@@ -54766,7 +54768,7 @@ var Music = React.createClass({
 exports['default'] = Music;
 module.exports = exports['default'];
 
-},{"./instrument_list":361,"./keyboard":362,"./track_list":369,"./volume_control":371,"react":333}],367:[function(require,module,exports){
+},{"./instrument_list":361,"./keyboard":362,"./track_list":370,"./volume_control":372,"react":333}],367:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54914,7 +54916,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../lib/transparency":372,"./edit_palette":357,"./modal":365,"jquery":132,"react":333,"tinycolor2":349}],368:[function(require,module,exports){
+},{"../lib/transparency":373,"./edit_palette":357,"./modal":365,"jquery":132,"react":333,"tinycolor2":349}],368:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -55029,58 +55031,48 @@ Object.defineProperty(exports, '__esModule', {
 });
 var React = require('react');
 
-var TrackList = React.createClass({
-  displayName: 'TrackList',
+var Track = React.createClass({
+  displayName: 'Track',
 
   componentDidMount: function componentDidMount() {
-    var scratchCanvas = document.getElementById('scratch-canvas');
-    var scratchCtx = scratchCanvas.getContext('2d');
+    var canvas = this.refs.canvas.getDOMNode();
+    var ctx = canvas.getContext('2d');
 
     this.setState({
-      scratchCanvas: scratchCanvas,
-      scratchCtx: scratchCtx
+      ctx: ctx
     });
   },
 
-  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    this.drawScratch();
+  componentDidUpdate: function componentDidUpdate() {
+    this.draw();
   },
 
   render: function render() {
     return React.createElement(
-      'ul',
-      { className: 'track-list' },
-      React.createElement('li', { className: 'track' }),
-      React.createElement('li', { className: 'track' }),
-      React.createElement('li', { className: 'track' }),
-      React.createElement('li', { className: 'track' }),
-      React.createElement(
-        'li',
-        { className: 'track scratch' },
-        React.createElement('canvas', { id: 'scratch-canvas',
-          width: '850',
-          height: '80' })
-      )
+      'li',
+      { className: 'track' },
+      React.createElement('canvas', { className: 'track-canvas',
+        ref: 'canvas',
+        width: '850',
+        height: '80' })
     );
   },
 
-  drawScratch: function drawScratch() {
-    var recording = this.props.recording;
-    var ctx = this.state.scratchCtx;
+  draw: function draw() {
+    var data = this.props.data;
+    var ctx = this.state.ctx;
 
-    console.log('rec len: ' + recording.length);
-
-    if (!recording.length) {
+    if (!data || !data.length) {
       return;
     }
 
-    var timeZero = recording[0].startTime;
+    var timeZero = data[0].startTime;
 
     ctx.fillStyle = '#ffcc00';
-    var rectHeight = 10;
+    var rectHeight = 5;
 
-    for (var i = 0; i < recording.length; i++) {
-      var note = recording[i];
+    for (var i = 0; i < data.length; i++) {
+      var note = data[i];
       if (!note.endTime) {
         note.endTime = Number(new Date());
       }
@@ -55096,10 +55088,52 @@ var TrackList = React.createClass({
   }
 });
 
-exports['default'] = TrackList;
+exports['default'] = Track;
 module.exports = exports['default'];
 
 },{"react":333}],370:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _track = require('./track');
+
+var _track2 = _interopRequireDefault(_track);
+
+var React = require('react');
+
+var TrackList = React.createClass({
+  displayName: 'TrackList',
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      trackCount: 4
+    };
+  },
+
+  render: function render() {
+    var trackViews = [];
+    for (var i = 0; i < this.props.trackCount; i++) {
+      trackViews.push(React.createElement(_track2['default'], { data: this.props.tracks[i] }));
+    }
+
+    return React.createElement(
+      'ul',
+      { className: 'track-list' },
+      trackViews,
+      React.createElement(_track2['default'], { data: this.props.recording })
+    );
+  }
+});
+
+exports['default'] = TrackList;
+module.exports = exports['default'];
+
+},{"./track":369,"react":333}],371:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -55122,7 +55156,7 @@ var Vector = React.createClass({
 exports["default"] = Vector;
 module.exports = exports["default"];
 
-},{"react":333}],371:[function(require,module,exports){
+},{"react":333}],372:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -55177,7 +55211,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":333}],372:[function(require,module,exports){
+},{"react":333}],373:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55190,7 +55224,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],373:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55297,7 +55331,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],374:[function(require,module,exports){
+},{}],375:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

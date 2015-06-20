@@ -35,7 +35,8 @@ let Music = React.createClass({
       ],
       activeInstrument: 0,
       volume: 0.5,
-      recording: []
+      recording: [],
+      tracks: []
     };
   },
 
@@ -48,18 +49,18 @@ let Music = React.createClass({
             <InstrumentList instruments={this.state.instruments}
                             activeInstrument={this.state.activeInstrument}
                             onUpdate={this.onUpdate}/>
-
-            <VolumeControl gain="0.5"
-                           onVolumeChange={this.onVolumeChange}/>
           </div>
 
           <div className="main">
-            <TrackList recording={this.state.recording}/>
+            <TrackList tracks={this.state.tracks}
+                       recording={this.state.recording}/>
           </div>
         </div>
 
         <div className="bottom">
           <div className="controls">
+            <VolumeControl gain="0.5"
+                           onVolumeChange={this.onVolumeChange}/>
             <Keyboard instrument={instrument}
                       volume={this.state.volume}
                       onRecordingUpdate={this.onRecordingUpdate}/>
