@@ -54531,7 +54531,7 @@ var DrawSurface = React.createClass({
 
     var grid = this.state.grid;
     this.drawBackground();
-    drawCtx.clearRect(0, 0, this.state.width, this.state.height);
+    drawCtx.clearRect(0, 0, this.state.actualWidth, this.state.actualHeight);
 
     for (var x = 0; x < this.state.width; x++) {
       for (var y = 0; y < this.state.height; y++) {
