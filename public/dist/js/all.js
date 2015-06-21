@@ -54432,14 +54432,6 @@ var DrawSurface = React.createClass({
     var drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
     var overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
 
-    var bgTileSize = this.props.bgTileSize;
-    bgCtx.scale(bgTileSize, bgTileSize);
-
-    var tileWidth = this.state.tileWidth;
-    var tileHeight = this.state.tileHeight;
-    drawCtx.scale(tileWidth, tileHeight);
-    overlayCtx.scale(tileWidth, tileHeight);
-
     this.setState({
       bgCtx: bgCtx,
       drawCtx: drawCtx,
@@ -54537,11 +54529,6 @@ var DrawSurface = React.createClass({
     var overlayCtx = this.state.overlayCtx;
     var zoom = this.state.zoom;
 
-    var scaleWidth = this.state.tileWidth;
-    var scaleHeight = this.state.tileHeight;
-    drawCtx.scale(scaleWidth, scaleHeight);
-    overlayCtx.scale(scaleWidth, scaleHeight);
-
     var grid = this.state.grid;
     this.drawBackground();
     drawCtx.clearRect(0, 0, this.state.width, this.state.height);
@@ -54550,8 +54537,15 @@ var DrawSurface = React.createClass({
       for (var y = 0; y < this.state.height; y++) {
         var pixel = grid[x][y];
         if (pixel.color) {
+          var _getFillParams = this.getFillParams(x, y);
+
+          var fillX = _getFillParams.fillX;
+          var fillY = _getFillParams.fillY;
+          var fillWidth = _getFillParams.fillWidth;
+          var fillHeight = _getFillParams.fillHeight;
+
           drawCtx.fillStyle = pixel.color;
-          drawCtx.fillRect(x, y, 1, 1);
+          drawCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
         }
       }
     }
@@ -54576,8 +54570,15 @@ var DrawSurface = React.createClass({
     var currentPixel = grid[x][y];
 
     if (!currentPixel.highlighted) {
+      var _getFillParams2 = this.getFillParams(x, y);
+
+      var fillX = _getFillParams2.fillX;
+      var fillY = _getFillParams2.fillY;
+      var fillWidth = _getFillParams2.fillWidth;
+      var fillHeight = _getFillParams2.fillHeight;
+
       overlayCtx.fillStyle = this.props.overlayFill;
-      overlayCtx.fillRect(x, y, 1, 1);
+      overlayCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
       currentPixel.highlighted = true;
     }
 
@@ -54597,13 +54598,25 @@ var DrawSurface = React.createClass({
     var overlayCtx = this.state.overlayCtx;
     var grid = this.state.grid;
 
-    overlayCtx.clearRect(0, 0, this.state.width, this.state.height);
-    overlayCtx.fillStyle = this.props.overlayFill;
-    overlayCtx.fillRect(currentPixel.x, currentPixel.y, 1, 1);
+    var clearWidth = this.state.width * this.state.tileWidth;
+    var clearHeight = this.state.height * this.state.tileHeight;
+    overlayCtx.clearRect(0, 0, this.state.actualWidth, this.state.actualHeight);
+    var x = currentPixel.x;
+    var y = currentPixel.y;
 
-    for (var x = 0; x < this.state.width; x++) {
-      for (var y = 0; y < this.state.height; y++) {
-        var pixel = grid[x][y];
+    var _getFillParams3 = this.getFillParams(x, y);
+
+    var fillX = _getFillParams3.fillX;
+    var fillY = _getFillParams3.fillY;
+    var fillWidth = _getFillParams3.fillWidth;
+    var fillHeight = _getFillParams3.fillHeight;
+
+    overlayCtx.fillStyle = this.props.overlayFill;
+    overlayCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
+
+    for (var _x = 0; _x < this.state.width; _x++) {
+      for (var _y = 0; _y < this.state.height; _y++) {
+        var pixel = grid[_x][_y];
         if (pixel === currentPixel) {
           continue;
         }
@@ -54627,6 +54640,13 @@ var DrawSurface = React.createClass({
     var grid = this.state.grid;
     var drawCtx = this.state.drawCtx;
 
+    var _getFillParams4 = this.getFillParams(x, y);
+
+    var fillX = _getFillParams4.fillX;
+    var fillY = _getFillParams4.fillY;
+    var fillWidth = _getFillParams4.fillWidth;
+    var fillHeight = _getFillParams4.fillHeight;
+
     var color = this.props.primaryColor;
     var button = ev.which || ev.button;
     if (button === 2) {
@@ -54637,7 +54657,7 @@ var DrawSurface = React.createClass({
       case 'Pencil':
         grid[x][y].color = color;
         drawCtx.fillStyle = color;
-        drawCtx.fillRect(x, y, 1, 1);
+        drawCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
 
         this.setState({
           grid: grid,
@@ -54651,7 +54671,7 @@ var DrawSurface = React.createClass({
         var originalColor = grid[x][y].color;
         grid[x][y].color = color;
         drawCtx.fillStyle = color;
-        drawCtx.fillRect(x, y, 1, 1);
+        drawCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
 
         var seen = {};
         (function drawNeighbors(x, y) {
@@ -54666,21 +54686,28 @@ var DrawSurface = React.createClass({
 
           for (var i = 0; i < neighbors.length; i++) {
             var _neighbors$i = neighbors[i];
-            var _x = _neighbors$i.x;
-            var _y = _neighbors$i.y;
+            var _x2 = _neighbors$i.x;
+            var _y2 = _neighbors$i.y;
 
-            if (_x < 0 || _y < 0 || _x >= grid.length || _y >= grid[0].length) {
+            if (_x2 < 0 || _y2 < 0 || _x2 >= grid.length || _y2 >= grid[0].length) {
               continue;
             }
 
-            var px = grid[_x][_y];
+            var px = grid[_x2][_y2];
             if (px.color !== originalColor) {
               continue;
             }
 
-            grid[_x][_y].color = color;
-            drawCtx.fillRect(_x, _y, 1, 1);
-            drawNeighbors(_x, _y);
+            var _getFillParams5 = this.getFillParams(_x2, _y2);
+
+            var _fillX = _getFillParams5.fillX;
+            var _fillY = _getFillParams5.fillY;
+            var _fillWidth = _getFillParams5.fillWidth;
+            var _fillHeight = _getFillParams5.fillHeight;
+
+            grid[_x2][_y2].color = color;
+            drawCtx.fillRect(_fillX, _fillY, _fillWidth, _fillHeight);
+            drawNeighbors(_x2, _y2);
           }
         })(x, y);
 
@@ -54801,9 +54828,10 @@ var DrawSurface = React.createClass({
     for (var x = 0; x < numTilesH; x++) {
       for (var y = 0; y < numTilesV; y++) {
         var fill = (x + y) % 2 == 0 ? '#999' : '#777';
-
+        var fillX = x * bgTileSize;
+        var fillY = y * bgTileSize;
         bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, 1, 1);
+        bgCtx.fillRect(fillX, fillY, bgTileSize, bgTileSize);
       }
     }
 
@@ -54855,6 +54883,20 @@ var DrawSurface = React.createClass({
     var tileY = Math.floor(y / this.state.tileHeight);
 
     return { x: tileX, y: tileY };
+  },
+
+  getFillParams: function getFillParams(x, y) {
+    var fillWidth = this.state.tileWidth;
+    var fillHeight = this.state.tileHeight;
+    var fillX = x * fillWidth;
+    var fillY = y * fillHeight;
+
+    return {
+      fillX: fillX,
+      fillY: fillY,
+      fillWidth: fillWidth,
+      fillHeight: fillHeight
+    };
   }
 });
 

@@ -52,14 +52,6 @@ let DrawSurface = React.createClass({
     let drawCtx = this.refs.drawCanvas.getDOMNode().getContext('2d');
     let overlayCtx = this.refs.overlayCanvas.getDOMNode().getContext('2d');
 
-    let bgTileSize = this.props.bgTileSize;
-    bgCtx.scale(bgTileSize, bgTileSize);
-
-    let tileWidth = this.state.tileWidth;
-    let tileHeight = this.state.tileHeight;
-    drawCtx.scale(tileWidth, tileHeight);
-    overlayCtx.scale(tileWidth, tileHeight);
-
     this.setState({
       bgCtx: bgCtx,
       drawCtx: drawCtx,
@@ -155,11 +147,6 @@ let DrawSurface = React.createClass({
     let overlayCtx = this.state.overlayCtx;
     let zoom = this.state.zoom;
 
-    let scaleWidth = this.state.tileWidth;
-    let scaleHeight = this.state.tileHeight;
-    drawCtx.scale(scaleWidth, scaleHeight);
-    overlayCtx.scale(scaleWidth, scaleHeight);
-
     let grid = this.state.grid;
     this.drawBackground();
     drawCtx.clearRect(0, 0, this.state.width, this.state.height);
@@ -168,8 +155,9 @@ let DrawSurface = React.createClass({
       for (let y = 0; y < this.state.height; y++) {
         let pixel = grid[x][y];
         if (pixel.color) {
+          let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
           drawCtx.fillStyle = pixel.color;
-          drawCtx.fillRect(x, y, 1, 1);
+          drawCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
         }
       }
     }
@@ -189,8 +177,9 @@ let DrawSurface = React.createClass({
     let currentPixel = grid[x][y];
 
     if (!currentPixel.highlighted) {
+      let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
       overlayCtx.fillStyle = this.props.overlayFill;
-      overlayCtx.fillRect(x, y, 1, 1);
+      overlayCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
       currentPixel.highlighted = true;
     }
 
@@ -210,9 +199,14 @@ let DrawSurface = React.createClass({
     let overlayCtx = this.state.overlayCtx;
     let grid = this.state.grid;
 
-    overlayCtx.clearRect(0, 0, this.state.width, this.state.height);
+    let clearWidth = this.state.width * this.state.tileWidth;
+    let clearHeight = this.state.height * this.state.tileHeight;
+    overlayCtx.clearRect(0, 0, this.state.actualWidth, this.state.actualHeight);
+    let x = currentPixel.x;
+    let y = currentPixel.y;
+    let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
     overlayCtx.fillStyle = this.props.overlayFill;
-    overlayCtx.fillRect(currentPixel.x, currentPixel.y, 1, 1);
+    overlayCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
 
     for (let x = 0; x < this.state.width; x++) {
       for (let y = 0; y < this.state.height; y++) {
@@ -236,6 +230,7 @@ let DrawSurface = React.createClass({
     let grid = this.state.grid;
     let drawCtx = this.state.drawCtx;
 
+    let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
     let color = this.props.primaryColor;
     let button = ev.which || ev.button;
     if (button === 2) {
@@ -246,7 +241,7 @@ let DrawSurface = React.createClass({
       case 'Pencil':
         grid[x][y].color = color;
         drawCtx.fillStyle = color;
-        drawCtx.fillRect(x, y, 1, 1);
+        drawCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
 
         this.setState({
           grid: grid,
@@ -260,7 +255,7 @@ let DrawSurface = React.createClass({
         let originalColor = grid[x][y].color;
         grid[x][y].color = color;
         drawCtx.fillStyle = color;
-        drawCtx.fillRect(x, y, 1, 1);
+        drawCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
 
         var seen = {};
         (function drawNeighbors(x, y) {
@@ -290,8 +285,9 @@ let DrawSurface = React.createClass({
               continue;
             }
 
+            let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
             grid[x][y].color = color;
-            drawCtx.fillRect(x, y, 1, 1);
+            drawCtx.fillRect(fillX, fillY, fillWidth, fillHeight);
             drawNeighbors(x, y);
           }
         })(x, y);
@@ -416,9 +412,10 @@ let DrawSurface = React.createClass({
     for (let x = 0; x < numTilesH; x++) {
       for (let y = 0; y < numTilesV; y++) {
         let fill = ((x + y) % 2 == 0) ? "#999" : "#777";
-
+        let fillX = x * bgTileSize;
+        let fillY = y * bgTileSize;
         bgCtx.fillStyle = fill;
-        bgCtx.fillRect(x, y, 1, 1);
+        bgCtx.fillRect(fillX, fillY, bgTileSize, bgTileSize);
       }
     }
 
@@ -471,6 +468,20 @@ let DrawSurface = React.createClass({
 
     return { x: tileX, y: tileY };
   },
+
+  getFillParams: function (x, y) {
+    let fillWidth = this.state.tileWidth;
+    let fillHeight = this.state.tileHeight;
+    let fillX = x * fillWidth;
+    let fillY = y * fillHeight;
+
+    return {
+      fillX: fillX,
+      fillY: fillY,
+      fillWidth: fillWidth,
+      fillHeight: fillHeight
+    };
+  }
 });
 
 export default DrawSurface;
