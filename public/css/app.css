@@ -117,3 +117,13 @@ img.pixel {
   font-face: bold;
   font-size: 14px;
 }
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}

@@ -98,6 +98,14 @@
   display: flex;
 }
 
+#draw input.title {
+  width: 90%;
+  padding: 4px 8px;
+  margin: 4px 15px;
+  font-size: 18px;
+  background: #777;
+}
+
 #draw .palette-manager .icon {
   width: 12px;
   height: 12px;

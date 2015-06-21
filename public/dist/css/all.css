@@ -127,6 +127,16 @@ img.pixel {
   font-face: bold;
   font-size: 14px;
 }
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
 #draw {
   display: flex;
   flex-direction: row;
@@ -225,6 +235,14 @@ img.pixel {
 
 .render-container {
   display: flex;
+}
+
+#draw input.title {
+  width: 90%;
+  padding: 4px 8px;
+  margin: 4px 15px;
+  font-size: 18px;
+  background: #777;
 }
 
 #draw .palette-manager .icon {

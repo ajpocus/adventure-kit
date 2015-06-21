@@ -96,41 +96,44 @@ let DrawSurface = React.createClass({
 
     return (
       <div className="render-container">
-        <div className="title">
-          <input name="title"
-                 ref="title"
-                 value={this.state.title}
-                 onChange={this.onTitleChange}/>
-        </div>
+        <div className="render-column">
+          <div className="title-container">
+            <input name="title"
+                   className="title"
+                   ref="title"
+                   value={this.state.title}
+                   onChange={this.onTitleChange}/>
+          </div>
 
-        <div id="render">
-          <div className="background">
-            <div className="surface"
-                 style={surfaceStyle}
-                 onMouseMove={this.highlightPixel}
-                 onMouseOut={this.clearHighlight}
-                 onMouseDown={this.draw}
-                 onContextMenu={this.draw}
-                 onMouseUp={this.setMouseUp}
-                 onWheel={this.onZoom}>
-              <canvas id="bg-canvas"
-                      className="draw"
-                      ref="bgCanvas"
-                      width={this.state.actualWidth}
-                      height={this.state.actualHeight}>
-              </canvas>
-              <canvas id="draw-canvas"
-                      className="draw"
-                      ref="drawCanvas"
-                      width={this.state.actualWidth}
-                      height={this.state.actualHeight}>
-              </canvas>
-              <canvas id="overlay-canvas"
-                      className="draw"
-                      ref="overlayCanvas"
-                      width={this.state.actualWidth}
-                      height={this.state.actualHeight}>
-              </canvas>
+          <div id="render">
+            <div className="background">
+              <div className="surface"
+                   style={surfaceStyle}
+                   onMouseMove={this.highlightPixel}
+                   onMouseOut={this.clearHighlight}
+                   onMouseDown={this.draw}
+                   onContextMenu={this.draw}
+                   onMouseUp={this.setMouseUp}
+                   onWheel={this.onZoom}>
+                <canvas id="bg-canvas"
+                        className="draw"
+                        ref="bgCanvas"
+                        width={this.state.actualWidth}
+                        height={this.state.actualHeight}>
+                </canvas>
+                <canvas id="draw-canvas"
+                        className="draw"
+                        ref="drawCanvas"
+                        width={this.state.actualWidth}
+                        height={this.state.actualHeight}>
+                </canvas>
+                <canvas id="overlay-canvas"
+                        className="draw"
+                        ref="overlayCanvas"
+                        width={this.state.actualWidth}
+                        height={this.state.actualHeight}>
+                </canvas>
+              </div>
             </div>
           </div>
         </div>
