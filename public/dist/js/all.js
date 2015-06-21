@@ -54764,7 +54764,7 @@ var DrawSurface = React.createClass({
     var tileHeight = this.state.tileHeight;
     var actualWidth = this.state.actualWidth;
     var actualHeight = this.state.actualHeight;
-    var zoom = this.props.zoom;
+    var zoom = this.state.zoom;
 
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
