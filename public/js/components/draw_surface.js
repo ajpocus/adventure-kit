@@ -42,7 +42,8 @@ let DrawSurface = React.createClass({
       totalHeight: 1024,
       bgTileSize: 8,
       minZoom: 0.125,
-      maxZoom: 4
+      maxZoom: 4,
+      overlayFill: 'rgba(255, 255, 255, 0.2)'
     };
   },
 
@@ -190,7 +191,7 @@ let DrawSurface = React.createClass({
     let currentPixel = grid[x][y];
 
     if (!currentPixel.highlighted) {
-      overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      overlayCtx.fillStyle = this.props.overlayFill;
       overlayCtx.fillRect(x, y, 1, 1);
       currentPixel.highlighted = true;
     }
@@ -212,7 +213,7 @@ let DrawSurface = React.createClass({
     let grid = this.state.grid;
 
     overlayCtx.clearRect(0, 0, this.state.width, this.state.height);
-    overlayCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    overlayCtx.fillStyle = this.props.overlayFill;
     overlayCtx.fillRect(currentPixel.x, currentPixel.y, 1, 1);
 
     for (let x = 0; x < this.state.width; x++) {
