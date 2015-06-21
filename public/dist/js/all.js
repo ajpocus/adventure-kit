@@ -54455,8 +54455,9 @@ var DrawSurface = React.createClass({
     }
 
     if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
-      this.updateGrid();
-      this.redraw();
+      this.updateGrid(function () {
+        this.redraw();
+      });
     }
   },
 
@@ -54535,9 +54536,6 @@ var DrawSurface = React.createClass({
     var drawCtx = this.state.drawCtx;
     var overlayCtx = this.state.overlayCtx;
     var zoom = this.state.zoom;
-
-    var bgScale = this.props.bgTileSize;
-    bgCtx.scale(bgScale, bgScale);
 
     var scaleWidth = this.state.tileWidth;
     var scaleHeight = this.state.tileHeight;
@@ -54826,7 +54824,7 @@ var DrawSurface = React.createClass({
     this.setState({ grid: grid });
   },
 
-  updateGrid: function updateGrid() {
+  updateGrid: function updateGrid(callback) {
     var width = this.state.width;
     var height = this.state.height;
     var oldGrid = this.state.grid;
@@ -54843,7 +54841,7 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: newGrid });
+    this.setState({ grid: newGrid }, callback);
   },
 
   getTileCoordinates: function getTileCoordinates(ev) {
