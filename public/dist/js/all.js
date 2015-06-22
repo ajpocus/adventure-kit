@@ -56169,7 +56169,18 @@ var Keyboard = React.createClass({
   handleKeyDown: function handleKeyDown(ev) {
     var key = this.keyCodeToChar(ev.keyCode);
 
-    if (!this.state.isPlaying[key]) {
+    if (this.state.isPlaying[key]) {
+      var indices = this.state.indices;
+      var idx = indices[key];
+      var recording = this.state.recording;
+      recording[idx].endTime = Number(new Date());
+
+      this.setState({
+        recording: recording
+      }, function () {
+        this.props.onRecordingUpdate(this.state.recording);
+      });
+    } else {
       var ctx = this.state.ctx;
       var oscillators = this.state.oscillators;
       var isPlaying = this.state.isPlaying;
@@ -56205,9 +56216,11 @@ var Keyboard = React.createClass({
       isPlaying[key] = true;
 
       var recording = this.state.recording;
+      var now = Number(new Date());
       recording.push({
         midi: midi,
-        startTime: Number(new Date())
+        startTime: now,
+        endTime: now + 1
       });
 
       var indices = this.state.indices;
@@ -56817,13 +56830,12 @@ var Track = React.createClass({
       ctx: ctx
     }, function () {
       this.drawMeasureMarkers();
-      this.draw();
+      requestAnimationFrame(this.draw);
     });
   },
 
   componentDidUpdate: function componentDidUpdate() {
-    this.draw();
-    console.log(this.props.data);
+    requestAnimationFrame(this.draw);
   },
 
   render: function render() {
@@ -56953,7 +56965,8 @@ var TrackList = React.createClass({
   render: function render() {
     var trackViews = [];
     for (var i = 0; i < this.props.trackCount; i++) {
-      trackViews.push(React.createElement(_track2['default'], { data: this.props.tracks[i] }));
+      trackViews.push(React.createElement(_track2['default'], { data: this.props.tracks[i],
+        key: i }));
     }
 
     return React.createElement(

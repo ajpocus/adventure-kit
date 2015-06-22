@@ -200,7 +200,18 @@ let Keyboard = React.createClass({
   handleKeyDown: function (ev) {
     let key = this.keyCodeToChar(ev.keyCode);
 
-    if (!this.state.isPlaying[key]) {
+    if (this.state.isPlaying[key]) {
+      let indices = this.state.indices;
+      let idx = indices[key];
+      let recording = this.state.recording;
+      recording[idx].endTime = Number(new Date());
+
+      this.setState({
+        recording: recording
+      }, function () {
+        this.props.onRecordingUpdate(this.state.recording);
+      });
+    } else {
       let ctx = this.state.ctx;
       let oscillators = this.state.oscillators;
       let isPlaying = this.state.isPlaying;
@@ -236,9 +247,11 @@ let Keyboard = React.createClass({
       isPlaying[key] = true;
 
       let recording = this.state.recording;
+      let now = Number(new Date());
       recording.push({
         midi: midi,
-        startTime: Number(new Date())
+        startTime: now,
+        endTime: now + 1
       });
 
       let indices = this.state.indices;

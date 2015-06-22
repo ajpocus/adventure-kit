@@ -19,13 +19,12 @@ let Track = React.createClass({
       ctx: ctx
     }, function () {
       this.drawMeasureMarkers();
-      this.draw();
+      requestAnimationFrame(this.draw);
     });
   },
 
   componentDidUpdate: function () {
-    this.draw();
-    console.log(this.props.data);
+    requestAnimationFrame(this.draw);
   },
 
   render: function () {

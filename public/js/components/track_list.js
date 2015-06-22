@@ -13,7 +13,8 @@ let TrackList = React.createClass({
     let trackViews = [];
     for (let i = 0; i < this.props.trackCount; i++) {
       trackViews.push(
-        <Track data={this.props.tracks[i]}/>
+        <Track data={this.props.tracks[i]}
+               key={i}/>
       );
     }
 
