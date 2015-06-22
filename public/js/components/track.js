@@ -19,6 +19,7 @@ let Track = React.createClass({
       ctx: ctx
     }, function () {
       this.drawMeasureMarkers();
+      this.draw();
     });
   },
 
