@@ -56885,9 +56885,10 @@ var Track = React.createClass({
       startBound = endBound - this.props.msPerWidth;
     }
 
-    ctx.fillStyle = '#ffcc00';
-    var rectHeight = 10;
     ctx.clearRect(0, 0, this.props.canvasWidth, this.props.canvasHeight);
+    this.drawMeasureMarkers();
+    ctx.fillStyle = '#ffcc00';
+
     for (var i = 0; i < data.length; i++) {
       var note = data[i];
 

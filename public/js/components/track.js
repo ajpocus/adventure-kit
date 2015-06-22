@@ -75,9 +75,10 @@ let Track = React.createClass({
       startBound = endBound - this.props.msPerWidth;
     }
 
-    ctx.fillStyle = "#ffcc00";
-    let rectHeight = 10;
     ctx.clearRect(0, 0, this.props.canvasWidth, this.props.canvasHeight)
+    this.drawMeasureMarkers();
+    ctx.fillStyle = "#ffcc00";
+
     for (let i = 0; i < data.length; i++) {
       let note = data[i];
       let { x, y, width, height } = this.getNoteParams(note, startBound, endBound);
