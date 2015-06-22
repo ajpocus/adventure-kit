@@ -25,6 +25,7 @@ let Track = React.createClass({
 
   componentDidUpdate: function () {
     this.draw();
+    console.log(this.props.data);
   },
 
   render: function () {

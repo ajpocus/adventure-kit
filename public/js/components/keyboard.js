@@ -16,7 +16,8 @@ let Keyboard = React.createClass({
       ctx: new window.AudioContext(),
       oscillators: {},
       octaveShift: 2,
-      recording: []
+      recording: [],
+      indices: {}
     };
   },
 
@@ -240,11 +241,15 @@ let Keyboard = React.createClass({
         startTime: Number(new Date())
       });
 
+      let indices = this.state.indices;
+      indices[key] = recording.length - 1;
+
       this.setState({
         ctx: ctx,
         oscillators: oscillators,
         isPlaying: isPlaying,
-        recording: recording
+        recording: recording,
+        indices: indices
       }, function () {
         this.props.onRecordingUpdate(this.state.recording);
       });
@@ -266,14 +271,17 @@ let Keyboard = React.createClass({
       delete oscillators[key];
       delete isPlaying[key];
 
+      let indices = this.state.indices;
       let recording = this.state.recording;
-      let lastIdx = recording.length - 1;
-      recording[lastIdx].endTime = Number(new Date());
+      let idx = this.state.indices[key];
+      recording[idx].endTime = Number(new Date());
+      delete indices[key];
 
       this.setState({
         oscillators: oscillators,
         isPlaying: isPlaying,
-        recording: recording
+        recording: recording,
+        indices: indices
       }, function () {
         this.props.onRecordingUpdate(this.state.recording);
       });
