@@ -3,11 +3,27 @@ let tinycolor = require('tinycolor2');
 
 let Track = React.createClass({
   getDefaultProps: function () {
+    let bpm = 120;
+    let numMeasures = 4;
+    let beatsPerMeasure = 4;
+
+    let beatsPerSecond = bpm / 60;
+    let msPerBeat = 1000 / beatsPerSecond;
+    let beatsPerWidth = beatsPerMeasure * numMeasures;
+    let msPerWidth = msPerBeat * beatsPerWidth;
+
     return {
       noteHeight: 8,
       noteColor: '#ffcc00',
       canvasWidth: 850,
-      canvasHeight: 96
+      canvasHeight: 96,
+      bpm,
+      numMeasures,
+      beatsPerMeasure,
+      beatsPerSecond,
+      msPerBeat,
+      beatsPerWidth,
+      msPerWidth
     };
   },
 
@@ -47,15 +63,24 @@ let Track = React.createClass({
       return;
     }
 
-    let timeZero = data[0].startTime;
+    let startBound = data[0].startTime;
+    let lastIdx = data.length - 1;
+    let endBound = data[lastIdx].endTime;
+    let boundTime = endBound - startBound;
+
+    if (boundTime < this.props.msPerWidth) {
+      endBound = startBound + this.props.msPerWidth;
+    } else {
+      endBound = Number(new Date());
+      startBound = endBound - this.props.msPerWidth;
+    }
 
     ctx.fillStyle = "#ffcc00";
     let rectHeight = 10;
-
+    ctx.clearRect(0, 0, this.props.canvasWidth, this.props.canvasHeight)
     for (let i = 0; i < data.length; i++) {
       let note = data[i];
-      let { x, y, width, height } = this.getNoteParams(note, timeZero);
-
+      let { x, y, width, height } = this.getNoteParams(note, startBound, endBound);
       ctx.fillRect(x, y, width, height);
     }
 
@@ -63,22 +88,13 @@ let Track = React.createClass({
   },
 
   getNoteParams: function (note, startBound, endBound) {
-    let bpm = 120;
-    let numMeasures = 4;
-    let beatsPerMeasure = 4;
-
-    let beatsPerSecond = bpm / 60;
-    let msPerBeat = 1000 / beatsPerSecond;
-    let beatsPerWidth = beatsPerMeasure * numMeasures;
-    let msPerWidth = msPerBeat * beatsPerWidth;
-
     if (!startBound && !endBound) {
       endBound = Number(new Date());
-      startBound = endBound - msPerWidth;
+      startBound = endBound - this.props.msPerWidth;
     } else if (!startBound) {
-      startBound = endBound - msPerWidth;
+      startBound = endBound - this.props.msPerWidth;
     } else if (!endBound) {
-      endBound = startBound + msPerWidth;
+      endBound = startBound + this.props.msPerWidth;
     }
 
     if (!note.endTime) {
@@ -91,11 +107,11 @@ let Track = React.createClass({
     let factor = midi % 12;
 
     let noteMs = note.endTime - note.startTime;
-    let noteBeats = noteMs / msPerBeat;
+    let noteBeats = noteMs / this.props.msPerBeat;
 
     let height = this.props.noteHeight;
-    let width = (noteBeats / beatsPerWidth) * this.props.canvasWidth;
-    let x = (startTime / msPerWidth) * this.props.canvasWidth;
+    let width = (noteBeats / this.props.beatsPerWidth) * this.props.canvasWidth;
+    let x = (startTime / this.props.msPerWidth) * this.props.canvasWidth;
     let y = this.props.canvasHeight - (factor * height);
 
     return { x, y, width, height };
