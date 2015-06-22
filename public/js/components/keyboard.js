@@ -268,7 +268,7 @@ let Keyboard = React.createClass({
 
       let recording = this.state.recording;
       let lastIdx = recording.length - 1;
-      recording[lastIdx].stopTime = Number(new Date());
+      recording[lastIdx].endTime = Number(new Date());
 
       this.setState({
         oscillators: oscillators,

@@ -56237,7 +56237,7 @@ var Keyboard = React.createClass({
 
       var recording = this.state.recording;
       var lastIdx = recording.length - 1;
-      recording[lastIdx].stopTime = Number(new Date());
+      recording[lastIdx].endTime = Number(new Date());
 
       this.setState({
         oscillators: oscillators,
@@ -56787,9 +56787,19 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 var React = require('react');
+var tinycolor = require('tinycolor2');
 
 var Track = React.createClass({
   displayName: 'Track',
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      noteHeight: 8,
+      noteColor: '#ffcc00',
+      canvasWidth: 850,
+      canvasHeight: 96
+    };
+  },
 
   componentDidMount: function componentDidMount() {
     var canvas = this.refs.canvas.getDOMNode();
@@ -56797,6 +56807,8 @@ var Track = React.createClass({
 
     this.setState({
       ctx: ctx
+    }, function () {
+      this.drawMeasureMarkers();
     });
   },
 
@@ -56810,8 +56822,8 @@ var Track = React.createClass({
       { className: 'track' },
       React.createElement('canvas', { className: 'track-canvas',
         ref: 'canvas',
-        width: '850',
-        height: '80' })
+        width: this.props.canvasWidth,
+        height: this.props.canvasHeight })
     );
   },
 
@@ -56830,25 +56842,81 @@ var Track = React.createClass({
 
     for (var i = 0; i < data.length; i++) {
       var note = data[i];
-      if (!note.endTime) {
-        note.endTime = Number(new Date());
-      }
 
-      var x = note.startTime - timeZero;
-      var y = 100 - note.midi;
-      var width = (note.endTime - note.startTime) * 10;
+      var _getNoteParams = this.getNoteParams(note, timeZero);
 
-      console.log(x, y, width);
+      var x = _getNoteParams.x;
+      var y = _getNoteParams.y;
+      var width = _getNoteParams.width;
+      var height = _getNoteParams.height;
 
-      ctx.fillRect(x, y, width, rectHeight);
+      ctx.fillRect(x, y, width, height);
     }
+
+    requestAnimationFrame(this.draw);
+  },
+
+  getNoteParams: function getNoteParams(note, startBound, endBound) {
+    var bpm = 120;
+    var numMeasures = 4;
+    var beatsPerMeasure = 4;
+
+    var beatsPerSecond = bpm / 60;
+    var msPerBeat = 1000 / beatsPerSecond;
+    var beatsPerWidth = beatsPerMeasure * numMeasures;
+    var msPerWidth = msPerBeat * beatsPerWidth;
+
+    if (!startBound && !endBound) {
+      endBound = Number(new Date());
+      startBound = endBound - msPerWidth;
+    } else if (!startBound) {
+      startBound = endBound - msPerWidth;
+    } else if (!endBound) {
+      endBound = startBound + msPerWidth;
+    }
+
+    if (!note.endTime) {
+      note.endTime = Number(new Date());
+    }
+
+    var startTime = note.startTime - startBound;
+    var endTime = note.endTime - startBound;
+    var midi = note.midi;
+    var factor = midi % 12;
+
+    var noteMs = note.endTime - note.startTime;
+    var noteBeats = noteMs / msPerBeat;
+
+    var height = this.props.noteHeight;
+    var width = noteMs / msPerWidth * this.props.canvasWidth;
+    var x = startTime / msPerWidth * this.props.canvasWidth;
+    var y = this.props.canvasHeight - factor * height;
+
+    return { x: x, y: y, width: width, height: height };
+  },
+
+  drawMeasureMarkers: function drawMeasureMarkers() {
+    var ctx = this.state.ctx;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+
+    var halfX = this.props.canvasWidth / 2;
+    var y = 0;
+    var width = 1;
+    var height = this.props.canvasHeight;
+    ctx.fillRect(halfX, y, width, height);
+
+    var quarterX = this.props.canvasWidth / 4;
+    ctx.fillRect(quarterX, y, width, height);
+
+    var threeX = this.props.canvasWidth * 3 / 4;
+    ctx.fillRect(threeX, y, width, height);
   }
 });
 
 exports['default'] = Track;
 module.exports = exports['default'];
 
-},{"react":342}],380:[function(require,module,exports){
+},{"react":342,"tinycolor2":358}],380:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
