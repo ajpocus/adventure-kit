@@ -56888,7 +56888,7 @@ var Track = React.createClass({
     var noteBeats = noteMs / msPerBeat;
 
     var height = this.props.noteHeight;
-    var width = noteMs / msPerWidth * this.props.canvasWidth;
+    var width = noteBeats / beatsPerWidth * this.props.canvasWidth;
     var x = startTime / msPerWidth * this.props.canvasWidth;
     var y = this.props.canvasHeight - factor * height;
 
