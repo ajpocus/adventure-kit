@@ -252,7 +252,9 @@ let DrawSurface = React.createClass({
           if (seen[x] && seen[x][y]) {
             return;
           } else {
-            seen[x] || (seen[x] = {});
+            if (!seen[x]) {
+              seen[x] = {};
+            }
             seen[x][y] = true;
           }
 
@@ -264,19 +266,19 @@ let DrawSurface = React.createClass({
           ];
 
           for (let i = 0; i < neighbors.length; i++) {
-            let {x, y} = neighbors[i];
+            let {nx, ny} = neighbors[i];
 
-            if (x < 0 || y < 0 || x >= grid.length || y >= grid[0].length) {
+            if (nx < 0 || ny < 0 || nx >= grid.length || ny >= grid[0].length) {
               continue;
             }
 
-            let px = grid[x][y];
+            let px = grid[nx][ny];
             if (px.color !== originalColor) {
               continue;
             }
 
-            grid[x][y].color = color;
-            drawNeighbors(x, y);
+            grid[nx][ny].color = color;
+            drawNeighbors(nx, ny);
           }
         })(x, y);
 
@@ -399,7 +401,7 @@ let DrawSurface = React.createClass({
 
     for (let x = 0; x < numTilesH; x++) {
       for (let y = 0; y < numTilesV; y++) {
-        let fill = ((x + y) % 2 == 0) ? 0x999999 : 0x777777;
+        let fill = ((x + y) % 2 === 0) ? 0x999999 : 0x777777;
         let fillX = x * bgTileSize;
         let fillY = y * bgTileSize;
 

@@ -80808,7 +80808,9 @@ var DrawSurface = React.createClass({
           if (seen[x] && seen[x][y]) {
             return;
           } else {
-            seen[x] || (seen[x] = {});
+            if (!seen[x]) {
+              seen[x] = {};
+            }
             seen[x][y] = true;
           }
 
@@ -80816,20 +80818,20 @@ var DrawSurface = React.createClass({
 
           for (var i = 0; i < neighbors.length; i++) {
             var _neighbors$i = neighbors[i];
-            var _x = _neighbors$i.x;
-            var _y = _neighbors$i.y;
+            var nx = _neighbors$i.nx;
+            var ny = _neighbors$i.ny;
 
-            if (_x < 0 || _y < 0 || _x >= grid.length || _y >= grid[0].length) {
+            if (nx < 0 || ny < 0 || nx >= grid.length || ny >= grid[0].length) {
               continue;
             }
 
-            var px = grid[_x][_y];
+            var px = grid[nx][ny];
             if (px.color !== originalColor) {
               continue;
             }
 
-            grid[_x][_y].color = color;
-            drawNeighbors(_x, _y);
+            grid[nx][ny].color = color;
+            drawNeighbors(nx, ny);
           }
         })(x, y);
 
@@ -80949,7 +80951,7 @@ var DrawSurface = React.createClass({
 
     for (var x = 0; x < numTilesH; x++) {
       for (var y = 0; y < numTilesV; y++) {
-        var fill = (x + y) % 2 == 0 ? 10066329 : 7829367;
+        var fill = (x + y) % 2 === 0 ? 10066329 : 7829367;
         var fillX = x * bgTileSize;
         var fillY = y * bgTileSize;
 
