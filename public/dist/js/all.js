@@ -80663,10 +80663,12 @@ var DrawSurface = React.createClass({
   redraw: function redraw() {
     var drawGfx = this.state.drawGfx;
     var zoom = this.state.zoom;
-
+    var renderer = this.state.renderer;
     var grid = this.state.grid;
     this.drawBackground();
 
+    renderer.width = this.state.actualWidth;
+    renderer.height = this.state.actualHeight;
     drawGfx.clear();
 
     for (var x = 0; x < this.state.width; x++) {
@@ -80686,7 +80688,7 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ drawGfx: drawGfx });
+    this.setState({ drawGfx: drawGfx, renderer: renderer });
   },
 
   highlightPixel: function highlightPixel(ev) {
@@ -80726,7 +80728,9 @@ var DrawSurface = React.createClass({
     }
   },
 
-  clearHighlight: function clearHighlight(ev, currentPixel) {
+  clearHighlight: function clearHighlight(ev) {
+    var currentPixel = arguments[1] === undefined ? null : arguments[1];
+
     var overlayGfx = this.state.overlayGfx;
     var grid = this.state.grid;
 
@@ -80820,29 +80824,29 @@ var DrawSurface = React.createClass({
 
           for (var i = 0; i < neighbors.length; i++) {
             var _neighbors$i = neighbors[i];
-            var _x = _neighbors$i.x;
+            var _x2 = _neighbors$i.x;
             var _y = _neighbors$i.y;
 
-            if (_x < 0 || _y < 0 || _x >= grid.length || _y >= grid[0].length) {
+            if (_x2 < 0 || _y < 0 || _x2 >= grid.length || _y >= grid[0].length) {
               continue;
             }
 
-            var px = grid[_x][_y];
+            var px = grid[_x2][_y];
             if (px.color !== originalColor) {
               continue;
             }
 
-            var _getFillParams5 = this.getFillParams(_x, _y);
+            var _getFillParams5 = this.getFillParams(_x2, _y);
 
             var _fillX = _getFillParams5.fillX;
             var _fillY = _getFillParams5.fillY;
             var _fillWidth = _getFillParams5.fillWidth;
             var _fillHeight = _getFillParams5.fillHeight;
 
-            grid[_x][_y].color = color;
+            grid[_x2][_y].color = color;
 
             drawGfx.drawRect(_fillX, _fillY, _fillWidth, _fillHeight);
-            drawNeighbors(_x, _y);
+            drawNeighbors(_x2, _y);
           }
         })(x, y);
 

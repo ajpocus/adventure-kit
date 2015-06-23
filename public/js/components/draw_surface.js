@@ -142,10 +142,12 @@ let DrawSurface = React.createClass({
   redraw: function () {
     let drawGfx = this.state.drawGfx;
     let zoom = this.state.zoom;
-
+    let renderer = this.state.renderer;
     let grid = this.state.grid;
     this.drawBackground();
 
+    renderer.width = this.state.actualWidth;
+    renderer.height = this.state.actualHeight;
     drawGfx.clear();
 
     for (let x = 0; x < this.state.width; x++) {
@@ -159,7 +161,7 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ drawGfx });
+    this.setState({ drawGfx, renderer });
   },
 
   highlightPixel: function (ev) {
@@ -188,7 +190,7 @@ let DrawSurface = React.createClass({
     }
   },
 
-  clearHighlight: function (ev, currentPixel) {
+  clearHighlight: function (ev, currentPixel=null) {
     let overlayGfx = this.state.overlayGfx;
     let grid = this.state.grid;
 
