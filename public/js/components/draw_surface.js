@@ -82,6 +82,7 @@ let DrawSurface = React.createClass({
         this.state.actualHeight !== prevState.actualHeight ||
         this.state.width !== prevState.width ||
         this.state.height !== prevState.height) {
+      this.drawBackground();
       this.updateGrid();
     }
 
