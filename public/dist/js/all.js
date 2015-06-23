@@ -80642,7 +80642,7 @@ var DrawSurface = React.createClass({
               ref: 'surface',
               style: surfaceStyle,
               onMouseMove: this.highlightPixel,
-              onMouseOut: this.clearHighlight,
+              onMouseOut: this.clearHighlight.bind(this, null),
               onMouseDown: this.draw,
               onContextMenu: this.draw,
               onMouseUp: this.setMouseUp,
@@ -80721,19 +80721,16 @@ var DrawSurface = React.createClass({
       overlayGfx: overlayGfx
     });
 
-    this.clearHighlight(null, currentPixel);
+    this.clearHighlight(currentPixel);
 
     if (this.state.isMouseDown) {
       this.draw(ev);
     }
   },
 
-  clearHighlight: function clearHighlight(ev) {
-    var currentPixel = arguments[1] === undefined ? null : arguments[1];
-
+  clearHighlight: function clearHighlight(currentPixel) {
     var overlayGfx = this.state.overlayGfx;
     var grid = this.state.grid;
-
     overlayGfx.clear();
 
     if (currentPixel) {
@@ -80819,20 +80816,20 @@ var DrawSurface = React.createClass({
 
           for (var i = 0; i < neighbors.length; i++) {
             var _neighbors$i = neighbors[i];
-            var _x2 = _neighbors$i.x;
+            var _x = _neighbors$i.x;
             var _y = _neighbors$i.y;
 
-            if (_x2 < 0 || _y < 0 || _x2 >= grid.length || _y >= grid[0].length) {
+            if (_x < 0 || _y < 0 || _x >= grid.length || _y >= grid[0].length) {
               continue;
             }
 
-            var px = grid[_x2][_y];
+            var px = grid[_x][_y];
             if (px.color !== originalColor) {
               continue;
             }
 
-            grid[_x2][_y].color = color;
-            drawNeighbors(_x2, _y);
+            grid[_x][_y].color = color;
+            drawNeighbors(_x, _y);
           }
         })(x, y);
 

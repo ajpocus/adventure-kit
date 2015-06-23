@@ -118,7 +118,7 @@ let DrawSurface = React.createClass({
                    ref="surface"
                    style={surfaceStyle}
                    onMouseMove={this.highlightPixel}
-                   onMouseOut={this.clearHighlight}
+                   onMouseOut={this.clearHighlight.bind(this, null)}
                    onMouseDown={this.draw}
                    onContextMenu={this.draw}
                    onMouseUp={this.setMouseUp}
@@ -181,17 +181,16 @@ let DrawSurface = React.createClass({
       overlayGfx
     });
 
-    this.clearHighlight(null, currentPixel);
+    this.clearHighlight(currentPixel);
 
     if (this.state.isMouseDown) {
       this.draw(ev);
     }
   },
 
-  clearHighlight: function (ev, currentPixel=null) {
+  clearHighlight: function (currentPixel) {
     let overlayGfx = this.state.overlayGfx;
     let grid = this.state.grid;
-
     overlayGfx.clear();
 
     if (currentPixel) {
