@@ -44,8 +44,8 @@ let Track = React.createClass({
       stage,
       gfx
     }, function () {
-      renderer.render(stage);
       this.drawMeasureMarkers();
+      renderer.render(stage);
       requestAnimationFrame(this.draw);
     });
   },
@@ -73,7 +73,7 @@ let Track = React.createClass({
 
     let startBound = data[0].startTime;
     let lastIdx = data.length - 1;
-    let endBound = data[lastIdx].endTime;
+    let endBound = Number(new Date());
     let boundTime = endBound - startBound;
 
     if (boundTime < this.props.msPerWidth) {

@@ -82985,8 +82985,8 @@ var Track = React.createClass({
       stage: stage,
       gfx: gfx
     }, function () {
-      renderer.render(stage);
       this.drawMeasureMarkers();
+      renderer.render(stage);
       requestAnimationFrame(this.draw);
     });
   },
@@ -83011,7 +83011,7 @@ var Track = React.createClass({
 
     var startBound = data[0].startTime;
     var lastIdx = data.length - 1;
-    var endBound = data[lastIdx].endTime;
+    var endBound = Number(new Date());
     var boundTime = endBound - startBound;
 
     if (boundTime < this.props.msPerWidth) {

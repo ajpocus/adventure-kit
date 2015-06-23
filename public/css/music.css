@@ -59,7 +59,6 @@
 #music .track-list .track {
   width: 850px;
   height: 96px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   background: #bebebe;
   margin: 8px;
 }
