@@ -80340,7 +80340,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":490,"./components/footer":495,"./components/header":496,"./components/map":501,"./components/music":503,"./components/play":505,"./components/vector":509,"babel/polyfill":93,"jquery":147,"react":470,"react-router":301}],489:[function(require,module,exports){
+},{"./components/draw":490,"./components/footer":495,"./components/header":496,"./components/map":501,"./components/music":503,"./components/play":505,"./components/vector":510,"babel/polyfill":93,"jquery":147,"react":470,"react-router":301}],489:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80504,9 +80504,9 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _manage_draw_list = require('./manage_draw_list');
+var _manage_tool_list = require('./manage_tool_list');
 
-var _manage_draw_list2 = _interopRequireDefault(_manage_draw_list);
+var _manage_tool_list2 = _interopRequireDefault(_manage_tool_list);
 
 var _resize_prompt = require('./resize_prompt');
 
@@ -80653,7 +80653,7 @@ var DrawSurface = React.createClass({
       React.createElement(
         'div',
         { className: 'manage-surface' },
-        React.createElement(_manage_draw_list2['default'], { onResizeClick: this.onResizeClick,
+        React.createElement(_manage_tool_list2['default'], { onResizeClick: this.onResizeClick,
           onExportClick: this.onExportClick,
           onSaveClick: this.onSaveClick })
       )
@@ -81035,12 +81035,19 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../lib/transparency":511,"../models/pixel":513,"./manage_draw_list":500,"./resize_prompt":506,"jquery":147,"pixi.js":252,"pngjs":276,"react":470,"tinycolor2":486}],492:[function(require,module,exports){
+},{"../lib/transparency":512,"../models/pixel":514,"./manage_tool_list":500,"./resize_prompt":506,"jquery":147,"pixi.js":252,"pngjs":276,"react":470,"tinycolor2":486}],492:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _tool_list = require('./tool_list');
+
+var _tool_list2 = _interopRequireDefault(_tool_list);
+
 var React = require('react');
 
 var DrawToolList = React.createClass({
@@ -81065,50 +81072,20 @@ var DrawToolList = React.createClass({
   },
 
   render: function render() {
-    var toolList = [];
-    for (var i = 0; i < this.props.tools.length; i++) {
-      var tool = this.props.tools[i];
-      var className = 'btn';
-      if (tool.name === this.props.activeTool) {
-        className += ' active';
-      }
-
-      toolList.push(React.createElement(
-        'li',
-        { className: 'tool', key: tool.name, title: tool.name },
-        React.createElement(
-          'button',
-          { className: className,
-            onClick: this.setActiveTool.bind(this, tool.name) },
-          React.createElement(
-            'div',
-            { className: 'img-container' },
-            React.createElement('img', { className: 'icon', src: tool.imgUrl })
-          )
-        )
-      ));
-    }
-
     return React.createElement(
       'div',
       { className: 'draw-tools' },
-      React.createElement(
-        'ul',
-        { className: 'tool-list' },
-        toolList
-      )
+      React.createElement(_tool_list2['default'], { tools: this.props.tools,
+        activeTool: this.props.tools[0].name,
+        onSetActiveTool: this.props.onSetActiveTool })
     );
-  },
-
-  setActiveTool: function setActiveTool(name) {
-    this.props.onSetActiveTool(name);
   }
 });
 
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"react":470}],493:[function(require,module,exports){
+},{"./tool_list":507,"react":470}],493:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81479,7 +81456,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../lib/transparency":511,"jquery":147,"react":470}],495:[function(require,module,exports){
+},{"../lib/transparency":512,"jquery":147,"react":470}],495:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82403,16 +82380,23 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../mixins/key_map_mixin":512,"jquery":147,"react":470,"teoria":471,"underscore":487}],500:[function(require,module,exports){
+},{"../mixins/key_map_mixin":513,"jquery":147,"react":470,"teoria":471,"underscore":487}],500:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _tool_list = require('./tool_list');
+
+var _tool_list2 = _interopRequireDefault(_tool_list);
+
 var React = require('react');
 
-var ManageDrawList = React.createClass({
-  displayName: 'ManageDrawList',
+var ManageToolList = React.createClass({
+  displayName: 'ManageToolList',
 
   getDefaultProps: function getDefaultProps() {
     return {
@@ -82430,35 +82414,11 @@ var ManageDrawList = React.createClass({
   },
 
   render: function render() {
-    var toolList = [];
-    for (var i = 0; i < this.props.tools.length; i++) {
-      var tool = this.props.tools[i];
-      var className = 'link ' + tool.name.toLowerCase();
-
-      toolList.push(React.createElement(
-        'li',
-        { className: 'tool', key: i },
-        React.createElement(
-          'a',
-          { href: '#', className: className },
-          React.createElement(
-            'button',
-            { className: 'btn',
-              onClick: this.handleClick.bind(this, tool.name) },
-            React.createElement(
-              'div',
-              { className: 'img-container' },
-              React.createElement('img', { className: 'icon', src: tool.imgUrl })
-            )
-          )
-        )
-      ));
-    }
-
     return React.createElement(
-      'ul',
+      'div',
       { className: 'manage-buttons' },
-      toolList
+      React.createElement(_tool_list2['default'], { tools: this.props.tools,
+        onSetActiveTool: this.handleClick })
     );
   },
 
@@ -82482,10 +82442,10 @@ var ManageDrawList = React.createClass({
   }
 });
 
-exports['default'] = ManageDrawList;
+exports['default'] = ManageToolList;
 module.exports = exports['default'];
 
-},{"react":470}],501:[function(require,module,exports){
+},{"./tool_list":507,"react":470}],501:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82656,7 +82616,7 @@ var Music = React.createClass({
 exports['default'] = Music;
 module.exports = exports['default'];
 
-},{"./instrument_list":498,"./keyboard":499,"./track_list":508,"./volume_control":510,"react":470}],504:[function(require,module,exports){
+},{"./instrument_list":498,"./keyboard":499,"./track_list":509,"./volume_control":511,"react":470}],504:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82804,7 +82764,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../lib/transparency":511,"./edit_palette":494,"./modal":502,"jquery":147,"react":470,"tinycolor2":486}],505:[function(require,module,exports){
+},{"../lib/transparency":512,"./edit_palette":494,"./modal":502,"jquery":147,"react":470,"tinycolor2":486}],505:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82931,6 +82891,76 @@ exports["default"] = ResizePrompt;
 module.exports = exports["default"];
 
 },{"react":470}],507:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var React = require("react");
+
+var ToolList = React.createClass({
+  displayName: "ToolList",
+
+  propTypes: {
+    tools: React.PropTypes.array.isRequired,
+    onSetActiveTool: React.PropTypes.func
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      activeTool: this.props.activeTool
+    };
+  },
+
+  render: function render() {
+    var toolList = [];
+    for (var i = 0; i < this.props.tools.length; i++) {
+      var tool = this.props.tools[i];
+      var className = "btn";
+      if (tool.name === this.state.activeTool) {
+        className += " active";
+      }
+
+      toolList.push(React.createElement(
+        "li",
+        { className: "tool", key: tool.name, title: tool.name },
+        React.createElement(
+          "button",
+          { className: className,
+            onClick: this.setActiveTool.bind(this, tool.name) },
+          React.createElement(
+            "div",
+            { className: "img-container" },
+            React.createElement("img", { className: "icon", src: tool.imgUrl })
+          )
+        )
+      ));
+    }
+
+    return React.createElement(
+      "div",
+      { className: "tools" },
+      React.createElement(
+        "ul",
+        { className: "tool-list" },
+        toolList
+      )
+    );
+  },
+
+  setActiveTool: function setActiveTool(name) {
+    this.setState({ activeTool: name });
+
+    if (this.props.onSetActiveTool) {
+      this.props.onSetActiveTool(name);
+    }
+  }
+});
+
+exports["default"] = ToolList;
+module.exports = exports["default"];
+
+},{"react":470}],508:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83103,7 +83133,7 @@ var Track = React.createClass({
 exports['default'] = Track;
 module.exports = exports['default'];
 
-},{"react":470,"tinycolor2":486}],508:[function(require,module,exports){
+},{"react":470,"tinycolor2":486}],509:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83146,7 +83176,7 @@ var TrackList = React.createClass({
 exports['default'] = TrackList;
 module.exports = exports['default'];
 
-},{"./track":507,"react":470}],509:[function(require,module,exports){
+},{"./track":508,"react":470}],510:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83169,7 +83199,7 @@ var Vector = React.createClass({
 exports["default"] = Vector;
 module.exports = exports["default"];
 
-},{"react":470}],510:[function(require,module,exports){
+},{"react":470}],511:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83224,7 +83254,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":470}],511:[function(require,module,exports){
+},{"react":470}],512:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83237,7 +83267,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],512:[function(require,module,exports){
+},{}],513:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83344,7 +83374,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],513:[function(require,module,exports){
+},{}],514:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

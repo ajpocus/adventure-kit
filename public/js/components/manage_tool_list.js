@@ -1,6 +1,8 @@
 let React = require('react');
 
-let ManageDrawList = React.createClass({
+import ToolList from './tool_list';
+
+let ManageToolList = React.createClass({
   getDefaultProps: function () {
     return {
       tools: [
@@ -21,29 +23,11 @@ let ManageDrawList = React.createClass({
   },
 
   render: function () {
-    let toolList = [];
-    for (let i = 0; i < this.props.tools.length; i++) {
-      let tool = this.props.tools[i];
-      let className = 'link ' + tool.name.toLowerCase();
-
-      toolList.push(
-        <li className="tool" key={i}>
-          <a href="#" className={className}>
-            <button className="btn"
-                    onClick={this.handleClick.bind(this, tool.name)}>
-              <div className="img-container">
-                <img className="icon" src={tool.imgUrl}/>
-              </div>
-            </button>
-          </a>
-        </li>
-      );
-    }
-
     return (
-      <ul className="manage-buttons">
-        {toolList}
-      </ul>
+      <div className="manage-buttons">
+        <ToolList tools={this.props.tools}
+                  onSetActiveTool={this.handleClick}/>
+      </div>
     );
   },
 
@@ -67,4 +51,4 @@ let ManageDrawList = React.createClass({
   }
 });
 
-export default ManageDrawList;
+export default ManageToolList;
