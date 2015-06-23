@@ -80562,7 +80562,8 @@ var DrawSurface = React.createClass({
       totalHeight: 1024,
       bgTileSize: 8,
       minZoom: 0.125,
-      maxZoom: 4
+      maxZoom: 4,
+      zoomDelta: 0.125
     };
   },
 
@@ -80667,8 +80668,7 @@ var DrawSurface = React.createClass({
     var grid = this.state.grid;
     this.drawBackground();
 
-    renderer.width = this.state.actualWidth;
-    renderer.height = this.state.actualHeight;
+    renderer.resize(this.state.actualWidth, this.state.actualHeight);
     drawGfx.clear();
 
     for (var x = 0; x < this.state.width; x++) {
@@ -80877,9 +80877,9 @@ var DrawSurface = React.createClass({
     if (ev) {
       ev.preventDefault();
       if (ev.deltaY > 0) {
-        zoom /= 2;
+        zoom -= this.props.zoomDelta;
       } else if (ev.deltaY < 0) {
-        zoom *= 2;
+        zoom += this.props.zoomDelta;
       } else {
         return;
       }
