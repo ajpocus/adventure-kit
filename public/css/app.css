@@ -127,3 +127,18 @@ img.pixel {
   display: flex;
   flex-direction: column;
 }
+
+.tool-list .btn {
+  padding: 0;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.tool-list .btn .img-container {
+  border: 5px solid rgba(0, 0, 0, 0);
+}
+
+.tool-list .btn img {
+  padding: 3px;
+}

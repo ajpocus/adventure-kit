@@ -137,6 +137,21 @@ img.pixel {
   display: flex;
   flex-direction: column;
 }
+
+.tool-list .btn {
+  padding: 0;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.tool-list .btn .img-container {
+  border: 5px solid rgba(0, 0, 0, 0);
+}
+
+.tool-list .btn img {
+  padding: 3px;
+}
 #draw {
   display: flex;
   flex-direction: row;
@@ -174,21 +189,8 @@ img.pixel {
   width: 100px;
 }
 
-.draw-tools .tool-list .btn {
-  padding: 0;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-}
-
-.draw-tools .tool-list .btn .img-container {
-  border: 5px solid rgba(0, 0, 0, 0);
-}
-
 .draw-tools .tool-list .btn.active  .img-container {
-  border: 5px solid #07a;
-}
-
-.draw-tools .tool-list .btn img {
-  padding: 3px;
+  border: 4px solid #07a;
 }
 
 #draw .palette-manager {
@@ -411,6 +413,11 @@ img.pixel {
 
 #keyboard .black.spacer {
   opacity: 0;
+}
+
+.track-tools .tool-list {
+  display: flex;
+  flex-direction: row;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126

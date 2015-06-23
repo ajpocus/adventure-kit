@@ -80340,7 +80340,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":490,"./components/footer":495,"./components/header":496,"./components/map":501,"./components/music":503,"./components/play":505,"./components/vector":510,"babel/polyfill":93,"jquery":147,"react":470,"react-router":301}],489:[function(require,module,exports){
+},{"./components/draw":490,"./components/footer":495,"./components/header":496,"./components/map":501,"./components/music":503,"./components/play":505,"./components/vector":511,"babel/polyfill":93,"jquery":147,"react":470,"react-router":301}],489:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81034,7 +81034,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../lib/transparency":512,"../models/pixel":514,"./manage_tool_list":500,"./resize_prompt":506,"jquery":147,"pixi.js":252,"pngjs":276,"react":470,"tinycolor2":486}],492:[function(require,module,exports){
+},{"../lib/transparency":513,"../models/pixel":515,"./manage_tool_list":500,"./resize_prompt":506,"jquery":147,"pixi.js":252,"pngjs":276,"react":470,"tinycolor2":486}],492:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81455,7 +81455,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../lib/transparency":512,"jquery":147,"react":470}],495:[function(require,module,exports){
+},{"../lib/transparency":513,"jquery":147,"react":470}],495:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82379,7 +82379,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../mixins/key_map_mixin":513,"jquery":147,"react":470,"teoria":471,"underscore":487}],500:[function(require,module,exports){
+},{"../mixins/key_map_mixin":514,"jquery":147,"react":470,"teoria":471,"underscore":487}],500:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82615,7 +82615,7 @@ var Music = React.createClass({
 exports['default'] = Music;
 module.exports = exports['default'];
 
-},{"./instrument_list":498,"./keyboard":499,"./track_list":509,"./volume_control":511,"react":470}],504:[function(require,module,exports){
+},{"./instrument_list":498,"./keyboard":499,"./track_list":509,"./volume_control":512,"react":470}],504:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82763,7 +82763,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../lib/transparency":512,"./edit_palette":494,"./modal":502,"jquery":147,"react":470,"tinycolor2":486}],505:[function(require,module,exports){
+},{"../lib/transparency":513,"./edit_palette":494,"./modal":502,"jquery":147,"react":470,"tinycolor2":486}],505:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82965,6 +82965,13 @@ module.exports = exports["default"];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _track_tool_list = require('./track_tool_list');
+
+var _track_tool_list2 = _interopRequireDefault(_track_tool_list);
+
 var React = require('react');
 var tinycolor = require('tinycolor2');
 
@@ -83028,18 +83035,9 @@ var Track = React.createClass({
       'li',
       { className: 'track' },
       React.createElement(
-        'ul',
-        { className: 'controls' },
-        React.createElement(
-          'li',
-          null,
-          React.createElement(
-            'button',
-            { className: 'pause',
-              onClick: this.pauseTrack },
-            React.createElement('img', { src: '/img/icons/glyphicons-175-pause.png' })
-          )
-        )
+        'div',
+        { className: 'track-controls' },
+        React.createElement(_track_tool_list2['default'], { onSetActiveTool: this.handleSetActiveTool })
       )
     );
   },
@@ -83062,7 +83060,7 @@ var Track = React.createClass({
     if (boundTime < this.props.msPerWidth) {
       endBound = startBound + this.props.msPerWidth;
     } else {
-      endBound = Number(new Date());
+      endBound = this.state.endBound || Number(new Date());
       startBound = endBound - this.props.msPerWidth;
     }
 
@@ -83126,13 +83124,39 @@ var Track = React.createClass({
 
     var threeX = this.props.canvasWidth * 3 / 4;
     gfx.drawRect(threeX, y, width, height);
+  },
+
+  handleSetActiveTool: function handleSetActiveTool(name) {
+    var isPaused = this.state.isPaused;
+    var endBound = this.state.endBound;
+
+    switch (name) {
+      case 'Play':
+        // stop recording, set the marker to 0, and play the recording
+        break;
+
+      case 'Pause':
+        // pause the track recording / playback
+        isPaused = !isPaused;
+        endBound = Number(new Date());
+        break;
+
+      default:
+        return;
+    }
+
+    this.setState({
+      activeTool: name,
+      isPaused: isPaused,
+      endBound: endBound
+    });
   }
 });
 
 exports['default'] = Track;
 module.exports = exports['default'];
 
-},{"react":470,"tinycolor2":486}],509:[function(require,module,exports){
+},{"./track_tool_list":510,"react":470,"tinycolor2":486}],509:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83176,6 +83200,53 @@ exports['default'] = TrackList;
 module.exports = exports['default'];
 
 },{"./track":508,"react":470}],510:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _tool_list = require('./tool_list');
+
+var _tool_list2 = _interopRequireDefault(_tool_list);
+
+var React = require('react');
+
+var TrackToolList = React.createClass({
+  displayName: 'TrackToolList',
+
+  propTypes: {
+    onSetActiveTool: React.PropTypes.func.isRequired
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      tools: [{
+        name: 'Play',
+        imgUrl: '/img/icons/glyphicons-174-play.png'
+      }, {
+        name: 'Pause',
+        imgUrl: '/img/icons/glyphicons-175-pause.png'
+      }]
+    };
+  },
+
+  render: function render() {
+    return React.createElement(
+      'div',
+      { className: 'track-tools' },
+      React.createElement(_tool_list2['default'], { tools: this.props.tools,
+        onSetActiveTool: this.props.onSetActiveTool })
+    );
+  }
+});
+
+exports['default'] = TrackToolList;
+module.exports = exports['default'];
+
+},{"./tool_list":507,"react":470}],511:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83198,7 +83269,7 @@ var Vector = React.createClass({
 exports["default"] = Vector;
 module.exports = exports["default"];
 
-},{"react":470}],511:[function(require,module,exports){
+},{"react":470}],512:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83253,7 +83324,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":470}],512:[function(require,module,exports){
+},{"react":470}],513:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83266,7 +83337,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],513:[function(require,module,exports){
+},{}],514:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83373,7 +83444,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],514:[function(require,module,exports){
+},{}],515:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

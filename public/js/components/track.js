@@ -1,6 +1,8 @@
 let React = require('react');
 let tinycolor = require('tinycolor2');
 
+import TrackToolList from './track_tool_list';
+
 let Track = React.createClass({
   getDefaultProps: function () {
     let bpm = 120;
@@ -57,15 +59,9 @@ let Track = React.createClass({
   render: function () {
     return (
       <li className="track">
-        <ul className="controls">
-          <li>
-            <button className="pause"
-                    onClick={this.pauseTrack}>
-              <img src="/img/icons/glyphicons-175-pause.png"/>
-            </button>
-          </li>
-        </ul>
-
+        <div className="track-controls">
+          <TrackToolList onSetActiveTool={this.handleSetActiveTool}/>
+        </div>
       </li>
     );
   },
@@ -88,7 +84,7 @@ let Track = React.createClass({
     if (boundTime < this.props.msPerWidth) {
       endBound = startBound + this.props.msPerWidth;
     } else {
-      endBound = Number(new Date());
+      endBound = this.state.endBound || Number(new Date());
       startBound = endBound - this.props.msPerWidth;
     }
 
@@ -145,6 +141,32 @@ let Track = React.createClass({
 
     let threeX = this.props.canvasWidth * 3 / 4;
     gfx.drawRect(threeX, y, width, height);
+  },
+
+  handleSetActiveTool: function (name) {
+    let isPaused = this.state.isPaused;
+    let endBound = this.state.endBound;
+
+    switch (name) {
+      case 'Play':
+        // stop recording, set the marker to 0, and play the recording
+        break;
+
+      case 'Pause':
+        // pause the track recording / playback
+        isPaused = !isPaused;
+        endBound = Number(new Date());
+        break;
+
+      default:
+        return;
+    }
+
+    this.setState({
+      activeTool: name,
+      isPaused,
+      endBound
+    });
   }
 });
 

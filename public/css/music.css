@@ -127,3 +127,8 @@
 #keyboard .black.spacer {
   opacity: 0;
 }
+
+.track-tools .tool-list {
+  display: flex;
+  flex-direction: row;
+}

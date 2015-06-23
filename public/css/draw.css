@@ -35,21 +35,8 @@
   width: 100px;
 }
 
-.draw-tools .tool-list .btn {
-  padding: 0;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-}
-
-.draw-tools .tool-list .btn .img-container {
-  border: 5px solid rgba(0, 0, 0, 0);
-}
-
 .draw-tools .tool-list .btn.active  .img-container{
-  border: 5px solid #07a;
-}
-
-.draw-tools .tool-list .btn img {
-  padding: 3px;
+  border: 4px solid #07a;
 }
 
 #draw .palette-manager {
