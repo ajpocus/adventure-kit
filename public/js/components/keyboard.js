@@ -250,8 +250,7 @@ let Keyboard = React.createClass({
       let now = Number(new Date());
       recording.push({
         midi: midi,
-        startTime: now,
-        endTime: now + 1
+        startTime: now
       });
 
       let indices = this.state.indices;

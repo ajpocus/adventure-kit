@@ -82349,8 +82349,7 @@ var Keyboard = React.createClass({
       var now = Number(new Date());
       recording.push({
         midi: midi,
-        startTime: now,
-        endTime: now + 1
+        startTime: now
       });
 
       var indices = this.state.indices;
@@ -82996,7 +82995,24 @@ var Track = React.createClass({
   },
 
   render: function render() {
-    return React.createElement('li', { className: 'track' });
+    return React.createElement(
+      'li',
+      { className: 'track' },
+      React.createElement(
+        'ul',
+        { className: 'controls' },
+        React.createElement(
+          'li',
+          null,
+          React.createElement(
+            'button',
+            { className: 'pause',
+              onClick: this.pauseTrack },
+            React.createElement('img', { src: '/img/icons/glyphicons-175-pause.png' })
+          )
+        )
+      )
+    );
   },
 
   draw: function draw() {
@@ -83052,22 +83068,16 @@ var Track = React.createClass({
       endBound = startBound + this.props.msPerWidth;
     }
 
-    if (!note.endTime) {
-      note.endTime = Number(new Date());
-    }
-
     var startTime = note.startTime - startBound;
-    var endTime = note.endTime - startBound;
+    var endTime = (note.endTime || Number(new Date())) - startBound;
     var midi = note.midi;
     var factor = midi % 12;
+    var noteMs = (note.endTime || Number(new Date())) - note.startTime;
 
-    var noteMs = note.endTime - note.startTime;
-    var noteBeats = noteMs / this.props.msPerBeat;
-
+    var width = noteMs / this.props.msPerWidth * this.props.canvasWidth;
     var height = this.props.noteHeight;
-    var width = noteBeats / this.props.beatsPerWidth * this.props.canvasWidth;
     var x = startTime / this.props.msPerWidth * this.props.canvasWidth;
-    var y = this.props.canvasHeight - factor * height;
+    var y = this.props.canvasHeight - (factor * height + height);
 
     return { x: x, y: y, width: width, height: height };
   },

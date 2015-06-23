@@ -57,6 +57,15 @@ let Track = React.createClass({
   render: function () {
     return (
       <li className="track">
+        <ul className="controls">
+          <li>
+            <button className="pause"
+                    onClick={this.pauseTrack}>
+              <img src="/img/icons/glyphicons-175-pause.png"/>
+            </button>
+          </li>
+        </ul>
+
       </li>
     );
   },
@@ -107,22 +116,16 @@ let Track = React.createClass({
       endBound = startBound + this.props.msPerWidth;
     }
 
-    if (!note.endTime) {
-      note.endTime = Number(new Date());
-    }
-
     let startTime = note.startTime - startBound;
-    let endTime = note.endTime - startBound;
+    let endTime = (note.endTime || Number(new Date())) - startBound;
     let midi = note.midi;
     let factor = midi % 12;
+    let noteMs = (note.endTime || Number(new Date())) - note.startTime;
 
-    let noteMs = note.endTime - note.startTime;
-    let noteBeats = noteMs / this.props.msPerBeat;
-
+    let width = (noteMs / this.props.msPerWidth) * this.props.canvasWidth;
     let height = this.props.noteHeight;
-    let width = (noteBeats / this.props.beatsPerWidth) * this.props.canvasWidth;
     let x = (startTime / this.props.msPerWidth) * this.props.canvasWidth;
-    let y = this.props.canvasHeight - (factor * height);
+    let y = this.props.canvasHeight - (factor * height + height);
 
     return { x, y, width, height };
   },
