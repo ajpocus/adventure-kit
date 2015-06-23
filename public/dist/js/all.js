@@ -82969,12 +82969,23 @@ var Track = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    var canvas = this.refs.canvas.getDOMNode();
-    var ctx = canvas.getContext('2d');
+    var width = this.props.canvasWidth;
+    var height = this.props.canvasHeight;
+    var renderer = PIXI.autoDetectRenderer(width, height, {
+      backgroundColor: 5657942
+    });
+    this.getDOMNode().appendChild(renderer.view);
+
+    var stage = new PIXI.Container();
+    var gfx = new PIXI.Graphics();
+    stage.addChild(gfx);
 
     this.setState({
-      ctx: ctx
+      renderer: renderer,
+      stage: stage,
+      gfx: gfx
     }, function () {
+      renderer.render(stage);
       this.drawMeasureMarkers();
       requestAnimationFrame(this.draw);
     });
@@ -82985,19 +82996,14 @@ var Track = React.createClass({
   },
 
   render: function render() {
-    return React.createElement(
-      'li',
-      { className: 'track' },
-      React.createElement('canvas', { className: 'track-canvas',
-        ref: 'canvas',
-        width: this.props.canvasWidth,
-        height: this.props.canvasHeight })
-    );
+    return React.createElement('li', { className: 'track' });
   },
 
   draw: function draw() {
     var data = this.props.data;
-    var ctx = this.state.ctx;
+    var gfx = this.state.gfx;
+    var renderer = this.state.renderer;
+    var stage = this.state.stage;
 
     if (!data || !data.length) {
       return;
@@ -83015,9 +83021,9 @@ var Track = React.createClass({
       startBound = endBound - this.props.msPerWidth;
     }
 
-    ctx.clearRect(0, 0, this.props.canvasWidth, this.props.canvasHeight);
+    gfx.clear();
     this.drawMeasureMarkers();
-    ctx.fillStyle = '#ffcc00';
+    gfx.beginFill(16763904);
 
     for (var i = 0; i < data.length; i++) {
       var note = data[i];
@@ -83029,9 +83035,10 @@ var Track = React.createClass({
       var width = _getNoteParams.width;
       var height = _getNoteParams.height;
 
-      ctx.fillRect(x, y, width, height);
+      gfx.drawRect(x, y, width, height);
     }
 
+    renderer.render(stage);
     requestAnimationFrame(this.draw);
   },
 
@@ -83066,20 +83073,20 @@ var Track = React.createClass({
   },
 
   drawMeasureMarkers: function drawMeasureMarkers() {
-    var ctx = this.state.ctx;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    var gfx = this.state.gfx;
+    gfx.beginFill(0, 0.2);
 
     var halfX = this.props.canvasWidth / 2;
     var y = 0;
     var width = 1;
     var height = this.props.canvasHeight;
-    ctx.fillRect(halfX, y, width, height);
+    gfx.drawRect(halfX, y, width, height);
 
     var quarterX = this.props.canvasWidth / 4;
-    ctx.fillRect(quarterX, y, width, height);
+    gfx.drawRect(quarterX, y, width, height);
 
     var threeX = this.props.canvasWidth * 3 / 4;
-    ctx.fillRect(threeX, y, width, height);
+    gfx.drawRect(threeX, y, width, height);
   }
 });
 

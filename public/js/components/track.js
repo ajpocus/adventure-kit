@@ -28,12 +28,23 @@ let Track = React.createClass({
   },
 
   componentDidMount: function () {
-    let canvas = this.refs.canvas.getDOMNode();
-    let ctx = canvas.getContext('2d');
+    let width = this.props.canvasWidth;
+    let height = this.props.canvasHeight;
+    let renderer = PIXI.autoDetectRenderer(width, height, {
+      backgroundColor: 0x565556
+    });
+    this.getDOMNode().appendChild(renderer.view);
+
+    let stage = new PIXI.Container();
+    let gfx = new PIXI.Graphics();
+    stage.addChild(gfx);
 
     this.setState({
-      ctx: ctx
+      renderer,
+      stage,
+      gfx
     }, function () {
+      renderer.render(stage);
       this.drawMeasureMarkers();
       requestAnimationFrame(this.draw);
     });
@@ -46,18 +57,15 @@ let Track = React.createClass({
   render: function () {
     return (
       <li className="track">
-        <canvas className="track-canvas"
-                ref="canvas"
-                width={this.props.canvasWidth}
-                height={this.props.canvasHeight}>
-        </canvas>
       </li>
     );
   },
 
   draw: function () {
     let data = this.props.data;
-    let ctx = this.state.ctx;
+    let gfx = this.state.gfx;
+    let renderer = this.state.renderer;
+    let stage = this.state.stage;
 
     if (!data || !data.length) {
       return;
@@ -75,16 +83,17 @@ let Track = React.createClass({
       startBound = endBound - this.props.msPerWidth;
     }
 
-    ctx.clearRect(0, 0, this.props.canvasWidth, this.props.canvasHeight)
+    gfx.clear();
     this.drawMeasureMarkers();
-    ctx.fillStyle = "#ffcc00";
+    gfx.beginFill(0xffcc00);
 
     for (let i = 0; i < data.length; i++) {
       let note = data[i];
       let { x, y, width, height } = this.getNoteParams(note, startBound, endBound);
-      ctx.fillRect(x, y, width, height);
+      gfx.drawRect(x, y, width, height);
     }
 
+    renderer.render(stage);
     requestAnimationFrame(this.draw);
   },
 
@@ -119,20 +128,20 @@ let Track = React.createClass({
   },
 
   drawMeasureMarkers: function () {
-    let ctx = this.state.ctx;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
+    let gfx = this.state.gfx;
+    gfx.beginFill(0x000000, 0.2);
 
     let halfX = this.props.canvasWidth / 2;
     let y = 0;
     let width = 1;
     let height = this.props.canvasHeight;
-    ctx.fillRect(halfX, y, width, height);
+    gfx.drawRect(halfX, y, width, height);
 
     let quarterX = this.props.canvasWidth / 4;
-    ctx.fillRect(quarterX, y, width, height);
+    gfx.drawRect(quarterX, y, width, height);
 
     let threeX = this.props.canvasWidth * 3 / 4;
-    ctx.fillRect(threeX, y, width, height);
+    gfx.drawRect(threeX, y, width, height);
   }
 });
 
