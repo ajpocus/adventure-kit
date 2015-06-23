@@ -35,8 +35,8 @@
   width: 100px;
 }
 
-.draw-tools .tool-list .btn.active  .img-container{
-  border: 4px solid #07a;
+.draw-tools .tool-list .btn.active {
+  background: #f8b217;
 }
 
 #draw .palette-manager {

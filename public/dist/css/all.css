@@ -189,8 +189,8 @@ img.pixel {
   width: 100px;
 }
 
-.draw-tools .tool-list .btn.active  .img-container {
-  border: 4px solid #07a;
+.draw-tools .tool-list .btn.active {
+  background: #f8b217;
 }
 
 #draw .palette-manager {
@@ -418,6 +418,10 @@ img.pixel {
 .track-tools .tool-list {
   display: flex;
   flex-direction: row;
+}
+
+.track-tools .tool-list .btn.active {
+  background: #f8b217;
 }
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
