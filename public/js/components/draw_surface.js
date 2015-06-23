@@ -70,28 +70,24 @@ let DrawSurface = React.createClass({
       bgGfx,
       drawGfx,
       overlayGfx
+    }, function () {
+      this.initGrid(function () {
+        requestAnimationFrame(this.animate);
+      });
     });
-
-    this.initGrid();
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    if (this.state.bgGfx &&
-        this.state.bgGfx !== prevState.bgGfx &&
-        !prevState.bgGfx) {
-      this.drawBackground();
-    }
-
     if (this.state.actualWidth !== prevState.actualWidth ||
         this.state.actualHeight !== prevState.actualHeight ||
         this.state.width !== prevState.width ||
         this.state.height !== prevState.height) {
-      this.updateGrid(function () {
-        this.redraw();
-      });
+      this.updateGrid();
     }
 
-    this.state.renderer.render(this.state.stage);
+    if (this.state.bgGfx && !prevState.bgGfx) {
+      this.drawBackground();
+    }
   },
 
   render: function () {
@@ -140,12 +136,12 @@ let DrawSurface = React.createClass({
     );
   },
 
-  redraw: function () {
+  animate: function () {
     let drawGfx = this.state.drawGfx;
     let zoom = this.state.zoom;
     let renderer = this.state.renderer;
+    let stage = this.state.stage;
     let grid = this.state.grid;
-    this.drawBackground();
 
     renderer.resize(this.state.actualWidth, this.state.actualHeight);
     drawGfx.clear();
@@ -161,7 +157,8 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ drawGfx, renderer });
+    renderer.render(stage);
+    requestAnimationFrame(this.animate);
   },
 
   highlightPixel: function (ev) {
@@ -237,8 +234,6 @@ let DrawSurface = React.createClass({
     switch (this.props.activeTool) {
       case 'Pencil':
         grid[x][y].color = color;
-        drawGfx.beginFill(this.colorToInt(color));
-        drawGfx.drawRect(fillX, fillY, fillWidth, fillHeight);
 
         this.setState({
           grid,
@@ -251,9 +246,6 @@ let DrawSurface = React.createClass({
       case 'Bucket':
         let originalColor = grid[x][y].color;
         grid[x][y].color = color;
-
-        drawGfx.beginFill(this.colorToInt(color));
-        drawGfx.drawRect(fillX, fillY, fillWidth, fillHeight);
 
         var seen = {};
         (function drawNeighbors(x, y) {
@@ -283,10 +275,7 @@ let DrawSurface = React.createClass({
               continue;
             }
 
-            let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
             grid[x][y].color = color;
-
-            drawGfx.drawRect(fillX, fillY, fillWidth, fillHeight);
             drawNeighbors(x, y);
           }
         })(x, y);
@@ -422,7 +411,7 @@ let DrawSurface = React.createClass({
     this.setState({ bgGfx });
   },
 
-  initGrid: function () {
+  initGrid: function (callback) {
     let grid = [];
 
     for (let x = 0; x < this.state.width; x++) {
@@ -433,7 +422,7 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid });
+    this.setState({ grid }, callback);
   },
 
   updateGrid: function (callback) {

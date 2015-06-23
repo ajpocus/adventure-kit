@@ -80589,23 +80589,21 @@ var DrawSurface = React.createClass({
       bgGfx: bgGfx,
       drawGfx: drawGfx,
       overlayGfx: overlayGfx
+    }, function () {
+      this.initGrid(function () {
+        requestAnimationFrame(this.animate);
+      });
     });
-
-    this.initGrid();
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.state.bgGfx && this.state.bgGfx !== prevState.bgGfx && !prevState.bgGfx) {
+    if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
+      this.updateGrid();
+    }
+
+    if (this.state.bgGfx && !prevState.bgGfx) {
       this.drawBackground();
     }
-
-    if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
-      this.updateGrid(function () {
-        this.redraw();
-      });
-    }
-
-    this.state.renderer.render(this.state.stage);
   },
 
   render: function render() {
@@ -80661,12 +80659,12 @@ var DrawSurface = React.createClass({
     );
   },
 
-  redraw: function redraw() {
+  animate: function animate() {
     var drawGfx = this.state.drawGfx;
     var zoom = this.state.zoom;
     var renderer = this.state.renderer;
+    var stage = this.state.stage;
     var grid = this.state.grid;
-    this.drawBackground();
 
     renderer.resize(this.state.actualWidth, this.state.actualHeight);
     drawGfx.clear();
@@ -80688,7 +80686,8 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ drawGfx: drawGfx, renderer: renderer });
+    renderer.render(stage);
+    requestAnimationFrame(this.animate);
   },
 
   highlightPixel: function highlightPixel(ev) {
@@ -80793,8 +80792,6 @@ var DrawSurface = React.createClass({
     switch (this.props.activeTool) {
       case 'Pencil':
         grid[x][y].color = color;
-        drawGfx.beginFill(this.colorToInt(color));
-        drawGfx.drawRect(fillX, fillY, fillWidth, fillHeight);
 
         this.setState({
           grid: grid,
@@ -80807,9 +80804,6 @@ var DrawSurface = React.createClass({
       case 'Bucket':
         var originalColor = grid[x][y].color;
         grid[x][y].color = color;
-
-        drawGfx.beginFill(this.colorToInt(color));
-        drawGfx.drawRect(fillX, fillY, fillWidth, fillHeight);
 
         var seen = {};
         (function drawNeighbors(x, y) {
@@ -80836,16 +80830,7 @@ var DrawSurface = React.createClass({
               continue;
             }
 
-            var _getFillParams5 = this.getFillParams(_x2, _y);
-
-            var _fillX = _getFillParams5.fillX;
-            var _fillY = _getFillParams5.fillY;
-            var _fillWidth = _getFillParams5.fillWidth;
-            var _fillHeight = _getFillParams5.fillHeight;
-
             grid[_x2][_y].color = color;
-
-            drawGfx.drawRect(_fillX, _fillY, _fillWidth, _fillHeight);
             drawNeighbors(_x2, _y);
           }
         })(x, y);
@@ -80978,7 +80963,7 @@ var DrawSurface = React.createClass({
     this.setState({ bgGfx: bgGfx });
   },
 
-  initGrid: function initGrid() {
+  initGrid: function initGrid(callback) {
     var grid = [];
 
     for (var x = 0; x < this.state.width; x++) {
@@ -80989,7 +80974,7 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({ grid: grid });
+    this.setState({ grid: grid }, callback);
   },
 
   updateGrid: function updateGrid(callback) {
