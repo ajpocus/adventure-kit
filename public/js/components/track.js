@@ -33,7 +33,11 @@ let Track = React.createClass({
     return {
       isRecording: this.props.isRecording,
       isPlaying: false,
-      isPaused: false
+      isPaused: false,
+      isMouseDown: false,
+      noteSelected: false,
+      trackSelected: false,
+      isSelectingTrack: false
     };
   },
 
@@ -74,7 +78,11 @@ let Track = React.createClass({
 
   render: function () {
     return (
-      <li className="track">
+      <li className="track"
+          onClick={this.handleClick}
+          onMouseDown={this.handleMouseDown}
+          onMouseUp={this.handleMouseUp}
+          onMouseMove={this.handleMouseMove}>
         <div className="track-controls">
           <TrackToolList onSetActiveTool={this.handleSetActiveTool}/>
         </div>
@@ -92,8 +100,32 @@ let Track = React.createClass({
       return;
     }
 
+    let [startBound, endBound] = this.getTrackBounds();
+
+    gfx.clear();
+    this.drawMeasureMarkers();
+    gfx.beginFill(0xffcc00);
+
+    for (let i = 0; i < data.length; i++) {
+      let note = data[i];
+      let { x, y, width, height } = this.getNoteBounds(note, startBound, endBound);
+      gfx.drawRect(x, y, width, height);
+    }
+
+    renderer.render(stage);
+    requestAnimationFrame(this.draw);
+  },
+
+  getTrackBounds: function () {
+    let data = this.state.data;
+
+    if (!data || !data.length) {
+      let startBound = Number(new Date());
+      let endBound = startBound + this.props.msPerWidth;
+      return [startBound, endBound];
+    }
+
     let startBound = data[0].startTime;
-    let lastIdx = data.length - 1;
     let endBound = Number(new Date());
     let boundTime = endBound - startBound;
 
@@ -104,21 +136,10 @@ let Track = React.createClass({
       startBound = endBound - this.props.msPerWidth;
     }
 
-    gfx.clear();
-    this.drawMeasureMarkers();
-    gfx.beginFill(0xffcc00);
-
-    for (let i = 0; i < data.length; i++) {
-      let note = data[i];
-      let { x, y, width, height } = this.getNoteParams(note, startBound, endBound);
-      gfx.drawRect(x, y, width, height);
-    }
-
-    renderer.render(stage);
-    requestAnimationFrame(this.draw);
+    return [startBound, endBound];
   },
 
-  getNoteParams: function (note, startBound, endBound) {
+  getNoteBounds: function (note, startBound, endBound) {
     if (!startBound && !endBound) {
       endBound = Number(new Date());
       startBound = endBound - this.props.msPerWidth;
@@ -188,6 +209,69 @@ let Track = React.createClass({
       isPaused,
       endBound
     });
+  },
+
+  handleClick: function (ev) {
+    if (mouseOverNote(ev)) {
+      this.selectNote(ev);
+    }
+  },
+
+  handleMouseDown: function (ev) {
+    this.setState({ isMouseDown: true });
+  },
+
+  handleMouseUp: function (ev) {
+    this.setState({ isMouseDown: false });
+  },
+
+  handleMouseMove: function (ev) {
+    if (this.state.isMouseDown) {
+      if (this.state.noteSelected) {
+        this.moveNote(ev);
+      } else if (this.state.trackSelected) {
+        this.moveTrackSelection(ev);
+      }
+    }
+  },
+
+  moveNote: function (ev) {
+
+  },
+
+  moveTrackSelection: function (ev) {
+
+  },
+
+  mouseOverNote: function (ev) {
+    let pos = this.getCanvasPosition(ev);
+    let activeNote = null;
+    let data = this.state.data;
+    for (let i = 0; i < data.length; i++) {
+      let note = data[i];
+      let [startBound, endBound] = this.getTrackBounds();
+      let { x, y, width, height } = this.getNoteBounds(note, startBound, endBound);
+      let endX = width - x;
+      let endY = height - y;
+
+      if (pos.x > x && pos.x < endX && pos.y > y && pos.y < endY) {
+        activeNote = i;
+      }
+    }
+
+    this.setState({
+      activeNote
+    });
+
+    return Boolean(activeNote);
+  },
+
+  getCanvasPosition: function (ev) {
+    let rect = this.state.renderer.view.getBoundingRect();
+    return {
+      x: ev.clientX - rect.left,
+      y: ev.clientY - rect.top
+    };
   }
 });
 

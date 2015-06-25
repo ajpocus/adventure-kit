@@ -82968,6 +82968,8 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+function _slicedToArray(arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }
+
 var _track_tool_list = require('./track_tool_list');
 
 var _track_tool_list2 = _interopRequireDefault(_track_tool_list);
@@ -83007,7 +83009,11 @@ var Track = React.createClass({
     return {
       isRecording: this.props.isRecording,
       isPlaying: false,
-      isPaused: false
+      isPaused: false,
+      isMouseDown: false,
+      noteSelected: false,
+      trackSelected: false,
+      isSelectingTrack: false
     };
   },
 
@@ -83048,7 +83054,11 @@ var Track = React.createClass({
   render: function render() {
     return React.createElement(
       'li',
-      { className: 'track' },
+      { className: 'track',
+        onClick: this.handleClick,
+        onMouseDown: this.handleMouseDown,
+        onMouseUp: this.handleMouseUp,
+        onMouseMove: this.handleMouseMove },
       React.createElement(
         'div',
         { className: 'track-controls' },
@@ -83067,8 +83077,44 @@ var Track = React.createClass({
       return;
     }
 
+    var _getTrackBounds = this.getTrackBounds();
+
+    var _getTrackBounds2 = _slicedToArray(_getTrackBounds, 2);
+
+    var startBound = _getTrackBounds2[0];
+    var endBound = _getTrackBounds2[1];
+
+    gfx.clear();
+    this.drawMeasureMarkers();
+    gfx.beginFill(16763904);
+
+    for (var i = 0; i < data.length; i++) {
+      var note = data[i];
+
+      var _getNoteBounds = this.getNoteBounds(note, startBound, endBound);
+
+      var x = _getNoteBounds.x;
+      var y = _getNoteBounds.y;
+      var width = _getNoteBounds.width;
+      var height = _getNoteBounds.height;
+
+      gfx.drawRect(x, y, width, height);
+    }
+
+    renderer.render(stage);
+    requestAnimationFrame(this.draw);
+  },
+
+  getTrackBounds: function getTrackBounds() {
+    var data = this.state.data;
+
+    if (!data || !data.length) {
+      var _startBound = Number(new Date());
+      var _endBound = _startBound + this.props.msPerWidth;
+      return [_startBound, _endBound];
+    }
+
     var startBound = data[0].startTime;
-    var lastIdx = data.length - 1;
     var endBound = Number(new Date());
     var boundTime = endBound - startBound;
 
@@ -83079,28 +83125,10 @@ var Track = React.createClass({
       startBound = endBound - this.props.msPerWidth;
     }
 
-    gfx.clear();
-    this.drawMeasureMarkers();
-    gfx.beginFill(16763904);
-
-    for (var i = 0; i < data.length; i++) {
-      var note = data[i];
-
-      var _getNoteParams = this.getNoteParams(note, startBound, endBound);
-
-      var x = _getNoteParams.x;
-      var y = _getNoteParams.y;
-      var width = _getNoteParams.width;
-      var height = _getNoteParams.height;
-
-      gfx.drawRect(x, y, width, height);
-    }
-
-    renderer.render(stage);
-    requestAnimationFrame(this.draw);
+    return [startBound, endBound];
   },
 
-  getNoteParams: function getNoteParams(note, startBound, endBound) {
+  getNoteBounds: function getNoteBounds(note, startBound, endBound) {
     if (!startBound && !endBound) {
       endBound = Number(new Date());
       startBound = endBound - this.props.msPerWidth;
@@ -83170,6 +83198,78 @@ var Track = React.createClass({
       isPaused: isPaused,
       endBound: endBound
     });
+  },
+
+  handleClick: function handleClick(ev) {
+    if (mouseOverNote(ev)) {
+      this.selectNote(ev);
+    }
+  },
+
+  handleMouseDown: function handleMouseDown(ev) {
+    this.setState({ isMouseDown: true });
+  },
+
+  handleMouseUp: function handleMouseUp(ev) {
+    this.setState({ isMouseDown: false });
+  },
+
+  handleMouseMove: function handleMouseMove(ev) {
+    if (this.state.isMouseDown) {
+      if (this.state.noteSelected) {
+        this.moveNote(ev);
+      } else if (this.state.trackSelected) {
+        this.moveTrackSelection(ev);
+      }
+    }
+  },
+
+  moveNote: function moveNote(ev) {},
+
+  moveTrackSelection: function moveTrackSelection(ev) {},
+
+  mouseOverNote: function mouseOverNote(ev) {
+    var pos = this.getCanvasPosition(ev);
+    var activeNote = null;
+    var data = this.state.data;
+    for (var i = 0; i < data.length; i++) {
+      var note = data[i];
+
+      var _getTrackBounds3 = this.getTrackBounds();
+
+      var _getTrackBounds32 = _slicedToArray(_getTrackBounds3, 2);
+
+      var startBound = _getTrackBounds32[0];
+      var endBound = _getTrackBounds32[1];
+
+      var _getNoteBounds2 = this.getNoteBounds(note, startBound, endBound);
+
+      var x = _getNoteBounds2.x;
+      var y = _getNoteBounds2.y;
+      var width = _getNoteBounds2.width;
+      var height = _getNoteBounds2.height;
+
+      var endX = width - x;
+      var endY = height - y;
+
+      if (pos.x > x && pos.x < endX && pos.y > y && pos.y < endY) {
+        activeNote = i;
+      }
+    }
+
+    this.setState({
+      activeNote: activeNote
+    });
+
+    return Boolean(activeNote);
+  },
+
+  getCanvasPosition: function getCanvasPosition(ev) {
+    var rect = this.state.renderer.view.getBoundingRect();
+    return {
+      x: ev.clientX - rect.left,
+      y: ev.clientY - rect.top
+    };
   }
 });
 
