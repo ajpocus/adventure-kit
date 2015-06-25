@@ -22,7 +22,7 @@ let TrackList = React.createClass({
       <ul className="track-list">
         {trackViews}
 
-        <Track data={this.props.recording}/>
+        <Track data={this.props.recording} isRecording={true}/>
       </ul>
     );
   }

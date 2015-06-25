@@ -29,6 +29,14 @@ let Track = React.createClass({
     };
   },
 
+  getInitialState: function () {
+    return {
+      isRecording: this.props.isRecording,
+      isPlaying: false,
+      isPaused: false
+    };
+  },
+
   componentDidMount: function () {
     let width = this.props.canvasWidth;
     let height = this.props.canvasHeight;
@@ -54,6 +62,14 @@ let Track = React.createClass({
 
   componentDidUpdate: function () {
     requestAnimationFrame(this.draw);
+
+    if (this.state.isPaused && this.state.isRecording ||
+        this.state.isPaused && this.state.isPlaying) {
+      this.setState({
+        isRecording: false,
+        isPlaying: false
+      });
+    }
   },
 
   render: function () {
@@ -144,17 +160,22 @@ let Track = React.createClass({
   },
 
   handleSetActiveTool: function (name) {
+    let isRecording = this.state.isRecording;
+    let isPlaying = this.state.isPlaying;
     let isPaused = this.state.isPaused;
     let endBound = this.state.endBound;
 
     switch (name) {
       case 'Play':
         // stop recording, set the marker to 0, and play the recording
+        isRecording = false;
         break;
 
       case 'Pause':
         // pause the track recording / playback
         isPaused = !isPaused;
+        isPlaying = false;
+        isRecording = false;
         endBound = Number(new Date());
         break;
 

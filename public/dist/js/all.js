@@ -83003,6 +83003,14 @@ var Track = React.createClass({
     };
   },
 
+  getInitialState: function getInitialState() {
+    return {
+      isRecording: this.props.isRecording,
+      isPlaying: false,
+      isPaused: false
+    };
+  },
+
   componentDidMount: function componentDidMount() {
     var width = this.props.canvasWidth;
     var height = this.props.canvasHeight;
@@ -83028,6 +83036,13 @@ var Track = React.createClass({
 
   componentDidUpdate: function componentDidUpdate() {
     requestAnimationFrame(this.draw);
+
+    if (this.state.isPaused && this.state.isRecording || this.state.isPaused && this.state.isPlaying) {
+      this.setState({
+        isRecording: false,
+        isPlaying: false
+      });
+    }
   },
 
   render: function render() {
@@ -83127,17 +83142,22 @@ var Track = React.createClass({
   },
 
   handleSetActiveTool: function handleSetActiveTool(name) {
+    var isRecording = this.state.isRecording;
+    var isPlaying = this.state.isPlaying;
     var isPaused = this.state.isPaused;
     var endBound = this.state.endBound;
 
     switch (name) {
       case 'Play':
         // stop recording, set the marker to 0, and play the recording
+        isRecording = false;
         break;
 
       case 'Pause':
         // pause the track recording / playback
         isPaused = !isPaused;
+        isPlaying = false;
+        isRecording = false;
         endBound = Number(new Date());
         break;
 
@@ -83191,7 +83211,7 @@ var TrackList = React.createClass({
       'ul',
       { className: 'track-list' },
       trackViews,
-      React.createElement(_track2['default'], { data: this.props.recording })
+      React.createElement(_track2['default'], { data: this.props.recording, isRecording: true })
     );
   }
 });
