@@ -9,12 +9,12 @@ body,
 /* Background from subtlepatterns.com */
 
 body {
-  background: url("/img/wild_oliva.png");
-  color: #ebebeb;
+  background: url("/img/pixel_weave.png");
+  color: #323232;
 }
 
 body a:visited {
-  color: #ebebeb;
+  color: #323232;
 }
 
 #root {
