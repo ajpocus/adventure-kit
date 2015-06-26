@@ -14,8 +14,8 @@ let ContextMenu = React.createClass({
   render: function () {
     let ev = this.props.ev;
     let menuStyle = {
-      top: ev.pageY,
-      left: ev.pageX
+      top: ev.pageY + 1,
+      left: ev.pageX + 1
     };
     let self = this;
 
