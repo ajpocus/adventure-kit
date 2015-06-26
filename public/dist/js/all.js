@@ -83177,12 +83177,10 @@ var Track = React.createClass({
   },
 
   getTrackBounds: function getTrackBounds() {
-    var data = this.state.data;
+    var data = this.props.data;
 
     if (!data || !data.length) {
-      var _startBound = Number(new Date());
-      var _endBound = _startBound + this.props.msPerWidth;
-      return [_startBound, _endBound];
+      return;
     }
 
     var startBound = data[0].startTime;
@@ -83272,7 +83270,7 @@ var Track = React.createClass({
   },
 
   handleClick: function handleClick(ev) {
-    if (mouseOverNote(ev)) {
+    if (this.mouseOverNote(ev)) {
       this.selectNote(ev);
     }
   },
@@ -83297,7 +83295,6 @@ var Track = React.createClass({
 
   handleContextMenu: function handleContextMenu(ev) {
     ev.preventDefault();
-    console.log(ev.clientX, ev.pageX, ev.screenX);
     React.render(React.createElement(_context_menu2['default'], { options: this.props.contextOptions,
       onOptionSelected: this.onOptionSelected,
       ev: ev }), document.getElementById('context-menu-container'));
@@ -83311,6 +83308,11 @@ var Track = React.createClass({
     var pos = this.getCanvasPosition(ev);
     var activeNote = null;
     var data = this.state.data;
+
+    if (!data || !data.length) {
+      return false;
+    }
+
     for (var i = 0; i < data.length; i++) {
       var note = data[i];
 
@@ -83344,20 +83346,20 @@ var Track = React.createClass({
   },
 
   getCanvasPosition: function getCanvasPosition(ev) {
-    var rect = this.state.renderer.view.getBoundingRect();
+    var rect = this.state.stage.getBounds();
     return {
       x: ev.clientX - rect.left,
       y: ev.clientY - rect.top
     };
   },
 
-  onOptionSelected: function onOptionSelected(name) {
-    console.log(name);
-  }
+  onOptionSelected: function onOptionSelected(name) {}
 });
 
 exports['default'] = Track;
 module.exports = exports['default'];
+
+// TODO: do something with selected option
 
 },{"./context_menu":490,"./track_tool_list":511,"react":470,"tinycolor2":486}],510:[function(require,module,exports){
 'use strict';

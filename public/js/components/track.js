@@ -124,12 +124,10 @@ let Track = React.createClass({
   },
 
   getTrackBounds: function () {
-    let data = this.state.data;
+    let data = this.props.data;
 
     if (!data || !data.length) {
-      let startBound = Number(new Date());
-      let endBound = startBound + this.props.msPerWidth;
-      return [startBound, endBound];
+      return;
     }
 
     let startBound = data[0].startTime;
@@ -219,7 +217,7 @@ let Track = React.createClass({
   },
 
   handleClick: function (ev) {
-    if (mouseOverNote(ev)) {
+    if (this.mouseOverNote(ev)) {
       this.selectNote(ev);
     }
   },
@@ -244,7 +242,6 @@ let Track = React.createClass({
 
   handleContextMenu: function (ev) {
     ev.preventDefault();
-    console.log(ev.clientX, ev.pageX, ev.screenX);
     React.render(<ContextMenu options={this.props.contextOptions}
                               onOptionSelected={this.onOptionSelected}
                               ev={ev}/>,
@@ -263,6 +260,11 @@ let Track = React.createClass({
     let pos = this.getCanvasPosition(ev);
     let activeNote = null;
     let data = this.state.data;
+
+    if (!data || !data.length) {
+      return false;
+    }
+
     for (let i = 0; i < data.length; i++) {
       let note = data[i];
       let [startBound, endBound] = this.getTrackBounds();
@@ -283,7 +285,7 @@ let Track = React.createClass({
   },
 
   getCanvasPosition: function (ev) {
-    let rect = this.state.renderer.view.getBoundingRect();
+    let rect = this.state.stage.getBounds();
     return {
       x: ev.clientX - rect.left,
       y: ev.clientY - rect.top
@@ -291,7 +293,7 @@ let Track = React.createClass({
   },
 
   onOptionSelected: function (name) {
-    console.log(name);
+    // TODO: do something with selected option
   }
 });
 
