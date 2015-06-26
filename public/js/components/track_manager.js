@@ -2,7 +2,7 @@ let React = require('react');
 
 import Track from './track';
 
-let TrackList = React.createClass({
+let TrackManager = React.createClass({
   getDefaultProps: function () {
     return {
       trackCount: 4
@@ -28,4 +28,4 @@ let TrackList = React.createClass({
   }
 });
 
-export default TrackList;
+export default TrackManager;

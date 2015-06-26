@@ -98,7 +98,6 @@ img.pixel {
   -ms-interpolation-mode: nearest-neighbor;
   /* IE8+ */
 }
-
 .modal-background {
   position: absolute;
   top: 0;
@@ -126,16 +125,6 @@ img.pixel {
   padding: 4px;
   font-face: bold;
   font-size: 14px;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
 }
 
 .tool-list .btn {

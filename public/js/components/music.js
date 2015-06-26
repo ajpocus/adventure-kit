@@ -1,6 +1,6 @@
 let React = require('react');
 
-import TrackList from './track_list';
+import TrackManager from './track_manager';
 import InstrumentList from './instrument_list';
 import Keyboard from './keyboard';
 import VolumeControl from './volume_control';
@@ -34,7 +34,7 @@ let Music = React.createClass({
         }
       ],
       activeInstrument: 0,
-      volume: 0.5,
+      volume: 0.3,
       recording: [],
       tracks: [],
       isRecording: true
@@ -53,14 +53,14 @@ let Music = React.createClass({
           </div>
 
           <div className="main">
-            <TrackList tracks={this.state.tracks}
-                       recording={this.state.recording}/>
+            <TrackManager tracks={this.state.tracks}
+                          recording={this.state.recording}/>
           </div>
         </div>
 
         <div className="bottom">
           <div className="controls">
-            <VolumeControl gain="0.5"
+            <VolumeControl volume={this.state.volume}
                            onVolumeChange={this.onVolumeChange}/>
             <Keyboard instrument={instrument}
                       volume={this.state.volume}

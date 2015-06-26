@@ -1,10 +1,8 @@
 let React = require('react');
 
 let VolumeControl = React.createClass({
-  getDefaultProps: function () {
-    return {
-      volume: 0.5
-    };
+  propTypes: {
+    volume: React.PropTypes.number.isRequired
   },
 
   getInitialState: function () {
@@ -16,7 +14,7 @@ let VolumeControl = React.createClass({
   render: function () {
     return (
       <div className="volume control">
-        <img className="icon"
+        <img className="volume icon"
              src="/img/icons/glyphicons-184-volume-down.png"/>
         <input type="range"
                min="0"
@@ -24,7 +22,7 @@ let VolumeControl = React.createClass({
                step="0.01"
                value={this.state.volume}
                onChange={this.handleChange}/>
-        <img className="icon"
+        <img className="volume icon"
              src="/img/icons/glyphicons-185-volume-up.png"/>
         <span className="display">{Math.round(this.state.volume * 100)}</span>
       </div>

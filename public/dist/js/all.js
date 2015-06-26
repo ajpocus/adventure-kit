@@ -82577,9 +82577,9 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _track_list = require('./track_list');
+var _track_manager = require('./track_manager');
 
-var _track_list2 = _interopRequireDefault(_track_list);
+var _track_manager2 = _interopRequireDefault(_track_manager);
 
 var _instrument_list = require('./instrument_list');
 
@@ -82620,7 +82620,7 @@ var Music = React.createClass({
         }]
       }],
       activeInstrument: 0,
-      volume: 0.5,
+      volume: 0.3,
       recording: [],
       tracks: [],
       isRecording: true
@@ -82645,7 +82645,7 @@ var Music = React.createClass({
         React.createElement(
           'div',
           { className: 'main' },
-          React.createElement(_track_list2['default'], { tracks: this.state.tracks,
+          React.createElement(_track_manager2['default'], { tracks: this.state.tracks,
             recording: this.state.recording })
         )
       ),
@@ -82655,7 +82655,7 @@ var Music = React.createClass({
         React.createElement(
           'div',
           { className: 'controls' },
-          React.createElement(_volume_control2['default'], { gain: '0.5',
+          React.createElement(_volume_control2['default'], { volume: this.state.volume,
             onVolumeChange: this.onVolumeChange }),
           React.createElement(_keyboard2['default'], { instrument: instrument,
             volume: this.state.volume,
@@ -82682,7 +82682,7 @@ var Music = React.createClass({
 exports['default'] = Music;
 module.exports = exports['default'];
 
-},{"./instrument_list":499,"./keyboard":500,"./track_list":510,"./volume_control":513,"react":470}],505:[function(require,module,exports){
+},{"./instrument_list":499,"./keyboard":500,"./track_manager":510,"./volume_control":513,"react":470}],505:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83382,8 +83382,8 @@ var _track2 = _interopRequireDefault(_track);
 
 var React = require('react');
 
-var TrackList = React.createClass({
-  displayName: 'TrackList',
+var TrackManager = React.createClass({
+  displayName: 'TrackManager',
 
   getDefaultProps: function getDefaultProps() {
     return {
@@ -83407,7 +83407,7 @@ var TrackList = React.createClass({
   }
 });
 
-exports['default'] = TrackList;
+exports['default'] = TrackManager;
 module.exports = exports['default'];
 
 },{"./track":509,"react":470}],511:[function(require,module,exports){
@@ -83491,10 +83491,8 @@ var React = require("react");
 var VolumeControl = React.createClass({
   displayName: "VolumeControl",
 
-  getDefaultProps: function getDefaultProps() {
-    return {
-      volume: 0.5
-    };
+  propTypes: {
+    volume: React.PropTypes.number.isRequired
   },
 
   getInitialState: function getInitialState() {
@@ -83507,7 +83505,7 @@ var VolumeControl = React.createClass({
     return React.createElement(
       "div",
       { className: "volume control" },
-      React.createElement("img", { className: "icon",
+      React.createElement("img", { className: "volume icon",
         src: "/img/icons/glyphicons-184-volume-down.png" }),
       React.createElement("input", { type: "range",
         min: "0",
@@ -83515,7 +83513,7 @@ var VolumeControl = React.createClass({
         step: "0.01",
         value: this.state.volume,
         onChange: this.handleChange }),
-      React.createElement("img", { className: "icon",
+      React.createElement("img", { className: "volume icon",
         src: "/img/icons/glyphicons-185-volume-up.png" }),
       React.createElement(
         "span",
