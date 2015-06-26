@@ -80402,7 +80402,9 @@ var Keyboard = React.createClass({
       var key = blackKeys[i];
 
       if (key.spacer) {
-        blackKeyViews.push(React.createElement('li', { className: 'black key spacer' }));
+        blackKeyViews.push(React.createElement('li', { className: 'black key spacer',
+          key: 'spacer-' + i }));
+
         continue;
       }
 

@@ -104,8 +104,10 @@ let Keyboard = React.createClass({
 
       if (key.spacer) {
         blackKeyViews.push(
-          <li className="black key spacer"></li>
+          <li className="black key spacer"
+              key={'spacer-' + i}></li>
         );
+
         continue;
       }
 
