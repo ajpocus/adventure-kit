@@ -28,6 +28,7 @@ $(function () {
           </div>
 
           <div id="modal-container"></div>
+          <div id="context-menu-container"></div>
 
           <Footer/>
         </div>

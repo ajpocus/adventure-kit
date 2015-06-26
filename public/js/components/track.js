@@ -2,6 +2,7 @@ let React = require('react');
 let tinycolor = require('tinycolor2');
 
 import TrackToolList from './track_tool_list';
+import ContextMenu from './context_menu';
 
 let Track = React.createClass({
   getDefaultProps: function () {
@@ -25,7 +26,12 @@ let Track = React.createClass({
       beatsPerSecond,
       msPerBeat,
       beatsPerWidth,
-      msPerWidth
+      msPerWidth,
+      contextOptions: [
+        'Cut',
+        'Copy',
+        'Paste'
+      ]
     };
   },
 
@@ -82,7 +88,8 @@ let Track = React.createClass({
           onClick={this.handleClick}
           onMouseDown={this.handleMouseDown}
           onMouseUp={this.handleMouseUp}
-          onMouseMove={this.handleMouseMove}>
+          onMouseMove={this.handleMouseMove}
+          onContextMenu={this.handleContextMenu}>
         <div className="track-controls">
           <TrackToolList onSetActiveTool={this.handleSetActiveTool}/>
         </div>
@@ -235,6 +242,15 @@ let Track = React.createClass({
     }
   },
 
+  handleContextMenu: function (ev) {
+    ev.preventDefault();
+    console.log(ev.clientX, ev.pageX, ev.screenX);
+    React.render(<ContextMenu options={this.props.contextOptions}
+                              onOptionSelected={this.onOptionSelected}
+                              ev={ev}/>,
+                 document.getElementById('context-menu-container'));
+  },
+
   moveNote: function (ev) {
 
   },
@@ -272,6 +288,10 @@ let Track = React.createClass({
       x: ev.clientX - rect.left,
       y: ev.clientY - rect.top
     };
+  },
+
+  onOptionSelected: function (name) {
+    console.log(name);
   }
 });
 
