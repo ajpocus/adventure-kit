@@ -1,7 +1,6 @@
 let React = require('react');
 let $ = require('jquery');
 let teoria = require('teoria');
-let _ = require('underscore');
 
 import KeyMapMixin from '../mixins/key_map_mixin';
 
@@ -9,6 +8,51 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let Keyboard = React.createClass({
   mixins: [ KeyMapMixin ],
+
+  getDefaultProps: function () {
+    return {
+      keys: {
+        white: [
+          { key: 'Z', midi: 0 },
+          { key: 'X', midi: 2 },
+          { key: 'C', midi: 4 },
+          { key: 'V', midi: 5 },
+          { key: 'B', midi: 7 },
+          { key: 'N', midi: 9 },
+          { key: 'M', midi: 11 },
+          { key: '< Q', midi: 12 },
+          { key: 'W', midi: 14 },
+          { key: 'E', midi: 16 },
+          { key: 'R', midi: 17 },
+          { key: 'T', midi: 19 },
+          { key: 'Y', midi: 21 },
+          { key: 'U', midi: 23 },
+          { key: 'I', midi: 24 },
+          { key: 'O', midi: 26 },
+          { key: 'P', midi: 28 }
+        ],
+        black: [
+          { key: 'S', midi: 1 },
+          { key: 'D', midi: 3 },
+          { spacer: true },
+          { key: 'G', midi: 6 },
+          { key: 'H', midi: 8 },
+          { key: 'J', midi: 10 },
+          { spacer: true },
+          { key: '2', midi: 13 },
+          { key: '3', midi: 15 },
+          { spacer: true },
+          { key: '5', midi: 18 },
+          { key: '6', midi: 20 },
+          { key: '7', midi: 22 },
+          { spacer: true },
+          { key: '9', midi: 25 },
+          { key: '0', midi: 27 }
+        ]
+      },
+      notesPerOctave: 12
+    };
+  },
 
   getInitialState: function () {
     return {
@@ -33,163 +77,61 @@ let Keyboard = React.createClass({
   },
 
   render: function () {
+    let whiteKeys = this.props.keys.white;
+    let blackKeys = this.props.keys.black;
+    let whiteKeyViews = [];
+    let blackKeyViews = [];
+    let octaveShift = this.state.octaveShift;
+    let notesPerOctave = this.props.notesPerOctave;
+
+    for (let i = 0; i < whiteKeys.length; i++) {
+      let key = whiteKeys[i];
+      let midi = notesPerOctave + key.midi + (notesPerOctave * octaveShift);
+      let note = teoria.note.fromMIDI(midi);
+      let scientific = note.scientific();
+
+      whiteKeyViews.push(
+        <li className="white key"
+            key={midi}>
+          <div className="char">{key.key}</div>
+          <div className="note">{scientific}</div>
+        </li>
+      );
+    }
+
+    for (let i = 0; i < blackKeys.length; i++) {
+      let key = blackKeys[i];
+
+      if (key.spacer) {
+        blackKeyViews.push(
+          <li className="black key spacer"></li>
+        );
+        continue;
+      }
+
+      let midi = notesPerOctave + key.midi + (notesPerOctave * octaveShift);
+      let note = teoria.note.fromMIDI(midi);
+
+      let scientific = note.scientific();
+      scientific = scientific.replace('b', '♭');
+      scientific = scientific.replace('#', '♯');
+
+      blackKeyViews.push(
+        <li className="black key"
+            key={midi}>
+          <div className="char">{key.key}</div>
+          <div className="note">{scientific}</div>
+        </li>
+      );
+    }
+
     return (
       <div id="keyboard">
         <ul className="white keys">
-          <li className="white key c">
-            <div className="char">Z</div>
-            <div className="note">C2</div>
-          </li>
-
-          <li className="white key d">
-            <div className="char">X</div>
-            <div className="note">D2</div>
-          </li>
-
-          <li className="white key e">
-            <div className="char">C</div>
-            <div className="note">E2</div>
-          </li>
-
-          <li className="white key f">
-            <div className="char">V</div>
-            <div className="note">F2</div>
-          </li>
-
-          <li className="white key g">
-            <div className="char">B</div>
-            <div className="note">G2</div>
-          </li>
-
-          <li className="white key a">
-            <div className="char">N</div>
-            <div className="note">A2</div>
-          </li>
-
-          <li className="white key b">
-            <div className="char">M</div>
-            <div className="note">B2</div>
-          </li>
-
-          <li className="white key c">
-            <div className="char">&lt;<br/>Q</div>
-            <div className="note">C3</div>
-          </li>
-
-          <li className="white key d">
-            <div className="char">W</div>
-            <div className="note">D3</div>
-          </li>
-
-          <li className="white key e">
-            <div className="char">E</div>
-            <div className="note">E3</div>
-          </li>
-
-          <li className="white key f">
-            <div className="char">R</div>
-            <div className="note">F3</div>
-          </li>
-
-          <li className="white key g">
-            <div className="char">T</div>
-            <div className="note">G3</div>
-          </li>
-
-          <li className="white key a">
-            <div className="char">Y</div>
-            <div className="note">A3</div>
-          </li>
-
-          <li className="white key b">
-            <div className="char">I</div>
-            <div className="note">B3</div>
-          </li>
-
-          <li className="white key c">
-            <div className="char">O</div>
-            <div className="note">C4</div>
-          </li>
-
-          <li className="white key d">
-            <div className="char">U</div>
-            <div className="note">D4</div>
-          </li>
-
-          <li className="white key e">
-            <div className="char">P</div>
-            <div className="note">E4</div>
-          </li>
+          {whiteKeyViews}
         </ul>
-
         <ul className="black keys">
-          <li className="black key first">
-            <div className="char">S</div>
-            <div className="note">C#2</div>
-          </li>
-
-          <li className="black key">
-            <div className="char">D</div>
-            <div className="note">D#2</div>
-          </li>
-
-          <li className="black spacer key"></li>
-
-          <li className="black key">
-            <div className="char">G</div>
-            <div className="note">F#2</div>
-          </li>
-
-          <li className="black key">
-            <div className="char">H</div>
-            <div className="note">G#2</div>
-          </li>
-
-          <li className="black key">
-            <div className="char">J</div>
-            <div className="note">A#2</div>
-          </li>
-
-          <li className="black spacer key"></li>
-
-          <li className="black key">
-            <div className="char">2</div>
-            <div className="note">C#3</div>
-          </li>
-
-          <li className="black key">
-            <div className="char">3</div>
-            <div className="note">D#3</div>
-          </li>
-
-          <li className="black spacer key"></li>
-
-          <li className="black key">
-            <div className="char">5</div>
-            <div className="note">F#3</div>
-          </li>
-
-          <li className="black key">
-            <div className="char">6</div>
-            <div className="note">G#3</div>
-          </li>
-
-          <li className="black key">
-            <div className="char">7</div>
-            <div className="note">A#3</div>
-          </li>
-
-          <li className="black spacer key"></li>
-
-          <li className="black key">
-            <div className="char">9</div>
-            <div className="note">C#4</div>
-          </li>
-
-          <li className="black key">
-            <div className="char">0</div>
-            <div className="note">D#4</div>
-          </li>
+          {blackKeyViews}
         </ul>
       </div>
     );
