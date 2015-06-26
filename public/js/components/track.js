@@ -220,6 +220,10 @@ let Track = React.createClass({
     if (this.mouseOverNote(ev)) {
       this.selectNote(ev);
     }
+
+    this.setState({
+      isPaused: true
+    });
   },
 
   handleMouseDown: function (ev) {
@@ -259,7 +263,7 @@ let Track = React.createClass({
   mouseOverNote: function (ev) {
     let pos = this.getCanvasPosition(ev);
     let activeNote = null;
-    let data = this.state.data;
+    let data = this.props.data;
 
     if (!data || !data.length) {
       return false;
@@ -269,8 +273,8 @@ let Track = React.createClass({
       let note = data[i];
       let [startBound, endBound] = this.getTrackBounds();
       let { x, y, width, height } = this.getNoteBounds(note, startBound, endBound);
-      let endX = width - x;
-      let endY = height - y;
+      let endX = x + width;
+      let endY = y + height;
 
       if (pos.x > x && pos.x < endX && pos.y > y && pos.y < endY) {
         activeNote = i;
@@ -285,7 +289,7 @@ let Track = React.createClass({
   },
 
   getCanvasPosition: function (ev) {
-    let rect = this.state.stage.getBounds();
+    let rect = this.state.renderer.view.getBoundingClientRect();
     return {
       x: ev.clientX - rect.left,
       y: ev.clientY - rect.top
