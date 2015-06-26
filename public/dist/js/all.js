@@ -80581,9 +80581,9 @@ var _modelsPixel = require('../models/pixel');
 
 var _modelsPixel2 = _interopRequireDefault(_modelsPixel);
 
-var _libTransparency = require('../lib/transparency');
+var _mixinsTransparency = require('../mixins/transparency');
 
-var _libTransparency2 = _interopRequireDefault(_libTransparency);
+var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var React = require('react');
 var $ = require('jquery');
@@ -81099,7 +81099,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../lib/transparency":514,"../models/pixel":516,"./manage_tool_list":501,"./resize_prompt":507,"jquery":147,"pixi.js":252,"pngjs":276,"react":470,"tinycolor2":486}],493:[function(require,module,exports){
+},{"../mixins/transparency":515,"../models/pixel":516,"./manage_tool_list":501,"./resize_prompt":507,"jquery":147,"pixi.js":252,"pngjs":276,"react":470,"tinycolor2":486}],493:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81353,9 +81353,9 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _libTransparency = require('../lib/transparency');
+var _mixinsTransparency = require('../mixins/transparency');
 
-var _libTransparency2 = _interopRequireDefault(_libTransparency);
+var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var React = require('react');
 var $ = require('jquery');
@@ -81384,7 +81384,7 @@ var EditPalette = React.createClass({
       var color = this.state.palette[i];
       var swatchStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
-        swatchStyle.background = _libTransparency2['default'].background;
+        swatchStyle.background = _mixinsTransparency2['default'].background;
       }
 
       colorList.push(React.createElement(
@@ -81520,7 +81520,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../lib/transparency":514,"jquery":147,"react":470}],496:[function(require,module,exports){
+},{"../mixins/transparency":515,"jquery":147,"react":470}],496:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -81888,12 +81888,13 @@ var Keyboard = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      isPlaying: {},
+      notesPlaying: {},
       ctx: new window.AudioContext(),
       oscillators: {},
       octaveShift: 2,
       recording: [],
-      indices: {}
+      recordingIndices: {},
+      isRecording: this.props.isRecording
     };
   },
 
@@ -81908,9 +81909,6 @@ var Keyboard = React.createClass({
   },
 
   render: function render() {
-    var whiteKeys = [];
-    var blackKeys = [];
-
     return React.createElement(
       'div',
       { id: 'keyboard' },
@@ -82340,9 +82338,9 @@ var Keyboard = React.createClass({
   handleKeyDown: function handleKeyDown(ev) {
     var key = this.keyCodeToChar(ev.keyCode);
 
-    if (this.state.isPlaying[key]) {
-      var indices = this.state.indices;
-      var idx = indices[key];
+    if (this.state.notesPlaying[key]) {
+      var recordingIndices = this.state.recordingIndices;
+      var idx = recordingIndices[key];
       var recording = this.state.recording;
       recording[idx].endTime = Number(new Date());
 
@@ -82354,7 +82352,7 @@ var Keyboard = React.createClass({
     } else {
       var ctx = this.state.ctx;
       var oscillators = this.state.oscillators;
-      var isPlaying = this.state.isPlaying;
+      var notesPlaying = this.state.notesPlaying;
       var instrument = this.props.instrument;
       oscillators[key] = [];
 
@@ -82384,24 +82382,26 @@ var Keyboard = React.createClass({
         oscillators[key].push(osc);
       }
 
-      isPlaying[key] = true;
+      notesPlaying[key] = true;
 
       var recording = this.state.recording;
-      var now = Number(new Date());
-      recording.push({
-        midi: midi,
-        startTime: now
-      });
+      if (this.state.isRecording) {
+        var now = Number(new Date());
+        recording.push({
+          midi: midi,
+          startTime: now
+        });
 
-      var indices = this.state.indices;
-      indices[key] = recording.length - 1;
+        var recordingIndices = this.state.recordingIndices;
+        recordingIndices[key] = recording.length - 1;
+      }
 
       this.setState({
         ctx: ctx,
         oscillators: oscillators,
-        isPlaying: isPlaying,
+        notesPlaying: notesPlaying,
         recording: recording,
-        indices: indices
+        recordingIndices: recordingIndices
       }, function () {
         this.props.onRecordingUpdate(this.state.recording);
       });
@@ -82410,9 +82410,9 @@ var Keyboard = React.createClass({
 
   handleKeyUp: function handleKeyUp(ev) {
     var key = this.keyCodeToChar(ev.keyCode);
-    var isPlaying = this.state.isPlaying;
+    var notesPlaying = this.state.notesPlaying;
 
-    if (isPlaying[key]) {
+    if (notesPlaying[key]) {
       var oscillators = this.state.oscillators;
 
       for (var i = 0; i < oscillators[key].length; i++) {
@@ -82421,19 +82421,19 @@ var Keyboard = React.createClass({
       }
 
       delete oscillators[key];
-      delete isPlaying[key];
+      delete notesPlaying[key];
 
-      var indices = this.state.indices;
+      var recordingIndices = this.state.recordingIndices;
       var recording = this.state.recording;
-      var idx = this.state.indices[key];
+      var idx = this.state.recordingIndices[key];
       recording[idx].endTime = Number(new Date());
-      delete indices[key];
+      delete recordingIndices[key];
 
       this.setState({
         oscillators: oscillators,
-        isPlaying: isPlaying,
+        notesPlaying: notesPlaying,
         recording: recording,
-        indices: indices
+        recordingIndices: recordingIndices
       }, function () {
         this.props.onRecordingUpdate(this.state.recording);
       });
@@ -82444,7 +82444,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../mixins/key_map_mixin":515,"jquery":147,"react":470,"teoria":471,"underscore":487}],501:[function(require,module,exports){
+},{"../mixins/key_map_mixin":514,"jquery":147,"react":470,"teoria":471,"underscore":487}],501:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82622,7 +82622,8 @@ var Music = React.createClass({
       activeInstrument: 0,
       volume: 0.5,
       recording: [],
-      tracks: []
+      tracks: [],
+      isRecording: true
     };
   },
 
@@ -82658,6 +82659,7 @@ var Music = React.createClass({
             onVolumeChange: this.onVolumeChange }),
           React.createElement(_keyboard2['default'], { instrument: instrument,
             volume: this.state.volume,
+            isRecording: this.state.isRecording,
             onRecordingUpdate: this.onRecordingUpdate })
         )
       )
@@ -82693,9 +82695,9 @@ var _edit_palette = require('./edit_palette');
 
 var _edit_palette2 = _interopRequireDefault(_edit_palette);
 
-var _libTransparency = require('../lib/transparency');
+var _mixinsTransparency = require('../mixins/transparency');
 
-var _libTransparency2 = _interopRequireDefault(_libTransparency);
+var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
 
 var _modal = require('./modal');
 
@@ -82711,7 +82713,7 @@ var PaletteManager = React.createClass({
   getInitialState: function getInitialState() {
     return {
       palettes: {
-        'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#ff00ff']
+        'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#770099']
       },
       activePalette: 'Rainbow',
       isEditingPalette: false
@@ -82738,7 +82740,7 @@ var PaletteManager = React.createClass({
       // When transparent, use a checkerboard pattern.
       var liStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
-        liStyle.background = _libTransparency2['default'].background;
+        liStyle.background = _mixinsTransparency2['default'].background;
       }
 
       paletteColors.push(React.createElement('li', { className: 'color', style: liStyle, key: i,
@@ -82828,7 +82830,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../lib/transparency":514,"./edit_palette":495,"./modal":503,"jquery":147,"react":470,"tinycolor2":486}],506:[function(require,module,exports){
+},{"../mixins/transparency":515,"./edit_palette":495,"./modal":503,"jquery":147,"react":470,"tinycolor2":486}],506:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83539,19 +83541,6 @@ module.exports = exports["default"];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var Transparency = {
-  background: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==")'
-};
-
-exports['default'] = Transparency;
-module.exports = exports['default'];
-
-},{}],515:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
 var KeyMapMixin = {
   keyToNote: function keyToNote(key) {
     // To shift up an octave, add 12. To shift down, subtract 12.
@@ -83651,6 +83640,19 @@ var KeyMapMixin = {
 };
 
 exports['default'] = KeyMapMixin;
+module.exports = exports['default'];
+
+},{}],515:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var Transparency = {
+  background: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==")'
+};
+
+exports['default'] = Transparency;
 module.exports = exports['default'];
 
 },{}],516:[function(require,module,exports){

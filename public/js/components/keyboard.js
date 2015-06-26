@@ -12,12 +12,13 @@ let Keyboard = React.createClass({
 
   getInitialState: function () {
     return {
-      isPlaying: {},
+      notesPlaying: {},
       ctx: new window.AudioContext(),
       oscillators: {},
       octaveShift: 2,
       recording: [],
-      indices: {}
+      recordingIndices: {},
+      isRecording: this.props.isRecording
     };
   },
 
@@ -32,9 +33,6 @@ let Keyboard = React.createClass({
   },
 
   render: function () {
-    let whiteKeys = [];
-    let blackKeys = [];
-
     return (
       <div id="keyboard">
         <ul className="white keys">
@@ -200,9 +198,9 @@ let Keyboard = React.createClass({
   handleKeyDown: function (ev) {
     let key = this.keyCodeToChar(ev.keyCode);
 
-    if (this.state.isPlaying[key]) {
-      let indices = this.state.indices;
-      let idx = indices[key];
+    if (this.state.notesPlaying[key]) {
+      let recordingIndices = this.state.recordingIndices;
+      let idx = recordingIndices[key];
       let recording = this.state.recording;
       recording[idx].endTime = Number(new Date());
 
@@ -214,7 +212,7 @@ let Keyboard = React.createClass({
     } else {
       let ctx = this.state.ctx;
       let oscillators = this.state.oscillators;
-      let isPlaying = this.state.isPlaying;
+      let notesPlaying = this.state.notesPlaying;
       let instrument = this.props.instrument;
       oscillators[key] = [];
 
@@ -244,24 +242,26 @@ let Keyboard = React.createClass({
         oscillators[key].push(osc);
       }
 
-      isPlaying[key] = true;
+      notesPlaying[key] = true;
 
       let recording = this.state.recording;
-      let now = Number(new Date());
-      recording.push({
-        midi: midi,
-        startTime: now
-      });
+      if (this.state.isRecording) {
+        let now = Number(new Date());
+        recording.push({
+          midi: midi,
+          startTime: now
+        });
 
-      let indices = this.state.indices;
-      indices[key] = recording.length - 1;
+        let recordingIndices = this.state.recordingIndices;
+        recordingIndices[key] = recording.length - 1;
+      }
 
       this.setState({
-        ctx: ctx,
-        oscillators: oscillators,
-        isPlaying: isPlaying,
-        recording: recording,
-        indices: indices
+        ctx,
+        oscillators,
+        notesPlaying,
+        recording,
+        recordingIndices
       }, function () {
         this.props.onRecordingUpdate(this.state.recording);
       });
@@ -270,9 +270,9 @@ let Keyboard = React.createClass({
 
   handleKeyUp: function (ev) {
     let key = this.keyCodeToChar(ev.keyCode);
-    let isPlaying = this.state.isPlaying;
+    let notesPlaying = this.state.notesPlaying;
 
-    if (isPlaying[key]) {
+    if (notesPlaying[key]) {
       let oscillators = this.state.oscillators;
 
       for (let i = 0; i < oscillators[key].length; i++) {
@@ -281,19 +281,19 @@ let Keyboard = React.createClass({
       }
 
       delete oscillators[key];
-      delete isPlaying[key];
+      delete notesPlaying[key];
 
-      let indices = this.state.indices;
+      let recordingIndices = this.state.recordingIndices;
       let recording = this.state.recording;
-      let idx = this.state.indices[key];
+      let idx = this.state.recordingIndices[key];
       recording[idx].endTime = Number(new Date());
-      delete indices[key];
+      delete recordingIndices[key];
 
       this.setState({
         oscillators: oscillators,
-        isPlaying: isPlaying,
+        notesPlaying: notesPlaying,
         recording: recording,
-        indices: indices
+        recordingIndices: recordingIndices
       }, function () {
         this.props.onRecordingUpdate(this.state.recording);
       });

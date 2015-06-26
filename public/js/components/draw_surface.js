@@ -7,7 +7,7 @@ let PIXI = require('pixi.js');
 import ManageToolList from './manage_tool_list';
 import ResizePrompt from './resize_prompt';
 import Pixel from '../models/pixel';
-import Transparency from '../lib/transparency';
+import Transparency from '../mixins/transparency';
 
 let DrawSurface = React.createClass({
   propTypes: {

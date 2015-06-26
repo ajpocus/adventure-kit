@@ -36,7 +36,8 @@ let Music = React.createClass({
       activeInstrument: 0,
       volume: 0.5,
       recording: [],
-      tracks: []
+      tracks: [],
+      isRecording: true
     };
   },
 
@@ -63,6 +64,7 @@ let Music = React.createClass({
                            onVolumeChange={this.onVolumeChange}/>
             <Keyboard instrument={instrument}
                       volume={this.state.volume}
+                      isRecording={this.state.isRecording}
                       onRecordingUpdate={this.onRecordingUpdate}/>
           </div>
         </div>

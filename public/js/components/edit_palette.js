@@ -1,7 +1,7 @@
 let React = require('react');
 let $ = require('jquery');
 
-import Transparency from '../lib/transparency';
+import Transparency from '../mixins/transparency';
 
 let EditPalette = React.createClass({
   getInitialState: function () {
