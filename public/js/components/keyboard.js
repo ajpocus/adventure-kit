@@ -51,7 +51,6 @@ let Keyboard = React.createClass({
         ]
       },
       notesPerOctave: 12,
-      isRecording: true
     };
   },
 
@@ -140,9 +139,9 @@ let Keyboard = React.createClass({
 
   handleKeyDown: function (ev) {
     let key = this.keyCodeToChar(ev.keyCode);
+    let recordingIndices = this.state.recordingIndices;
 
     if (this.state.notesPlaying[key]) {
-      let recordingIndices = this.state.recordingIndices;
       let idx = recordingIndices[key];
       let recording = this.state.recording;
       recording[idx].endTime = Number(new Date());
@@ -188,14 +187,13 @@ let Keyboard = React.createClass({
       notesPlaying[key] = true;
 
       let recording = this.state.recording;
-      if (this.state.isRecording) {
+      if (this.props.isRecording) {
         let now = Number(new Date());
         recording.push({
           midi: midi,
           startTime: now
         });
 
-        let recordingIndices = this.state.recordingIndices;
         recordingIndices[key] = recording.length - 1;
       }
 
