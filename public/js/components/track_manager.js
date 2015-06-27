@@ -16,17 +16,20 @@ let TrackManager = React.createClass({
       let isRecording = false;
       let isStopped = true;
       let lastIdx = trackCount - 1;
+      let activeTool = 'Stop';
 
       if (i === lastIdx) {
         isRecording = true;
         isStopped = false;
+        activeTool = 'Record';
       }
 
       trackStates.push({
         isRecording,
         isPlaying: false,
         isPaused: false,
-        isStopped
+        isStopped,
+        activeTool
       });
     }
 
@@ -56,6 +59,7 @@ let TrackManager = React.createClass({
                isPlaying={trackState.isPlaying}
                isPaused={trackState.isPaused}
                isStopped={trackState.isStopped}
+               activeTool={trackState.activeTool}
                onTrackStateChange={this.onTrackStateChange}/>
       );
     }

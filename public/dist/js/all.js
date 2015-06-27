@@ -81190,8 +81190,9 @@ var Track = React.createClass({
   getInitialState: function getInitialState() {
     return {
       isRecording: this.props.isRecording,
-      isPlaying: false,
-      isPaused: false,
+      isPlaying: this.props.isPlaying,
+      isPaused: this.props.isPaused,
+      isStopped: this.props.isStopped,
       isMouseDown: false,
       noteSelected: false,
       trackSelected: false,
@@ -81244,7 +81245,8 @@ var Track = React.createClass({
       React.createElement(
         'div',
         { className: 'track-controls' },
-        React.createElement(_track_tool_list2['default'], { onSetActiveTool: this.handleSetActiveTool })
+        React.createElement(_track_tool_list2['default'], { activeTool: this.props.activeTool,
+          onSetActiveTool: this.handleSetActiveTool })
       )
     );
   },
@@ -81515,17 +81517,20 @@ var TrackManager = React.createClass({
       var isRecording = false;
       var isStopped = true;
       var lastIdx = trackCount - 1;
+      var activeTool = 'Stop';
 
       if (i === lastIdx) {
         isRecording = true;
         isStopped = false;
+        activeTool = 'Record';
       }
 
       trackStates.push({
         isRecording: isRecording,
         isPlaying: false,
         isPaused: false,
-        isStopped: isStopped
+        isStopped: isStopped,
+        activeTool: activeTool
       });
     }
 
@@ -81554,6 +81559,7 @@ var TrackManager = React.createClass({
         isPlaying: trackState.isPlaying,
         isPaused: trackState.isPaused,
         isStopped: trackState.isStopped,
+        activeTool: trackState.activeTool,
         onTrackStateChange: this.onTrackStateChange }));
     }
 
@@ -81608,7 +81614,6 @@ var TrackToolList = React.createClass({
         imgUrl: '/img/icons/glyphicons-175-pause.png'
       }, {
         name: 'Stop',
-        active: true,
         imgUrl: '/img/icons/glyphicons-176-stop.png'
       }]
     };
@@ -81619,6 +81624,7 @@ var TrackToolList = React.createClass({
       'div',
       { className: 'track-tools' },
       React.createElement(_tool_list2['default'], { tools: this.props.tools,
+        activeTool: this.props.activeTool,
         onSetActiveTool: this.props.onSetActiveTool })
     );
   }

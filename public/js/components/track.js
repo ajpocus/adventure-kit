@@ -38,8 +38,9 @@ let Track = React.createClass({
   getInitialState: function () {
     return {
       isRecording: this.props.isRecording,
-      isPlaying: false,
-      isPaused: false,
+      isPlaying: this.props.isPlaying,
+      isPaused: this.props.isPaused,
+      isStopped: this.props.isStopped,
       isMouseDown: false,
       noteSelected: false,
       trackSelected: false,
@@ -90,7 +91,8 @@ let Track = React.createClass({
           onMouseMove={this.handleMouseMove}
           onContextMenu={this.handleContextMenu}>
         <div className="track-controls">
-          <TrackToolList onSetActiveTool={this.handleSetActiveTool}/>
+          <TrackToolList activeTool={this.props.activeTool}
+                         onSetActiveTool={this.handleSetActiveTool}/>
         </div>
       </li>
     );

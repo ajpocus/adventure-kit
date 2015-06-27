@@ -24,7 +24,6 @@ let TrackToolList = React.createClass({
         },
         {
           name: 'Stop',
-          active: true,
           imgUrl: '/img/icons/glyphicons-176-stop.png'
         }
       ]
@@ -35,6 +34,7 @@ let TrackToolList = React.createClass({
     return (
       <div className="track-tools">
         <ToolList tools={this.props.tools}
+                  activeTool={this.props.activeTool}
                   onSetActiveTool={this.props.onSetActiveTool}/>
       </div>
     );
