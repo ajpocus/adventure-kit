@@ -54,7 +54,8 @@ let Draw = React.createClass({
                      tileWidth={this.state.tileWidth}
                      tileHeight={this.state.tileHeight}
                      isMouseDown={this.state.isMouseDown}
-                     title={this.state.title}/>
+                     title={this.state.title}
+                     grid={this.state.grid}/>
       </div>
     );
   }

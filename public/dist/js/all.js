@@ -80627,6 +80627,11 @@ var DrawActions = (function () {
     value: function closeEditPalette() {
       this.dispatch();
     }
+  }, {
+    key: 'createGrid',
+    value: function createGrid() {
+      this.dispatch();
+    }
   }]);
 
   return DrawActions;
@@ -80934,7 +80939,13 @@ var Draw = React.createClass({
         tileWidth: this.state.tileWidth,
         tileHeight: this.state.tileHeight,
         isMouseDown: this.state.isMouseDown,
-        title: this.state.title })
+        title: this.state.title,
+        renderer: this.state.renderer,
+        stage: this.state.stage,
+        bgGfx: this.state.bgGfx,
+        drawGfx: this.state.drawGfx,
+        overlayGfx: this.state.overlayGfx,
+        grid: this.state.grid })
     );
   }
 });
@@ -80989,8 +81000,7 @@ var DrawSurface = React.createClass({
     var width = this.props.actualWidth;
     var height = this.props.actualHeight;
     var renderer = PIXI.autoDetectRenderer(width, height);
-
-    this.refs.surface.getDOMNode().appendChild(renderer.view);
+    this.refs.surface.getDOMNode().appendChild(this.props.renderer.view);
     var stage = new PIXI.Container();
 
     var bgGfx = new PIXI.Graphics();
@@ -83743,6 +83753,8 @@ var _actionsDraw_actions = require('../actions/draw_actions');
 
 var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
 
+var PIXI = require('pixi.js');
+
 var DrawStore = (function () {
   function DrawStore() {
     _classCallCheck(this, DrawStore);
@@ -83770,6 +83782,16 @@ var DrawStore = (function () {
     this.isMouseDown = false;
     this.title = 'Untitled';
 
+    this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
+    this.stage = new PIXI.Container();
+    this.bgGfx = new PIXI.Graphics();
+    this.drawGfx = new PIXI.Graphics();
+    this.overlayGfx = new PIXI.Graphics();
+
+    this.stage.addChild(this.bgGfx);
+    this.stage.addChild(this.drawGfx);
+    this.stage.addChild(this.overlayGfx);
+
     this.bindListeners({
       setActiveTool: _actionsDraw_actions2['default'].SET_ACTIVE_TOOL,
       setPrimaryColor: _actionsDraw_actions2['default'].SET_PRIMARY_COLOR,
@@ -83781,7 +83803,8 @@ var DrawStore = (function () {
       addColor: _actionsDraw_actions2['default'].ADD_COLOR,
       updateColor: _actionsDraw_actions2['default'].UPDATE_COLOR,
       updatePalette: _actionsDraw_actions2['default'].UPDATE_PALETTE,
-      closeEditPalette: _actionsDraw_actions2['default'].CLOSE_EDIT_PALETTE
+      closeEditPalette: _actionsDraw_actions2['default'].CLOSE_EDIT_PALETTE,
+      createGrid: _actionsDraw_actions2['default'].CREATE_GRID
     });
   }
 
@@ -83848,6 +83871,21 @@ var DrawStore = (function () {
     value: function closeEditPalette() {
       this.isEditingPalette = false;
     }
+  }, {
+    key: 'createGrid',
+    value: function createGrid() {
+      var grid = [];
+
+      for (var x = 0; x < this.width; x++) {
+        grid[x] = [];
+
+        for (var y = 0; y < this.height; y++) {
+          grid[x].push(new Pixel(x, y));
+        }
+      }
+
+      this.grid = grid;
+    }
   }]);
 
   return DrawStore;
@@ -83856,7 +83894,7 @@ var DrawStore = (function () {
 exports['default'] = _alt2['default'].createStore(DrawStore, 'DrawStore');
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../alt":502}]},{},[503])
+},{"../actions/draw_actions":501,"../alt":502,"pixi.js":266}]},{},[503])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

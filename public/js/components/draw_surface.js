@@ -23,8 +23,7 @@ let DrawSurface = React.createClass({
     let width = this.props.actualWidth;
     let height = this.props.actualHeight;
     let renderer = PIXI.autoDetectRenderer(width, height);
-
-    this.refs.surface.getDOMNode().appendChild(renderer.view);
+    this.refs.surface.getDOMNode().appendChild(this.props.renderer.view);
     let stage = new PIXI.Container();
 
     let bgGfx = new PIXI.Graphics();

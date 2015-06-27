@@ -1,3 +1,5 @@
+let PIXI = require('pixi.js');
+
 import alt from '../alt';
 import DrawActions from '../actions/draw_actions';
 
@@ -29,6 +31,16 @@ class DrawStore {
     this.isMouseDown = false;
     this.title = 'Untitled';
 
+    this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
+    this.stage = new PIXI.Container();
+    this.bgGfx = new PIXI.Graphics();
+    this.drawGfx = new PIXI.Graphics();
+    this.overlayGfx = new PIXI.Graphics();
+
+    this.stage.addChild(this.bgGfx);
+    this.stage.addChild(this.drawGfx);
+    this.stage.addChild(this.overlayGfx);
+
     this.bindListeners({
       setActiveTool: DrawActions.SET_ACTIVE_TOOL,
       setPrimaryColor: DrawActions.SET_PRIMARY_COLOR,
@@ -40,7 +52,8 @@ class DrawStore {
       addColor: DrawActions.ADD_COLOR,
       updateColor: DrawActions.UPDATE_COLOR,
       updatePalette: DrawActions.UPDATE_PALETTE,
-      closeEditPalette: DrawActions.CLOSE_EDIT_PALETTE
+      closeEditPalette: DrawActions.CLOSE_EDIT_PALETTE,
+      createGrid: DrawActions.CREATE_GRID
     });
   }
 
@@ -94,6 +107,20 @@ class DrawStore {
 
   closeEditPalette() {
     this.isEditingPalette = false;
+  }
+
+  createGrid() {
+    let grid = [];
+
+    for (let x = 0; x < this.width; x++) {
+      grid[x] = [];
+
+      for (let y = 0; y < this.height; y++) {
+        grid[x].push(new Pixel(x, y));
+      }
+    }
+
+    this.grid = grid;
   }
 }
 

@@ -44,6 +44,10 @@ class DrawActions {
   closeEditPalette() {
     this.dispatch();
   }
+
+  createGrid() {
+    this.dispatch();
+  }
 }
 
 export default alt.createActions(DrawActions);
