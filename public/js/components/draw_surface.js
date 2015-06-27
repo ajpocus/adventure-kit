@@ -10,37 +10,8 @@ import Pixel from '../models/pixel';
 import Transparency from '../mixins/transparency';
 
 let DrawSurface = React.createClass({
-  propTypes: {
-    primaryColor: React.PropTypes.string.isRequired,
-    secondaryColor: React.PropTypes.string.isRequired
-  },
-
-  getInitialState: function () {
-    let zoom = 0.875;
-    let width = 32;
-    let height = 32;
-    let actualWidth = this.props.totalWidth * zoom;
-    let actualHeight = this.props.totalHeight * zoom;
-    let tileWidth = actualWidth / width;
-    let tileHeight = actualHeight / height;
-
-    return {
-      isMouseDown: false,
-      width: 32,
-      height: 32,
-      zoom: 0.875,
-      actualWidth: actualWidth,
-      actualHeight: actualHeight,
-      tileWidth: tileWidth,
-      tileHeight: tileHeight,
-      title: 'Untitled'
-    };
-  },
-
   getDefaultProps: function () {
     return {
-      totalWidth: 1024,
-      totalHeight: 1024,
       bgTileSize: 8,
       minZoom: 0.125,
       maxZoom: 4,
@@ -49,8 +20,8 @@ let DrawSurface = React.createClass({
   },
 
   componentDidMount: function () {
-    let width = this.state.actualWidth;
-    let height = this.state.actualHeight;
+    let width = this.props.actualWidth;
+    let height = this.props.actualHeight;
     let renderer = PIXI.autoDetectRenderer(width, height);
 
     this.refs.surface.getDOMNode().appendChild(renderer.view);
@@ -92,11 +63,11 @@ let DrawSurface = React.createClass({
   },
 
   render: function () {
-    let surfaceTop = (this.props.totalHeight - this.state.actualHeight) / 2;
-    let surfaceLeft = (this.props.totalWidth - this.state.actualWidth) / 2;
+    let surfaceTop = (this.props.totalHeight - this.props.actualHeight) / 2;
+    let surfaceLeft = (this.props.totalWidth - this.props.actualWidth) / 2;
     let surfaceStyle = {
-      width: this.state.actualWidth,
-      height: this.state.actualHeight,
+      width: this.props.actualWidth,
+      height: this.props.actualHeight,
       top: surfaceTop,
       left: surfaceLeft
     };
@@ -108,7 +79,7 @@ let DrawSurface = React.createClass({
             <input name="title"
                    className="title"
                    ref="title"
-                   value={this.state.title}
+                   value={this.props.title}
                    onChange={this.onTitleChange}/>
           </div>
 
@@ -139,16 +110,16 @@ let DrawSurface = React.createClass({
 
   animate: function () {
     let drawGfx = this.state.drawGfx;
-    let zoom = this.state.zoom;
+    let zoom = this.props.zoom;
     let renderer = this.state.renderer;
     let stage = this.state.stage;
     let grid = this.state.grid;
 
-    renderer.resize(this.state.actualWidth, this.state.actualHeight);
+    renderer.resize(this.props.actualWidth, this.props.actualHeight);
     drawGfx.clear();
 
-    for (let x = 0; x < this.state.width; x++) {
-      for (let y = 0; y < this.state.height; y++) {
+    for (let x = 0; x < this.props.width; x++) {
+      for (let y = 0; y < this.props.height; y++) {
         let pixel = grid[x][y];
         if (pixel.color) {
           let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
@@ -183,7 +154,7 @@ let DrawSurface = React.createClass({
 
     this.clearHighlight(currentPixel);
 
-    if (this.state.isMouseDown) {
+    if (this.props.isMouseDown) {
       this.draw(ev);
     }
   },
@@ -202,8 +173,8 @@ let DrawSurface = React.createClass({
       overlayGfx.drawRect(fillX, fillY, fillWidth, fillHeight);
     }
 
-    for (let x = 0; x < this.state.width; x++) {
-      for (let y = 0; y < this.state.height; y++) {
+    for (let x = 0; x < this.props.width; x++) {
+      for (let y = 0; y < this.props.height; y++) {
         let pixel = grid[x][y];
         if (pixel === currentPixel) {
           continue;
@@ -293,11 +264,11 @@ let DrawSurface = React.createClass({
   },
 
   onZoom: function (ev, data) {
-    let zoom = this.state.zoom;
-    let actualWidth = this.state.actualWidth;
-    let actualHeight = this.state.actualHeight;
-    let tileWidth = this.state.tileWidth;
-    let tileHeight = this.state.tileHeight;
+    let zoom = this.props.zoom;
+    let actualWidth = this.props.actualWidth;
+    let actualHeight = this.props.actualHeight;
+    let tileWidth = this.props.tileWidth;
+    let tileHeight = this.props.tileHeight;
 
     if (ev) {
       ev.preventDefault();
@@ -326,8 +297,8 @@ let DrawSurface = React.createClass({
 
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
-    tileWidth = actualWidth / this.state.width;
-    tileHeight = actualHeight / this.state.height;
+    tileWidth = actualWidth / this.props.width;
+    tileHeight = actualHeight / this.props.height;
 
     this.setState({
       zoom: zoom,
@@ -343,18 +314,18 @@ let DrawSurface = React.createClass({
   },
 
   onResizeClick: function () {
-    React.render(<ResizePrompt width={this.state.width}
-                               height={this.state.height}
+    React.render(<ResizePrompt width={this.props.width}
+                               height={this.props.height}
                                handleResize={this.handleResize}/>,
                  document.getElementById('modal-container'));
   },
 
   handleResize: function (width, height) {
-    let tileWidth = this.state.tileWidth;
-    let tileHeight = this.state.tileHeight;
-    let actualWidth = this.state.actualWidth;
-    let actualHeight = this.state.actualHeight;
-    let zoom = this.state.zoom;
+    let tileWidth = this.props.tileWidth;
+    let tileHeight = this.props.tileHeight;
+    let actualWidth = this.props.actualWidth;
+    let actualHeight = this.props.actualHeight;
+    let zoom = this.props.zoom;
 
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
@@ -377,11 +348,11 @@ let DrawSurface = React.createClass({
   },
 
   onSaveClick: function () {
-    // TODO: save image to local store
+    // TODO: save image to ResourceManager
     let images = JSON.parse(localStorage.getItem('images')) || {};
     let dataUrl = this.refs.drawCanvas.getDOMNode().toDataURL('image/png');
     dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
-    images[this.state.title] = dataUrl;
+    images[this.props.title] = dataUrl;
     localStorage.setItem('images', JSON.stringify(images));
     console.log(localStorage.getItem('images'));
   },
@@ -389,8 +360,8 @@ let DrawSurface = React.createClass({
   drawBackground: function () {
     let bgGfx = this.state.bgGfx;
     let bgTileSize = this.props.bgTileSize;
-    let numTilesH = this.state.actualWidth / bgTileSize;
-    let numTilesV = this.state.actualHeight / bgTileSize;
+    let numTilesH = this.props.actualWidth / bgTileSize;
+    let numTilesV = this.props.actualHeight / bgTileSize;
 
     for (let x = 0; x < numTilesH; x++) {
       for (let y = 0; y < numTilesV; y++) {
@@ -409,10 +380,10 @@ let DrawSurface = React.createClass({
   initGrid: function (callback) {
     let grid = [];
 
-    for (let x = 0; x < this.state.width; x++) {
+    for (let x = 0; x < this.props.width; x++) {
       grid[x] = [];
 
-      for (let y = 0; y < this.state.height; y++) {
+      for (let y = 0; y < this.props.height; y++) {
         grid[x].push(new Pixel(x, y));
       }
     }
@@ -421,8 +392,8 @@ let DrawSurface = React.createClass({
   },
 
   updateGrid: function (callback) {
-    let width = this.state.width;
-    let height = this.state.height;
+    let width = this.props.width;
+    let height = this.props.height;
     let oldGrid = this.state.grid;
     let newGrid = [];
 
@@ -447,15 +418,15 @@ let DrawSurface = React.createClass({
     let x = absX - elRect.left;
     let y = absY - elRect.top;
 
-    let tileX = Math.floor(x / this.state.tileWidth);
-    let tileY = Math.floor(y / this.state.tileHeight);
+    let tileX = Math.floor(x / this.props.tileWidth);
+    let tileY = Math.floor(y / this.props.tileHeight);
 
     return { x: tileX, y: tileY };
   },
 
   getFillParams: function (x, y) {
-    let fillWidth = this.state.tileWidth;
-    let fillHeight = this.state.tileHeight;
+    let fillWidth = this.props.tileWidth;
+    let fillHeight = this.props.tileHeight;
     let fillX = x * fillWidth;
     let fillY = y * fillHeight;
 

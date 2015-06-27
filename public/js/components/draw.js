@@ -43,17 +43,20 @@ let Draw = React.createClass({
 
         <DrawSurface primaryColor={this.state.primaryColor}
                      secondaryColor={this.state.secondaryColor}
-                     activeTool={this.state.activeTool}/>
+                     activeTool={this.state.activeTool}
+                     width={this.state.width}
+                     height={this.state.height}
+                     zoom={this.state.zoom}
+                     totalWidth={this.state.totalWidth}
+                     totalHeight={this.state.totalHeight}
+                     actualWidth={this.state.actualWidth}
+                     actualHeight={this.state.actualHeight}
+                     tileWidth={this.state.tileWidth}
+                     tileHeight={this.state.tileHeight}
+                     isMouseDown={this.state.isMouseDown}
+                     title={this.state.title}/>
       </div>
     );
-  },
-
-  onPrimaryColorChange: function (color) {
-    this.setState({ primaryColor: color });
-  },
-
-  onSecondaryColorChange: function (color) {
-    this.setState({ secondaryColor: color });
   }
 });
 

@@ -16,11 +16,18 @@ class DrawStore {
     this.isEditingPalette = false;
     this.paletteCopy = this.palettes[this.activePalette].slice();
     this.activeColor = this.paletteCopy[0];
+
     this.width = 32;
     this.height = 32;
+    this.zoom = 0.875;
     this.totalWidth = 1024;
     this.totalHeight = 1024;
-    this.zoom = 0.875;
+    this.actualWidth = this.totalWidth * this.zoom;
+    this.actualHeight = this.totalHeight * this.zoom;
+    this.tileWidth = this.actualWidth / this.width;
+    this.tileHeight = this.actualHeight / this.height;
+    this.isMouseDown = false;
+    this.title = 'Untitled';
 
     this.bindListeners({
       setActiveTool: DrawActions.SET_ACTIVE_TOOL,

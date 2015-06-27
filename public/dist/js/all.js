@@ -80923,16 +80923,19 @@ var Draw = React.createClass({
       ),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
         secondaryColor: this.state.secondaryColor,
-        activeTool: this.state.activeTool })
+        activeTool: this.state.activeTool,
+        width: this.state.width,
+        height: this.state.height,
+        zoom: this.state.zoom,
+        totalWidth: this.state.totalWidth,
+        totalHeight: this.state.totalHeight,
+        actualWidth: this.state.actualWidth,
+        actualHeight: this.state.actualHeight,
+        tileWidth: this.state.tileWidth,
+        tileHeight: this.state.tileHeight,
+        isMouseDown: this.state.isMouseDown,
+        title: this.state.title })
     );
-  },
-
-  onPrimaryColorChange: function onPrimaryColorChange(color) {
-    this.setState({ primaryColor: color });
-  },
-
-  onSecondaryColorChange: function onSecondaryColorChange(color) {
-    this.setState({ secondaryColor: color });
   }
 });
 
@@ -80973,37 +80976,8 @@ var PIXI = require('pixi.js');
 var DrawSurface = React.createClass({
   displayName: 'DrawSurface',
 
-  propTypes: {
-    primaryColor: React.PropTypes.string.isRequired,
-    secondaryColor: React.PropTypes.string.isRequired
-  },
-
-  getInitialState: function getInitialState() {
-    var zoom = 0.875;
-    var width = 32;
-    var height = 32;
-    var actualWidth = this.props.totalWidth * zoom;
-    var actualHeight = this.props.totalHeight * zoom;
-    var tileWidth = actualWidth / width;
-    var tileHeight = actualHeight / height;
-
-    return {
-      isMouseDown: false,
-      width: 32,
-      height: 32,
-      zoom: 0.875,
-      actualWidth: actualWidth,
-      actualHeight: actualHeight,
-      tileWidth: tileWidth,
-      tileHeight: tileHeight,
-      title: 'Untitled'
-    };
-  },
-
   getDefaultProps: function getDefaultProps() {
     return {
-      totalWidth: 1024,
-      totalHeight: 1024,
       bgTileSize: 8,
       minZoom: 0.125,
       maxZoom: 4,
@@ -81012,8 +80986,8 @@ var DrawSurface = React.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    var width = this.state.actualWidth;
-    var height = this.state.actualHeight;
+    var width = this.props.actualWidth;
+    var height = this.props.actualHeight;
     var renderer = PIXI.autoDetectRenderer(width, height);
 
     this.refs.surface.getDOMNode().appendChild(renderer.view);
@@ -81052,11 +81026,11 @@ var DrawSurface = React.createClass({
   },
 
   render: function render() {
-    var surfaceTop = (this.props.totalHeight - this.state.actualHeight) / 2;
-    var surfaceLeft = (this.props.totalWidth - this.state.actualWidth) / 2;
+    var surfaceTop = (this.props.totalHeight - this.props.actualHeight) / 2;
+    var surfaceLeft = (this.props.totalWidth - this.props.actualWidth) / 2;
     var surfaceStyle = {
-      width: this.state.actualWidth,
-      height: this.state.actualHeight,
+      width: this.props.actualWidth,
+      height: this.props.actualHeight,
       top: surfaceTop,
       left: surfaceLeft
     };
@@ -81073,7 +81047,7 @@ var DrawSurface = React.createClass({
           React.createElement('input', { name: 'title',
             className: 'title',
             ref: 'title',
-            value: this.state.title,
+            value: this.props.title,
             onChange: this.onTitleChange })
         ),
         React.createElement(
@@ -81106,16 +81080,16 @@ var DrawSurface = React.createClass({
 
   animate: function animate() {
     var drawGfx = this.state.drawGfx;
-    var zoom = this.state.zoom;
+    var zoom = this.props.zoom;
     var renderer = this.state.renderer;
     var stage = this.state.stage;
     var grid = this.state.grid;
 
-    renderer.resize(this.state.actualWidth, this.state.actualHeight);
+    renderer.resize(this.props.actualWidth, this.props.actualHeight);
     drawGfx.clear();
 
-    for (var x = 0; x < this.state.width; x++) {
-      for (var y = 0; y < this.state.height; y++) {
+    for (var x = 0; x < this.props.width; x++) {
+      for (var y = 0; y < this.props.height; y++) {
         var pixel = grid[x][y];
         if (pixel.color) {
           var _getFillParams = this.getFillParams(x, y);
@@ -81167,7 +81141,7 @@ var DrawSurface = React.createClass({
 
     this.clearHighlight(currentPixel);
 
-    if (this.state.isMouseDown) {
+    if (this.props.isMouseDown) {
       this.draw(ev);
     }
   },
@@ -81192,8 +81166,8 @@ var DrawSurface = React.createClass({
       overlayGfx.drawRect(fillX, fillY, fillWidth, fillHeight);
     }
 
-    for (var x = 0; x < this.state.width; x++) {
-      for (var y = 0; y < this.state.height; y++) {
+    for (var x = 0; x < this.props.width; x++) {
+      for (var y = 0; y < this.props.height; y++) {
         var pixel = grid[x][y];
         if (pixel === currentPixel) {
           continue;
@@ -81290,11 +81264,11 @@ var DrawSurface = React.createClass({
   },
 
   onZoom: function onZoom(ev, data) {
-    var zoom = this.state.zoom;
-    var actualWidth = this.state.actualWidth;
-    var actualHeight = this.state.actualHeight;
-    var tileWidth = this.state.tileWidth;
-    var tileHeight = this.state.tileHeight;
+    var zoom = this.props.zoom;
+    var actualWidth = this.props.actualWidth;
+    var actualHeight = this.props.actualHeight;
+    var tileWidth = this.props.tileWidth;
+    var tileHeight = this.props.tileHeight;
 
     if (ev) {
       ev.preventDefault();
@@ -81323,8 +81297,8 @@ var DrawSurface = React.createClass({
 
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
-    tileWidth = actualWidth / this.state.width;
-    tileHeight = actualHeight / this.state.height;
+    tileWidth = actualWidth / this.props.width;
+    tileHeight = actualHeight / this.props.height;
 
     this.setState({
       zoom: zoom,
@@ -81340,17 +81314,17 @@ var DrawSurface = React.createClass({
   },
 
   onResizeClick: function onResizeClick() {
-    React.render(React.createElement(_resize_prompt2['default'], { width: this.state.width,
-      height: this.state.height,
+    React.render(React.createElement(_resize_prompt2['default'], { width: this.props.width,
+      height: this.props.height,
       handleResize: this.handleResize }), document.getElementById('modal-container'));
   },
 
   handleResize: function handleResize(width, height) {
-    var tileWidth = this.state.tileWidth;
-    var tileHeight = this.state.tileHeight;
-    var actualWidth = this.state.actualWidth;
-    var actualHeight = this.state.actualHeight;
-    var zoom = this.state.zoom;
+    var tileWidth = this.props.tileWidth;
+    var tileHeight = this.props.tileHeight;
+    var actualWidth = this.props.actualWidth;
+    var actualHeight = this.props.actualHeight;
+    var zoom = this.props.zoom;
 
     actualWidth = this.props.totalWidth * zoom;
     actualHeight = this.props.totalHeight * zoom;
@@ -81371,11 +81345,11 @@ var DrawSurface = React.createClass({
   onExportClick: function onExportClick() {},
 
   onSaveClick: function onSaveClick() {
-    // TODO: save image to local store
+    // TODO: save image to ResourceManager
     var images = JSON.parse(localStorage.getItem('images')) || {};
     var dataUrl = this.refs.drawCanvas.getDOMNode().toDataURL('image/png');
     dataUrl.replace(/^data:image\/(png|jpg);base64,/, '');
-    images[this.state.title] = dataUrl;
+    images[this.props.title] = dataUrl;
     localStorage.setItem('images', JSON.stringify(images));
     console.log(localStorage.getItem('images'));
   },
@@ -81383,8 +81357,8 @@ var DrawSurface = React.createClass({
   drawBackground: function drawBackground() {
     var bgGfx = this.state.bgGfx;
     var bgTileSize = this.props.bgTileSize;
-    var numTilesH = this.state.actualWidth / bgTileSize;
-    var numTilesV = this.state.actualHeight / bgTileSize;
+    var numTilesH = this.props.actualWidth / bgTileSize;
+    var numTilesV = this.props.actualHeight / bgTileSize;
 
     for (var x = 0; x < numTilesH; x++) {
       for (var y = 0; y < numTilesV; y++) {
@@ -81403,10 +81377,10 @@ var DrawSurface = React.createClass({
   initGrid: function initGrid(callback) {
     var grid = [];
 
-    for (var x = 0; x < this.state.width; x++) {
+    for (var x = 0; x < this.props.width; x++) {
       grid[x] = [];
 
-      for (var y = 0; y < this.state.height; y++) {
+      for (var y = 0; y < this.props.height; y++) {
         grid[x].push(new _modelsPixel2['default'](x, y));
       }
     }
@@ -81415,8 +81389,8 @@ var DrawSurface = React.createClass({
   },
 
   updateGrid: function updateGrid(callback) {
-    var width = this.state.width;
-    var height = this.state.height;
+    var width = this.props.width;
+    var height = this.props.height;
     var oldGrid = this.state.grid;
     var newGrid = [];
 
@@ -81441,15 +81415,15 @@ var DrawSurface = React.createClass({
     var x = absX - elRect.left;
     var y = absY - elRect.top;
 
-    var tileX = Math.floor(x / this.state.tileWidth);
-    var tileY = Math.floor(y / this.state.tileHeight);
+    var tileX = Math.floor(x / this.props.tileWidth);
+    var tileY = Math.floor(y / this.props.tileHeight);
 
     return { x: tileX, y: tileY };
   },
 
   getFillParams: function getFillParams(x, y) {
-    var fillWidth = this.state.tileWidth;
-    var fillHeight = this.state.tileHeight;
+    var fillWidth = this.props.tileWidth;
+    var fillHeight = this.props.tileHeight;
     var fillX = x * fillWidth;
     var fillY = y * fillHeight;
 
@@ -83783,11 +83757,18 @@ var DrawStore = (function () {
     this.isEditingPalette = false;
     this.paletteCopy = this.palettes[this.activePalette].slice();
     this.activeColor = this.paletteCopy[0];
+
     this.width = 32;
     this.height = 32;
+    this.zoom = 0.875;
     this.totalWidth = 1024;
     this.totalHeight = 1024;
-    this.zoom = 0.875;
+    this.actualWidth = this.totalWidth * this.zoom;
+    this.actualHeight = this.totalHeight * this.zoom;
+    this.tileWidth = this.actualWidth / this.width;
+    this.tileHeight = this.actualHeight / this.height;
+    this.isMouseDown = false;
+    this.title = 'Untitled';
 
     this.bindListeners({
       setActiveTool: _actionsDraw_actions2['default'].SET_ACTIVE_TOOL,
