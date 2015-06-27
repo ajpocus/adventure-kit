@@ -1,28 +1,22 @@
 let React = require('react');
 let $ = require('jquery');
 
+import DrawActions from '../actions/draw_actions';
 import Transparency from '../mixins/transparency';
 
 let EditPalette = React.createClass({
-  getInitialState: function () {
-    return {
-      palette: this.props.palette,
-      activePaletteColor: this.props.palette[0]
-    };
-  },
-
   componentDidMount: function () {
-    this.refs.paletteColor.getDOMNode().value = this.state.activePaletteColor;
+    this.refs.paletteColor.getDOMNode().value = this.props.activePaletteColor;
   },
 
   componentDidUpdate: function () {
-    this.refs.paletteColor.getDOMNode().value = this.state.activePaletteColor;
+    this.refs.paletteColor.getDOMNode().value = this.props.activePaletteColor;
   },
 
   render: function () {
     let colorList = [];
-    for (let i = 0; i < this.state.palette.length; i++) {
-      let color = this.state.palette[i];
+    for (let i = 0; i < this.props.paletteCopy.length; i++) {
+      let color = this.props.paletteCopy[i];
       let swatchStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
         swatchStyle.background = Transparency.background;
@@ -31,9 +25,9 @@ let EditPalette = React.createClass({
       colorList.push(
         <li className="color"
             key={i}
-            onClick={this.setActivePaletteColor.bind(this, color)}>
+            onClick={this.setActiveColor.bind(this, color)}>
           <span className="remove"
-                onClick={this.removePaletteColor.bind(this, color)}>
+                onClick={this.removeColor.bind(this, color)}>
             x
           </span>
           <div className="swatch" style={swatchStyle}></div>
@@ -42,7 +36,7 @@ let EditPalette = React.createClass({
     }
 
     colorList.push(
-      <li className="new color" key="new" onClick={this.addPaletteColor}>
+      <li className="new color" key="new" onClick={this.addColor}>
         <div className="swatch">+</div>
       </li>
     );
@@ -66,7 +60,7 @@ let EditPalette = React.createClass({
                 <input type="color"
                        ref="paletteColor"
                        id="palette-color"
-                       onChange={this.updatePaletteColor}/>
+                       onChange={this.updateColor}/>
                 <button className="add btn">Add color</button>
               </div>
             </div>
@@ -87,39 +81,30 @@ let EditPalette = React.createClass({
   },
 
 
-  setActivePaletteColor: function (color) {
-    this.setState({ activePaletteColor: color });
+  setActiveColor: function (color) {
+    DrawActions.setActiveColor(color);
   },
 
-  removePaletteColor: function (color) {
-    let palette = this.state.palette;
-    let idx = palette.indexOf(color);
-    palette.splice(idx, 1);
-    this.setState({ palette: palette });
+  removeColor: function (color) {
+    DrawActions.removeColor(color);
   },
 
-  addPaletteColor: function () {
-    let palette = this.state.palette;
-    let newColor = '#ffffff';
-    palette.push(newColor);
-    this.setState({ palette: palette, activePaletteColor: newColor });
+  addColor: function () {
+    DrawActions.addColor();
   },
 
-  updatePaletteColor: function (ev) {
+  updateColor: function (ev) {
     let color = ev.target.value;
-    let palette = this.state.palette;
-    let idx = palette.indexOf(this.state.activePaletteColor);
-    palette[idx] = color;
-    this.setState({ palette: palette, activePaletteColor: color });
+    DrawActions.updateColor(color);
   },
 
   savePalette: function () {
-    this.props.onPaletteChange(this.state.palette);
+    DrawActions.updatePalette();
     this.closeEdit();
   },
 
   closeEdit: function () {
-    this.props.closeEditPalette();
+    DrawActions.closeEditPalette();
   }
 });
 

@@ -80577,6 +80577,56 @@ var DrawActions = (function () {
     value: function setActiveTool(tool) {
       this.dispatch(tool);
     }
+  }, {
+    key: 'setPrimaryColor',
+    value: function setPrimaryColor(color) {
+      this.dispatch(color);
+    }
+  }, {
+    key: 'setSecondaryColor',
+    value: function setSecondaryColor(color) {
+      this.dispatch(color);
+    }
+  }, {
+    key: 'createPalette',
+    value: function createPalette(paletteName) {
+      this.dispatch(paletteName);
+    }
+  }, {
+    key: 'editPalette',
+    value: function editPalette() {
+      this.dispatch();
+    }
+  }, {
+    key: 'setActiveColor',
+    value: function setActiveColor(color) {
+      this.dispatch(color);
+    }
+  }, {
+    key: 'removeColor',
+    value: function removeColor(color) {
+      this.dispatch(color);
+    }
+  }, {
+    key: 'addColor',
+    value: function addColor() {
+      this.dispatch();
+    }
+  }, {
+    key: 'updateColor',
+    value: function updateColor(color) {
+      this.dispatch(color);
+    }
+  }, {
+    key: 'updatePalette',
+    value: function updatePalette() {
+      this.dispatch();
+    }
+  }, {
+    key: 'closeEditPalette',
+    value: function closeEditPalette() {
+      this.dispatch();
+    }
   }]);
 
   return DrawActions;
@@ -80874,8 +80924,10 @@ var Draw = React.createClass({
         'div',
         { className: 'toolbar' },
         React.createElement(_draw_tool_list2['default'], { activeTool: this.state.activeTool }),
-        React.createElement(_palette_manager2['default'], { onPrimaryColorChange: this.onPrimaryColorChange,
-          onSecondaryColorChange: this.onSecondaryColorChange }),
+        React.createElement(_palette_manager2['default'], { palettes: this.state.palettes,
+          activePalette: this.state.activePalette,
+          isEditingPalette: this.state.isEditingPalette,
+          paletteCopy: this.state.paletteCopy }),
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
           secondaryColor: this.state.secondaryColor,
           onPrimaryColorChange: this.onPrimaryColorChange,
@@ -81693,6 +81745,10 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _actionsDraw_actions = require('../actions/draw_actions');
+
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
+
 var _mixinsTransparency = require('../mixins/transparency');
 
 var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
@@ -81703,25 +81759,18 @@ var $ = require('jquery');
 var EditPalette = React.createClass({
   displayName: 'EditPalette',
 
-  getInitialState: function getInitialState() {
-    return {
-      palette: this.props.palette,
-      activePaletteColor: this.props.palette[0]
-    };
-  },
-
   componentDidMount: function componentDidMount() {
-    this.refs.paletteColor.getDOMNode().value = this.state.activePaletteColor;
+    this.refs.paletteColor.getDOMNode().value = this.props.activePaletteColor;
   },
 
   componentDidUpdate: function componentDidUpdate() {
-    this.refs.paletteColor.getDOMNode().value = this.state.activePaletteColor;
+    this.refs.paletteColor.getDOMNode().value = this.props.activePaletteColor;
   },
 
   render: function render() {
     var colorList = [];
-    for (var i = 0; i < this.state.palette.length; i++) {
-      var color = this.state.palette[i];
+    for (var i = 0; i < this.props.paletteCopy.length; i++) {
+      var color = this.props.paletteCopy[i];
       var swatchStyle = { background: color };
       if (color === 'rgba(0, 0, 0, 0)') {
         swatchStyle.background = _mixinsTransparency2['default'].background;
@@ -81731,11 +81780,11 @@ var EditPalette = React.createClass({
         'li',
         { className: 'color',
           key: i,
-          onClick: this.setActivePaletteColor.bind(this, color) },
+          onClick: this.setActiveColor.bind(this, color) },
         React.createElement(
           'span',
           { className: 'remove',
-            onClick: this.removePaletteColor.bind(this, color) },
+            onClick: this.removeColor.bind(this, color) },
           'x'
         ),
         React.createElement('div', { className: 'swatch', style: swatchStyle })
@@ -81744,7 +81793,7 @@ var EditPalette = React.createClass({
 
     colorList.push(React.createElement(
       'li',
-      { className: 'new color', key: 'new', onClick: this.addPaletteColor },
+      { className: 'new color', key: 'new', onClick: this.addColor },
       React.createElement(
         'div',
         { className: 'swatch' },
@@ -81794,7 +81843,7 @@ var EditPalette = React.createClass({
               React.createElement('input', { type: 'color',
                 ref: 'paletteColor',
                 id: 'palette-color',
-                onChange: this.updatePaletteColor }),
+                onChange: this.updateColor }),
               React.createElement(
                 'button',
                 { className: 'add btn' },
@@ -81821,46 +81870,37 @@ var EditPalette = React.createClass({
     );
   },
 
-  setActivePaletteColor: function setActivePaletteColor(color) {
-    this.setState({ activePaletteColor: color });
+  setActiveColor: function setActiveColor(color) {
+    _actionsDraw_actions2['default'].setActiveColor(color);
   },
 
-  removePaletteColor: function removePaletteColor(color) {
-    var palette = this.state.palette;
-    var idx = palette.indexOf(color);
-    palette.splice(idx, 1);
-    this.setState({ palette: palette });
+  removeColor: function removeColor(color) {
+    _actionsDraw_actions2['default'].removeColor(color);
   },
 
-  addPaletteColor: function addPaletteColor() {
-    var palette = this.state.palette;
-    var newColor = '#ffffff';
-    palette.push(newColor);
-    this.setState({ palette: palette, activePaletteColor: newColor });
+  addColor: function addColor() {
+    _actionsDraw_actions2['default'].addColor();
   },
 
-  updatePaletteColor: function updatePaletteColor(ev) {
+  updateColor: function updateColor(ev) {
     var color = ev.target.value;
-    var palette = this.state.palette;
-    var idx = palette.indexOf(this.state.activePaletteColor);
-    palette[idx] = color;
-    this.setState({ palette: palette, activePaletteColor: color });
+    _actionsDraw_actions2['default'].updateColor(color);
   },
 
   savePalette: function savePalette() {
-    this.props.onPaletteChange(this.state.palette);
+    _actionsDraw_actions2['default'].updatePalette();
     this.closeEdit();
   },
 
   closeEdit: function closeEdit() {
-    this.props.closeEditPalette();
+    _actionsDraw_actions2['default'].closeEditPalette();
   }
 });
 
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":530,"jquery":161,"react":484}],511:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"jquery":161,"react":484}],511:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82691,6 +82731,10 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _actionsDraw_actions = require('../actions/draw_actions');
+
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
+
 var _edit_palette = require('./edit_palette');
 
 var _edit_palette2 = _interopRequireDefault(_edit_palette);
@@ -82722,8 +82766,8 @@ var PaletteManager = React.createClass({
 
   render: function render() {
     var paletteOptions = [];
-    for (var paletteName in this.state.palettes) {
-      if (this.state.palettes.hasOwnProperty(paletteName)) {
+    for (var paletteName in this.props.palettes) {
+      if (this.props.palettes.hasOwnProperty(paletteName)) {
         paletteOptions.push(React.createElement(
           'option',
           { value: paletteName, key: paletteName },
@@ -82732,7 +82776,7 @@ var PaletteManager = React.createClass({
       }
     }
 
-    var activePalette = this.state.palettes[this.state.activePalette];
+    var activePalette = this.props.palettes[this.props.activePalette];
     var paletteColors = [];
     for (var i = 0; i < activePalette.length; i++) {
       var color = activePalette[i];
@@ -82747,8 +82791,6 @@ var PaletteManager = React.createClass({
         onClick: this.setPrimaryColor.bind(this, color) }));
     }
 
-    var paletteCopy = activePalette.slice();
-
     return React.createElement(
       'div',
       { className: 'palette-manager' },
@@ -82759,13 +82801,13 @@ var PaletteManager = React.createClass({
       ),
       React.createElement(
         'button',
-        { className: 'new-palette', onClick: this.newPalette },
+        { className: 'new-palette', onClick: this.createPalette },
         React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-433-plus.png' })
       ),
       React.createElement(
         'select',
         { name: 'activePalette', className: 'palette-chooser',
-          value: this.state.activePalette },
+          value: this.props.activePalette },
         paletteOptions
       ),
       React.createElement(
@@ -82780,57 +82822,44 @@ var PaletteManager = React.createClass({
       ),
       React.createElement(
         _modal2['default'],
-        { isOpen: this.state.isEditingPalette },
-        React.createElement(_edit_palette2['default'], { palette: paletteCopy,
-          name: this.state.activePalette,
-          onPaletteChange: this.onPaletteChange,
-          closeEditPalette: this.closeEditPalette })
+        { isOpen: this.props.isEditingPalette },
+        React.createElement(_edit_palette2['default'], { paletteCopy: this.props.paletteCopy,
+          name: this.props.activePalette,
+          activeColor: this.props.activeColor })
       )
     );
   },
 
   setPrimaryColor: function setPrimaryColor(color) {
-    this.props.onPrimaryColorChange(color);
+    _actionsDraw_actions2['default'].setPrimaryColor(color);
   },
 
-  newPalette: function newPalette() {
+  createPalette: function createPalette() {
     var paletteName = prompt('New palette name');
     if (paletteName.length === 0) {
       return;
     }
 
-    if (this.state.palettes[paletteName]) {
+    if (this.props.palettes[paletteName]) {
       alert('That palette name is already taken.');
     }
 
-    var palettes = this.state.palettes;
-    palettes[paletteName] = {};
-    this.setState({ palettes: palettes });
+    _actionsDraw_actions2['default'].createPalette(paletteName);
   },
 
   editPalette: function editPalette() {
-    this.setState({ isEditingPalette: true });
-  },
-
-  onPaletteChange: function onPaletteChange(palette) {
-    var name = this.state.activePalette;
-    var palettes = this.state.palettes;
-    palettes[name] = palette;
-    this.setState({
-      palettes: palettes,
-      isEditingPalette: false
-    });
+    _actionsDraw_actions2['default'].editPalette();
   },
 
   closeEditPalette: function closeEditPalette() {
-    this.setState({ isEditingPalette: false });
+    _actionsDraw_actions2['default'].closeEditPalette();
   }
 });
 
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../mixins/transparency":530,"./edit_palette":510,"./modal":518,"jquery":161,"react":484,"tinycolor2":500}],521:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"./edit_palette":510,"./modal":518,"jquery":161,"react":484,"tinycolor2":500}],521:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83759,6 +83788,13 @@ var DrawStore = (function () {
     this.activeTool = 'Pencil';
     this.primaryColor = '#000000';
     this.secondaryColor = '#ffffff';
+    this.palettes = {
+      'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#770099']
+    };
+    this.activePalette = 'Rainbow';
+    this.isEditingPalette = false;
+    this.paletteCopy = this.palettes[this.activePalette].slice();
+    this.activeColor = this.paletteCopy[0];
     this.width = 32;
     this.height = 32;
     this.totalWidth = 1024;
@@ -83766,7 +83802,17 @@ var DrawStore = (function () {
     this.zoom = 0.875;
 
     this.bindListeners({
-      setActiveTool: _actionsDraw_actions2['default'].SET_ACTIVE_TOOL
+      setActiveTool: _actionsDraw_actions2['default'].SET_ACTIVE_TOOL,
+      setPrimaryColor: _actionsDraw_actions2['default'].SET_PRIMARY_COLOR,
+      setSecondaryColor: _actionsDraw_actions2['default'].SET_SECONDARY_COLOR,
+      createPalette: _actionsDraw_actions2['default'].CREATE_PALETTE,
+      editPalette: _actionsDraw_actions2['default'].EDIT_PALETTE,
+      setActiveColor: _actionsDraw_actions2['default'].SET_ACTIVE_COLOR,
+      removeColor: _actionsDraw_actions2['default'].REMOVE_COLOR,
+      addColor: _actionsDraw_actions2['default'].ADD_COLOR,
+      updateColor: _actionsDraw_actions2['default'].UPDATE_COLOR,
+      updatePalette: _actionsDraw_actions2['default'].UPDATE_PALETTE,
+      closeEditPalette: _actionsDraw_actions2['default'].CLOSE_EDIT_PALETTE
     });
   }
 
@@ -83774,6 +83820,64 @@ var DrawStore = (function () {
     key: 'setActiveTool',
     value: function setActiveTool(tool) {
       this.activeTool = tool;
+    }
+  }, {
+    key: 'setPrimaryColor',
+    value: function setPrimaryColor(color) {
+      this.primaryColor = color;
+    }
+  }, {
+    key: 'setSecondaryColor',
+    value: function setSecondaryColor(color) {
+      this.secondaryColor = color;
+    }
+  }, {
+    key: 'createPalette',
+    value: function createPalette(paletteName) {
+      this.palettes[paletteName] = {};
+    }
+  }, {
+    key: 'editPalette',
+    value: function editPalette() {
+      this.isEditingPalette = true;
+    }
+  }, {
+    key: 'setActiveColor',
+    value: function setActiveColor(color) {
+      this.activeColor = color;
+    }
+  }, {
+    key: 'removeColor',
+    value: function removeColor(color) {
+      var palette = this.paletteCopy;
+      var idx = palette.indexOf(color);
+      palette.splice(idx, 1);
+      this.paletteCopy = palette;
+    }
+  }, {
+    key: 'addColor',
+    value: function addColor() {
+      this.paletteCopy.push('#ffffff');
+    }
+  }, {
+    key: 'updateColor',
+    value: function updateColor(color) {
+      var activeColor = this.activeColor;
+      var palette = this.paletteCopy;
+      var idx = palette.indexOf(this.state.activePaletteColor);
+      palette[idx] = color;
+      this.paletteCopy = palette;
+      this.activeColor = color;
+    }
+  }, {
+    key: 'updatePalette',
+    value: function updatePalette() {
+      this.palettes[this.activePalette] = this.paletteCopy;
+    }
+  }, {
+    key: 'closeEditPalette',
+    value: function closeEditPalette() {
+      this.isEditingPalette = false;
     }
   }]);
 
