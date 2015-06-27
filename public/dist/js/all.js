@@ -81213,10 +81213,9 @@ var Track = React.createClass({
 
     this.setState({
       renderer: renderer,
-      stage: stage,
-      gfx: gfx
+      stage: stage
     }, function () {
-      this.drawMeasureMarkers();
+      this.drawMeasureMarkers(gfx);
       renderer.render(stage);
       requestAnimationFrame(this.draw);
     });
@@ -81252,13 +81251,16 @@ var Track = React.createClass({
 
   draw: function draw() {
     var data = this.props.data;
-    var gfx = this.state.gfx;
     var renderer = this.state.renderer;
     var stage = this.state.stage;
+    var gfx = stage.getChildAt(0);
 
     if (!data || !data.length) {
       return;
     }
+
+    stage.removeChild(gfx);
+    gfx = new PIXI.Graphics();
 
     var _getTrackBounds = this.getTrackBounds();
 
@@ -81268,10 +81270,11 @@ var Track = React.createClass({
     var endBound = _getTrackBounds2[1];
 
     gfx.clear();
-    this.drawMeasureMarkers();
+    this.drawMeasureMarkers(gfx);
     gfx.beginFill(16763904);
 
-    for (var i = 0; i < data.length; i++) {
+    var lastIdx = data.length - 1;
+    for (var i = lastIdx; i >= 0; i--) {
       var note = data[i];
 
       var _getNoteBounds = this.getNoteBounds(note, startBound, endBound);
@@ -81281,9 +81284,14 @@ var Track = React.createClass({
       var width = _getNoteBounds.width;
       var height = _getNoteBounds.height;
 
+      if (note.startTime + (note.endTime - note.startTime) < startBound) {
+        break;
+      }
+
       gfx.drawRect(x, y, width, height);
     }
 
+    stage.addChild(gfx);
     renderer.render(stage);
     requestAnimationFrame(this.draw);
   },
@@ -81333,8 +81341,7 @@ var Track = React.createClass({
     return { x: x, y: y, width: width, height: height };
   },
 
-  drawMeasureMarkers: function drawMeasureMarkers() {
-    var gfx = this.state.gfx;
+  drawMeasureMarkers: function drawMeasureMarkers(gfx) {
     gfx.beginFill(0, 0.2);
 
     var halfX = this.props.canvasWidth / 2;
@@ -81530,11 +81537,19 @@ var TrackManager = React.createClass({
   render: function render() {
     var trackViews = [];
     var trackStates = this.state.trackStates;
+    var lastIdx = this.props.trackCount - 1;
+
     for (var i = 0; i < this.props.trackCount; i++) {
       var trackState = trackStates[i];
+      var data = undefined;
+      if (i === lastIdx) {
+        data = this.props.recording;
+      }
+
       trackViews.push(React.createElement(_track2['default'], { data: this.props.tracks[i],
         key: i,
         trackNumber: i,
+        data: data,
         isRecording: trackState.isRecording,
         isPlaying: trackState.isPlaying,
         isPaused: trackState.isPaused,

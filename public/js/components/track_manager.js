@@ -38,12 +38,20 @@ let TrackManager = React.createClass({
   render: function () {
     let trackViews = [];
     let trackStates = this.state.trackStates;
+    let lastIdx = this.props.trackCount - 1;
+
     for (let i = 0; i < this.props.trackCount; i++) {
       let trackState = trackStates[i];
+      let data;
+      if (i === lastIdx) {
+        data = this.props.recording;
+      }
+
       trackViews.push(
         <Track data={this.props.tracks[i]}
                key={i}
                trackNumber={i}
+               data={data}
                isRecording={trackState.isRecording}
                isPlaying={trackState.isPlaying}
                isPaused={trackState.isPaused}

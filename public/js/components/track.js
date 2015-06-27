@@ -61,10 +61,9 @@ let Track = React.createClass({
 
     this.setState({
       renderer,
-      stage,
-      gfx
+      stage
     }, function () {
-      this.drawMeasureMarkers();
+      this.drawMeasureMarkers(gfx);
       renderer.render(stage);
       requestAnimationFrame(this.draw);
     });
@@ -99,26 +98,35 @@ let Track = React.createClass({
 
   draw: function () {
     let data = this.props.data;
-    let gfx = this.state.gfx;
     let renderer = this.state.renderer;
     let stage = this.state.stage;
+    let gfx = stage.getChildAt(0);
 
     if (!data || !data.length) {
       return;
     }
 
+    stage.removeChild(gfx);
+    gfx = new PIXI.Graphics();
+
     let [startBound, endBound] = this.getTrackBounds();
 
     gfx.clear();
-    this.drawMeasureMarkers();
+    this.drawMeasureMarkers(gfx);
     gfx.beginFill(0xffcc00);
 
-    for (let i = 0; i < data.length; i++) {
+    let lastIdx = data.length - 1;
+    for (let i = lastIdx; i >= 0; i--) {
       let note = data[i];
       let { x, y, width, height } = this.getNoteBounds(note, startBound, endBound);
+      if ((note.startTime + (note.endTime - note.startTime)) < startBound) {
+        break;
+      }
+
       gfx.drawRect(x, y, width, height);
     }
 
+    stage.addChild(gfx);
     renderer.render(stage);
     requestAnimationFrame(this.draw);
   },
@@ -168,8 +176,7 @@ let Track = React.createClass({
     return { x, y, width, height };
   },
 
-  drawMeasureMarkers: function () {
-    let gfx = this.state.gfx;
+  drawMeasureMarkers: function (gfx) {
     gfx.beginFill(0x000000, 0.2);
 
     let halfX = this.props.canvasWidth / 2;
