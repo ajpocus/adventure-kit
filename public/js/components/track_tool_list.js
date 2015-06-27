@@ -11,12 +11,21 @@ let TrackToolList = React.createClass({
     return {
       tools: [
         {
+          name: 'Record',
+          imgUrl: '/img/icons/glyphicons-170-record.png'
+        },
+        {
           name: 'Play',
           imgUrl: '/img/icons/glyphicons-174-play.png'
         },
         {
           name: 'Pause',
           imgUrl: '/img/icons/glyphicons-175-pause.png'
+        },
+        {
+          name: 'Stop',
+          active: true,
+          imgUrl: '/img/icons/glyphicons-176-stop.png'
         }
       ]
     };

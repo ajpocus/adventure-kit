@@ -81093,7 +81093,7 @@ var ToolList = React.createClass({
     for (var i = 0; i < this.props.tools.length; i++) {
       var tool = this.props.tools[i];
       var className = "btn";
-      if (tool.name === this.state.activeTool) {
+      if (tool.name === this.state.activeTool || tool.active) {
         className += " active";
       }
 
@@ -81176,14 +81176,14 @@ var Track = React.createClass({
       noteColor: '#ffcc00',
       canvasWidth: 850,
       canvasHeight: 96,
+      contextOptions: ['Cut', 'Copy', 'Paste'],
       bpm: bpm,
       numMeasures: numMeasures,
       beatsPerMeasure: beatsPerMeasure,
       beatsPerSecond: beatsPerSecond,
       msPerBeat: msPerBeat,
       beatsPerWidth: beatsPerWidth,
-      msPerWidth: msPerWidth,
-      contextOptions: ['Cut', 'Copy', 'Paste']
+      msPerWidth: msPerWidth
     };
   },
 
@@ -81497,23 +81497,61 @@ var TrackManager = React.createClass({
 
   getDefaultProps: function getDefaultProps() {
     return {
-      trackCount: 4
+      trackCount: 5
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    var trackCount = this.props.trackCount;
+    var trackStates = [];
+    for (var i = 0; i < trackCount; i++) {
+      var isRecording = false;
+      var isStopped = true;
+      var lastIdx = trackCount - 1;
+
+      if (i === lastIdx) {
+        isRecording = true;
+        isStopped = false;
+      }
+
+      trackStates.push({
+        isRecording: isRecording,
+        isPlaying: false,
+        isPaused: false,
+        isStopped: isStopped
+      });
+    }
+
+    return {
+      trackStates: trackStates
     };
   },
 
   render: function render() {
     var trackViews = [];
+    var trackStates = this.state.trackStates;
     for (var i = 0; i < this.props.trackCount; i++) {
+      var trackState = trackStates[i];
       trackViews.push(React.createElement(_track2['default'], { data: this.props.tracks[i],
-        key: i }));
+        key: i,
+        trackNumber: i,
+        isRecording: trackState.isRecording,
+        isPlaying: trackState.isPlaying,
+        isPaused: trackState.isPaused,
+        isStopped: trackState.isStopped,
+        onTrackStateChange: this.onTrackStateChange }));
     }
 
     return React.createElement(
       'ul',
       { className: 'track-list' },
-      trackViews,
-      React.createElement(_track2['default'], { data: this.props.recording, isRecording: true })
+      trackViews
     );
+  },
+
+  onTrackStateChange: function onTrackStateChange(trackNumber, newState) {
+    var trackStates = this.state.trackStates;
+    trackStates[trackNumber] = newState;
   }
 });
 
@@ -81545,11 +81583,18 @@ var TrackToolList = React.createClass({
   getDefaultProps: function getDefaultProps() {
     return {
       tools: [{
+        name: 'Record',
+        imgUrl: '/img/icons/glyphicons-170-record.png'
+      }, {
         name: 'Play',
         imgUrl: '/img/icons/glyphicons-174-play.png'
       }, {
         name: 'Pause',
         imgUrl: '/img/icons/glyphicons-175-pause.png'
+      }, {
+        name: 'Stop',
+        active: true,
+        imgUrl: '/img/icons/glyphicons-176-stop.png'
       }]
     };
   },

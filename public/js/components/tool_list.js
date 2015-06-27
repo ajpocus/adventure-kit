@@ -17,7 +17,7 @@ let ToolList = React.createClass({
     for (let i = 0; i < this.props.tools.length; i++) {
       let tool = this.props.tools[i];
       let className = "btn";
-      if (tool.name === this.state.activeTool) {
+      if (tool.name === this.state.activeTool || tool.active) {
         className += " active";
       }
 

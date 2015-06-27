@@ -20,18 +20,18 @@ let Track = React.createClass({
       noteColor: '#ffcc00',
       canvasWidth: 850,
       canvasHeight: 96,
+      contextOptions: [
+        'Cut',
+        'Copy',
+        'Paste'
+      ],
       bpm,
       numMeasures,
       beatsPerMeasure,
       beatsPerSecond,
       msPerBeat,
       beatsPerWidth,
-      msPerWidth,
-      contextOptions: [
-        'Cut',
-        'Copy',
-        'Paste'
-      ]
+      msPerWidth
     };
   },
 
