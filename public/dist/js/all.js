@@ -80734,19 +80734,17 @@ $(function () {
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _actionsDraw_actions = require('../actions/draw_actions');
+
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
+
 var React = require('react');
-var $ = require('jquery');
-window.$ = $;
 
 var ColorPicker = React.createClass({
   displayName: 'ColorPicker',
-
-  getInitialState: function getInitialState() {
-    return {
-      primaryColor: this.props.primaryColor,
-      secondaryColor: this.props.secondaryColor
-    };
-  },
 
   render: function render() {
     return React.createElement(
@@ -80755,12 +80753,12 @@ var ColorPicker = React.createClass({
       React.createElement('input', { type: 'color',
         ref: 'primaryColor',
         id: 'primary-color',
-        value: this.state.primaryColor,
+        value: this.props.primaryColor,
         onChange: this.handlePrimaryColorChange }),
       React.createElement('input', { type: 'color',
         ref: 'secondaryColor',
         id: 'secondary-color',
-        value: this.state.secondaryColor,
+        value: this.props.secondaryColor,
         onChange: this.handleSecondaryColorChange })
     );
   },
@@ -80777,27 +80775,19 @@ var ColorPicker = React.createClass({
 
   handlePrimaryColorChange: function handlePrimaryColorChange(ev) {
     var color = ev.target.value;
-    this.setState({
-      primaryColor: color
-    }, function () {
-      this.props.onPrimaryColorChange(color);
-    });
+    _actionsDraw_actions2['default'].setPrimaryColor(color);
   },
 
   handleSecondaryColorChange: function handleSecondaryColorChange(ev) {
     var color = ev.target.value;
-    this.setState({
-      secondaryColor: color
-    }, function () {
-      this.props.onSecondaryColorChange(color);
-    });
+    _actionsDraw_actions2['default'].setSecondaryColor(color);
   }
 });
 
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"jquery":161,"react":484}],505:[function(require,module,exports){
+},{"../actions/draw_actions":501,"react":484}],505:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80929,9 +80919,7 @@ var Draw = React.createClass({
           isEditingPalette: this.state.isEditingPalette,
           paletteCopy: this.state.paletteCopy }),
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
-          secondaryColor: this.state.secondaryColor,
-          onPrimaryColorChange: this.onPrimaryColorChange,
-          onSecondaryColorChange: this.onSecondaryColorChange })
+          secondaryColor: this.state.secondaryColor })
       ),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
         secondaryColor: this.state.secondaryColor,

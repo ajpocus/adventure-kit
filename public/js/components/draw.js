@@ -38,9 +38,7 @@ let Draw = React.createClass({
                           isEditingPalette={this.state.isEditingPalette}
                           paletteCopy={this.state.paletteCopy}/>
           <ColorPicker primaryColor={this.state.primaryColor}
-                       secondaryColor={this.state.secondaryColor}
-                       onPrimaryColorChange={this.onPrimaryColorChange}
-                       onSecondaryColorChange={this.onSecondaryColorChange}/>
+                       secondaryColor={this.state.secondaryColor}/>
         </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}
