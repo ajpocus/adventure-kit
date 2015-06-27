@@ -234,13 +234,6 @@ let DrawSurface = React.createClass({
     switch (this.props.activeTool) {
       case 'Pencil':
         grid[x][y].color = color;
-
-        this.setState({
-          grid,
-          drawGfx,
-          isMouseDown: true
-        });
-
         break;
 
       case 'Bucket':
@@ -259,10 +252,10 @@ let DrawSurface = React.createClass({
           }
 
           let neighbors = [
-            { x: x + 1, y: y },
-            { x: x - 1, y: y },
-            { x: x, y: y + 1 },
-            { x: x, y: y - 1 }
+            { nx: x + 1, ny: y },
+            { nx: x - 1, ny: y },
+            { nx: x, ny: y + 1 },
+            { nx: x, ny: y - 1 }
           ];
 
           for (let i = 0; i < neighbors.length; i++) {

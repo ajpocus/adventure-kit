@@ -1,5 +1,6 @@
 let React = require('react');
 
+import DrawStore from '../stores/draw_store';
 import DrawToolList from './draw_tool_list';
 import PaletteManager from './palette_manager';
 import ColorPicker from './color_picker';
@@ -7,16 +8,19 @@ import DrawSurface from './draw_surface';
 
 let Draw = React.createClass({
   getInitialState: function () {
-    return {
-      primaryColor: '#000000',
-      secondaryColor: '#ffffff',
-      width: 32,
-      height: 32,
-      totalWidth: 1024,
-      totalHeight: 1024,
-      zoom: 0.875,
-      activeTool: 'Pencil'
-    };
+    return DrawStore.getState();
+  },
+
+  componentDidMount: function () {
+    DrawStore.listen(this.onChange);
+  },
+
+  componentWillUnmount: function () {
+    DrawStore.unlisten(this.onChange);
+  },
+
+  onChange: function (state) {
+    this.setState(state);
   },
 
   render: function () {
@@ -28,8 +32,7 @@ let Draw = React.createClass({
     return (
       <div id="draw">
         <div className="toolbar">
-          <DrawToolList activeTool={this.state.activeTool}
-                        onSetActiveTool={this.onSetActiveTool}/>
+          <DrawToolList activeTool={this.state.activeTool}/>
           <PaletteManager onPrimaryColorChange={this.onPrimaryColorChange}
                           onSecondaryColorChange={this.onSecondaryColorChange}/>
           <ColorPicker primaryColor={this.state.primaryColor}
@@ -51,10 +54,6 @@ let Draw = React.createClass({
 
   onSecondaryColorChange: function (color) {
     this.setState({ secondaryColor: color });
-  },
-
-  onSetActiveTool: function (name) {
-    this.setState({ activeTool: name });
   }
 });
 

@@ -1,5 +1,6 @@
 let React = require('react');
 
+import DrawActions from '../actions/draw_actions';
 import ToolList from './tool_list';
 
 let DrawToolList = React.createClass({
@@ -30,10 +31,14 @@ let DrawToolList = React.createClass({
     return (
       <div className="draw-tools">
         <ToolList tools={this.props.tools}
-                  activeTool={this.props.tools[0].name}
-                  onSetActiveTool={this.props.onSetActiveTool}/>
+                  activeTool={this.props.activeTool}
+                  onSetActiveTool={this.onSetActiveTool}/>
       </div>
     );
+  },
+
+  onSetActiveTool: function (tool) {
+    DrawActions.setActiveTool(tool);
   }
 });
 

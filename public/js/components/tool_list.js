@@ -3,13 +3,8 @@ let React = require('react');
 let ToolList = React.createClass({
   propTypes: {
     tools: React.PropTypes.array.isRequired,
-    onSetActiveTool: React.PropTypes.func
-  },
-
-  getInitialState: function () {
-    return {
-      activeTool: this.props.activeTool
-    };
+    activeTool: React.PropTypes.string,
+    onSetActiveTool: React.PropTypes.func.isRequired
   },
 
   render: function () {
@@ -17,7 +12,7 @@ let ToolList = React.createClass({
     for (let i = 0; i < this.props.tools.length; i++) {
       let tool = this.props.tools[i];
       let className = "btn";
-      if (tool.name === this.state.activeTool || tool.active) {
+      if (tool.name === this.props.activeTool || tool.active) {
         className += " active";
       }
 
@@ -42,12 +37,8 @@ let ToolList = React.createClass({
     );
   },
 
-  setActiveTool: function (name) {
-    this.setState({ activeTool: name });
-
-    if (this.props.onSetActiveTool) {
-      this.props.onSetActiveTool(name);
-    }
+  setActiveTool: function (tool) {
+    this.props.onSetActiveTool(tool);
   },
 });
 
