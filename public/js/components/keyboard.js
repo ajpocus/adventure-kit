@@ -50,7 +50,8 @@ let Keyboard = React.createClass({
           { key: '0', midi: 27 }
         ]
       },
-      notesPerOctave: 12
+      notesPerOctave: 12,
+      isRecording: true
     };
   },
 
@@ -61,8 +62,7 @@ let Keyboard = React.createClass({
       oscillators: {},
       octaveShift: 2,
       recording: [],
-      recordingIndices: {},
-      isRecording: this.props.isRecording
+      recordingIndices: {}
     };
   },
 
@@ -113,7 +113,6 @@ let Keyboard = React.createClass({
 
       let midi = notesPerOctave + key.midi + (notesPerOctave * octaveShift);
       let note = teoria.note.fromMIDI(midi);
-
       let scientific = note.scientific();
       scientific = scientific.replace('b', '♭');
       scientific = scientific.replace('#', '♯');

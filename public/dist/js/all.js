@@ -80341,7 +80341,8 @@ var Keyboard = React.createClass({
         white: [{ key: 'Z', midi: 0 }, { key: 'X', midi: 2 }, { key: 'C', midi: 4 }, { key: 'V', midi: 5 }, { key: 'B', midi: 7 }, { key: 'N', midi: 9 }, { key: 'M', midi: 11 }, { key: '< Q', midi: 12 }, { key: 'W', midi: 14 }, { key: 'E', midi: 16 }, { key: 'R', midi: 17 }, { key: 'T', midi: 19 }, { key: 'Y', midi: 21 }, { key: 'U', midi: 23 }, { key: 'I', midi: 24 }, { key: 'O', midi: 26 }, { key: 'P', midi: 28 }],
         black: [{ key: 'S', midi: 1 }, { key: 'D', midi: 3 }, { spacer: true }, { key: 'G', midi: 6 }, { key: 'H', midi: 8 }, { key: 'J', midi: 10 }, { spacer: true }, { key: '2', midi: 13 }, { key: '3', midi: 15 }, { spacer: true }, { key: '5', midi: 18 }, { key: '6', midi: 20 }, { key: '7', midi: 22 }, { spacer: true }, { key: '9', midi: 25 }, { key: '0', midi: 27 }]
       },
-      notesPerOctave: 12
+      notesPerOctave: 12,
+      isRecording: true
     };
   },
 
@@ -80352,8 +80353,7 @@ var Keyboard = React.createClass({
       oscillators: {},
       octaveShift: 2,
       recording: [],
-      recordingIndices: {},
-      isRecording: this.props.isRecording
+      recordingIndices: {}
     };
   },
 
@@ -80410,7 +80410,6 @@ var Keyboard = React.createClass({
 
       var midi = notesPerOctave + key.midi + notesPerOctave * octaveShift;
       var note = teoria.note.fromMIDI(midi);
-
       var scientific = note.scientific();
       scientific = scientific.replace('b', '♭');
       scientific = scientific.replace('#', '♯');
