@@ -52,7 +52,9 @@ let ResizePrompt = React.createClass({
   },
 
   handleResize: function () {
-    this.props.handleResize(this.state.width, this.state.height);
+    let width = this.state.width;
+    let height = this.state.height;
+    DrawActions.resizeSurface({ width, height });
     this.closePrompt();
   },
 

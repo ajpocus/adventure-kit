@@ -81336,8 +81336,7 @@ var DrawSurface = React.createClass({
 
   onResizeClick: function onResizeClick() {
     React.render(React.createElement(_resize_prompt2['default'], { width: this.props.width,
-      height: this.props.height,
-      handleResize: this.handleResize }), document.getElementById('modal-container'));
+      height: this.props.height }), document.getElementById('modal-container'));
   },
 
   handleResize: function handleResize(width, height) {
@@ -81374,20 +81373,6 @@ var DrawSurface = React.createClass({
     }
 
     this.setState({ bgGfx: bgGfx });
-  },
-
-  initGrid: function initGrid(callback) {
-    var grid = [];
-
-    for (var x = 0; x < this.props.width; x++) {
-      grid[x] = [];
-
-      for (var y = 0; y < this.props.height; y++) {
-        grid[x].push(new _modelsPixel2['default'](x, y));
-      }
-    }
-
-    this.setState({ grid: grid }, callback);
   },
 
   resizeGrid: function resizeGrid() {
@@ -82920,7 +82905,9 @@ var ResizePrompt = React.createClass({
   },
 
   handleResize: function handleResize() {
-    this.props.handleResize(this.state.width, this.state.height);
+    var width = this.state.width;
+    var height = this.state.height;
+    DrawActions.resizeSurface({ width: width, height: height });
     this.closePrompt();
   },
 

@@ -106,9 +106,9 @@ let DrawSurface = React.createClass({
 
   animate: function () {
     let drawGfx = this.state.drawGfx;
-    let zoom = this.props.zoom;
     let renderer = this.state.renderer;
     let stage = this.state.stage;
+    let zoom = this.props.zoom;
     let grid = this.props.grid;
 
     renderer.resize(this.props.actualWidth, this.props.actualHeight);
@@ -143,10 +143,8 @@ let DrawSurface = React.createClass({
       currentPixel.highlighted = true;
     }
 
-    this.setState({
-      grid,
-      overlayGfx
-    });
+    DrawActions.updateGrid(grid);
+    this.setState({ overlayGfx });
 
     this.clearHighlight(currentPixel);
 
@@ -297,13 +295,8 @@ let DrawSurface = React.createClass({
 
   onResizeClick: function () {
     React.render(<ResizePrompt width={this.props.width}
-                               height={this.props.height}
-                               handleResize={this.handleResize}/>,
+                               height={this.props.height}/>,
                  document.getElementById('modal-container'));
-  },
-
-  handleResize: function (width, height) {
-    DrawActions.resizeSurface({ width, height });
   },
 
   onExportClick: function () {
@@ -338,20 +331,6 @@ let DrawSurface = React.createClass({
     }
 
     this.setState({ bgGfx });
-  },
-
-  initGrid: function (callback) {
-    let grid = [];
-
-    for (let x = 0; x < this.props.width; x++) {
-      grid[x] = [];
-
-      for (let y = 0; y < this.props.height; y++) {
-        grid[x].push(new Pixel(x, y));
-      }
-    }
-
-    this.setState({ grid }, callback);
   },
 
   resizeGrid: function () {
