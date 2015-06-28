@@ -10,8 +10,7 @@ let RouteHandler = Router.RouteHandler;
 
 import Header from './components/header';
 import Footer from './components/footer';
-import Draw from './components/draw';
-import Vector from './components/vector';
+import DrawCtrl from './components/draw_ctrl';
 import Map from './components/map';
 import Music from './components/music';
 import Play from './components/play';
@@ -38,12 +37,11 @@ $(function () {
 
   let routes = (
     <Route name="app" path="/" handler={App}>
-      <Route name="draw" handler={Draw}/>
-      <Route name="vector" handler={Vector}/>
+      <Route name="draw" handler={DrawCtrl}/>
       <Route name="map" handler={Map}/>
       <Route name="music" handler={Music}/>
       <Route name="play" handler={Play}/>
-      <DefaultRoute handler={Draw}/>
+      <DefaultRoute handler={DrawCtrl}/>
     </Route>
   );
 

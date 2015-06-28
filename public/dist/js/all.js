@@ -80696,13 +80696,9 @@ var _componentsFooter = require('./components/footer');
 
 var _componentsFooter2 = _interopRequireDefault(_componentsFooter);
 
-var _componentsDraw = require('./components/draw');
+var _componentsDraw_ctrl = require('./components/draw_ctrl');
 
-var _componentsDraw2 = _interopRequireDefault(_componentsDraw);
-
-var _componentsVector = require('./components/vector');
-
-var _componentsVector2 = _interopRequireDefault(_componentsVector);
+var _componentsDraw_ctrl2 = _interopRequireDefault(_componentsDraw_ctrl);
 
 var _componentsMap = require('./components/map');
 
@@ -80750,12 +80746,11 @@ $(function () {
   var routes = React.createElement(
     Route,
     { name: 'app', path: '/', handler: App },
-    React.createElement(Route, { name: 'draw', handler: _componentsDraw2['default'] }),
-    React.createElement(Route, { name: 'vector', handler: _componentsVector2['default'] }),
+    React.createElement(Route, { name: 'draw', handler: _componentsDraw_ctrl2['default'] }),
     React.createElement(Route, { name: 'map', handler: _componentsMap2['default'] }),
     React.createElement(Route, { name: 'music', handler: _componentsMusic2['default'] }),
     React.createElement(Route, { name: 'play', handler: _componentsPlay2['default'] }),
-    React.createElement(DefaultRoute, { handler: _componentsDraw2['default'] })
+    React.createElement(DefaultRoute, { handler: _componentsDraw_ctrl2['default'] })
   );
 
   Router.run(routes, function (Handler) {
@@ -80763,7 +80758,7 @@ $(function () {
   });
 });
 
-},{"./components/draw":506,"./components/footer":511,"./components/header":512,"./components/map":517,"./components/music":519,"./components/play":521,"./components/vector":527,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],504:[function(require,module,exports){
+},{"./components/draw_ctrl":506,"./components/footer":511,"./components/header":512,"./components/map":517,"./components/music":519,"./components/play":521,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],504:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80917,8 +80912,8 @@ var _draw_surface2 = _interopRequireDefault(_draw_surface);
 
 var React = require('react');
 
-var Draw = React.createClass({
-  displayName: 'Draw',
+var DrawCtrl = React.createClass({
+  displayName: 'DrawCtrl',
 
   getInitialState: function getInitialState() {
     return _storesDraw_store2['default'].getState();
@@ -80975,10 +80970,10 @@ var Draw = React.createClass({
   }
 });
 
-exports['default'] = Draw;
+exports['default'] = DrawCtrl;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":532,"./color_picker":504,"./draw_surface":507,"./draw_tool_list":508,"./palette_manager":520,"react":484}],507:[function(require,module,exports){
+},{"../stores/draw_store":531,"./color_picker":504,"./draw_surface":507,"./draw_tool_list":508,"./palette_manager":520,"react":484}],507:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81416,7 +81411,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"../models/pixel":531,"./manage_tool_list":516,"./resize_prompt":522,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],508:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":529,"../models/pixel":530,"./manage_tool_list":516,"./resize_prompt":522,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],508:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81833,7 +81828,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"jquery":161,"react":484}],511:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":529,"jquery":161,"react":484}],511:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82417,7 +82412,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../mixins/key_map_mixin":529,"jquery":161,"react":484,"teoria":485}],516:[function(require,module,exports){
+},{"../mixins/key_map_mixin":528,"jquery":161,"react":484,"teoria":485}],516:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82655,7 +82650,7 @@ var Music = React.createClass({
 exports['default'] = Music;
 module.exports = exports['default'];
 
-},{"./instrument_list":514,"./keyboard":515,"./track_manager":525,"./volume_control":528,"react":484}],520:[function(require,module,exports){
+},{"./instrument_list":514,"./keyboard":515,"./track_manager":525,"./volume_control":527,"react":484}],520:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82792,7 +82787,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"./edit_palette":510,"./modal":518,"jquery":161,"react":484,"tinycolor2":500}],521:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":529,"./edit_palette":510,"./modal":518,"jquery":161,"react":484,"tinycolor2":500}],521:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83486,29 +83481,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 var React = require("react");
 
-var Vector = React.createClass({
-  displayName: "Vector",
-
-  render: function render() {
-    return React.createElement(
-      "div",
-      { id: "vector" },
-      React.createElement("div", { id: "render" })
-    );
-  }
-});
-
-exports["default"] = Vector;
-module.exports = exports["default"];
-
-},{"react":484}],528:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var React = require("react");
-
 var VolumeControl = React.createClass({
   displayName: "VolumeControl",
 
@@ -83554,7 +83526,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":484}],529:[function(require,module,exports){
+},{"react":484}],528:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83661,7 +83633,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],530:[function(require,module,exports){
+},{}],529:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83674,7 +83646,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],531:[function(require,module,exports){
+},{}],530:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83695,7 +83667,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],532:[function(require,module,exports){
+},{}],531:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83913,7 +83885,7 @@ var DrawStore = (function () {
 exports['default'] = _alt2['default'].createStore(DrawStore, 'DrawStore');
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../alt":502,"../models/pixel":531,"pixi.js":266}]},{},[503])
+},{"../actions/draw_actions":501,"../alt":502,"../models/pixel":530,"pixi.js":266}]},{},[503])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

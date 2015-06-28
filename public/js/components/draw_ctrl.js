@@ -6,7 +6,7 @@ import PaletteManager from './palette_manager';
 import ColorPicker from './color_picker';
 import DrawSurface from './draw_surface';
 
-let Draw = React.createClass({
+let DrawCtrl = React.createClass({
   getInitialState: function () {
     return DrawStore.getState();
   },
@@ -61,4 +61,4 @@ let Draw = React.createClass({
   }
 });
 
-export default Draw;
+export default DrawCtrl;
