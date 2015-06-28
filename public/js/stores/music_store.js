@@ -29,6 +29,7 @@ class MusicStore {
       }
     ];
     this.activeInstrument = 0;
+    this.isEditingInstrument = false;
     this.volume = 0.3;
     this.recording = [];
     this.tracks = [];
@@ -46,6 +47,7 @@ class MusicStore {
   }
 
   newInstrument() {
+    console.log(this.instruments);
     let instrument = {
       name: 'New Instrument',
       components: [
@@ -57,9 +59,10 @@ class MusicStore {
         }
       ]
     };
+    console.log(this.instruments);
     this.instruments.push(instrument);
     this.activeInstrument = this.instruments.length - 1;
-    this.instrumentCopy = instrument;
+    this.isEditingInstrument = true;
   }
 
   updateInstrument(instrument) {

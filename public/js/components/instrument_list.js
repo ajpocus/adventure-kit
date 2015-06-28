@@ -1,6 +1,7 @@
 let React = require('react');
 
 import MusicActions from '../actions/music_actions';
+import Modal from './modal';
 import EditInstrument from './edit_instrument';
 
 let InstrumentList = React.createClass({
@@ -8,7 +9,9 @@ let InstrumentList = React.createClass({
     let instruments = this.props.instruments;
     let instrumentViews = [];
 
+    console.log(instruments.length);
     for (let i = 0; i < instruments.length; i++) {
+      console.log(i);
       let instrument = instruments[i];
       let className = 'instrument';
       if (i === this.props.activeInstrument) {
@@ -24,6 +27,8 @@ let InstrumentList = React.createClass({
       );
     }
 
+    let activeInstrument = instruments[this.props.activeInstrument];
+
     return (
       <div className="instrument-list">
         <h2>Instruments</h2>
@@ -34,6 +39,10 @@ let InstrumentList = React.createClass({
         <ul className="instrument-list">
           {instrumentViews}
         </ul>
+
+        <Modal isOpen={this.props.isEditingInstrument}>
+          <EditInstrument instrument={activeInstrument}/>
+        </Modal>
       </div>
     );
   },
@@ -44,9 +53,6 @@ let InstrumentList = React.createClass({
 
   newInstrument: function () {
     MusicActions.newInstrument();
-    let instrument = this.props.instruments[this.props.activeInstrument];
-    React.render(<EditInstrument instrument={instrument}/>,
-                 document.getElementById('modal-container'));
   }
 });
 

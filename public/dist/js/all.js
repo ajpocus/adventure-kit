@@ -82083,6 +82083,10 @@ var _actionsMusic_actions = require('../actions/music_actions');
 
 var _actionsMusic_actions2 = _interopRequireDefault(_actionsMusic_actions);
 
+var _modal = require('./modal');
+
+var _modal2 = _interopRequireDefault(_modal);
+
 var _edit_instrument = require('./edit_instrument');
 
 var _edit_instrument2 = _interopRequireDefault(_edit_instrument);
@@ -82096,7 +82100,9 @@ var InstrumentList = React.createClass({
     var instruments = this.props.instruments;
     var instrumentViews = [];
 
+    console.log(instruments.length);
     for (var i = 0; i < instruments.length; i++) {
+      console.log(i);
       var instrument = instruments[i];
       var className = 'instrument';
       if (i === this.props.activeInstrument) {
@@ -82116,6 +82122,8 @@ var InstrumentList = React.createClass({
       ));
     }
 
+    var activeInstrument = instruments[this.props.activeInstrument];
+
     return React.createElement(
       'div',
       { className: 'instrument-list' },
@@ -82134,6 +82142,11 @@ var InstrumentList = React.createClass({
         'ul',
         { className: 'instrument-list' },
         instrumentViews
+      ),
+      React.createElement(
+        _modal2['default'],
+        { isOpen: this.props.isEditingInstrument },
+        React.createElement(_edit_instrument2['default'], { instrument: activeInstrument })
       )
     );
   },
@@ -82144,15 +82157,13 @@ var InstrumentList = React.createClass({
 
   newInstrument: function newInstrument() {
     _actionsMusic_actions2['default'].newInstrument();
-    var instrument = this.props.instruments[this.props.activeInstrument];
-    React.render(React.createElement(_edit_instrument2['default'], { instrument: instrument }), document.getElementById('modal-container'));
   }
 });
 
 exports['default'] = InstrumentList;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"./edit_instrument":510,"react":484}],516:[function(require,module,exports){
+},{"../actions/music_actions":502,"./edit_instrument":510,"./modal":519,"react":484}],516:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83904,6 +83915,7 @@ var MusicStore = (function () {
       }]
     }];
     this.activeInstrument = 0;
+    this.isEditingInstrument = false;
     this.volume = 0.3;
     this.recording = [];
     this.tracks = [];
@@ -83924,6 +83936,7 @@ var MusicStore = (function () {
   }, {
     key: 'newInstrument',
     value: function newInstrument() {
+      console.log(this.instruments);
       var instrument = {
         name: 'New Instrument',
         components: [{
@@ -83933,9 +83946,10 @@ var MusicStore = (function () {
           key: 0
         }]
       };
+      console.log(this.instruments);
       this.instruments.push(instrument);
       this.activeInstrument = this.instruments.length - 1;
-      this.instrumentCopy = instrument;
+      this.isEditingInstrument = true;
     }
   }, {
     key: 'updateInstrument',
