@@ -1,22 +1,17 @@
 let React = require('react');
 
 let InstrumentComponent = React.createClass({
-  getInitialState: function () {
-    return {
-      harmonic: this.props.harmonic,
-      gain: this.props.gain,
-      type: this.props.type
-    };
-  },
-
   render: function () {
+    let instrument = this.props.instrument;
+    let component = instrument.components[this.props.idx];
+
     return (
       <div className="component">
         <div className="field">
           <label htmlFor="harmonic">Harmonic</label>
           <input type="number"
                  name="harmonic"
-                 value={this.state.harmonic}
+                 value={component.harmonic}
                  onChange={this.onHarmonicChange}/>
         </div>
 
@@ -24,14 +19,14 @@ let InstrumentComponent = React.createClass({
           <label htmlFor="gain">Gain</label>
           <input type="range"
                  name="gain"
-                 value={this.state.gain}
+                 value={component.gain}
                  min="0"
                  max="1"
                  step="0.01"
                  onChange={this.onGainChange}/>
           <input type="number"
                  name="gain"
-                 value={parseFloat(this.state.gain).toFixed(2)}
+                 value={parseFloat(component.gain).toFixed(2)}
                  min="0"
                  max="1"
                  onChange={this.onGainChange}/>
@@ -40,7 +35,7 @@ let InstrumentComponent = React.createClass({
         <div className="field">
           <label htmlFor="waveType">Wave type</label>
           <select name="waveType"
-                  defaultValue={this.state.type}
+                  defaultValue={component.type}
                   onChange={this.onTypeChange}>
             <option value="sine">Sine</option>
             <option value="square">Square</option>
@@ -53,21 +48,18 @@ let InstrumentComponent = React.createClass({
   },
 
   onHarmonicChange: function (ev) {
-    let newState = { harmonic: ev.target.value };
-    this.setState(newState);
-    this.props.onChange(newState, this.props.idx);
+    instrument.components[this.props.idx].harmonic = ev.target.value;
+    MusicActions.updateInstrument(instrument);
   },
 
   onGainChange: function (ev) {
-    let newState = { gain: ev.target.value };
-    this.setState(newState);
-    this.props.onChange(newState, this.props.idx);
+    instrument.components[this.props.idx].gain = ev.target.value;
+    MusicActions.updateInstrument(instrument);
   },
 
   onTypeChange: function (ev) {
-    let newState = { type: ev.target.value };
-    this.setState(newState);
-    this.props.onChange(newState, this.props.idx);
+    instrument.components[this.props.idx].type = ev.target.value;
+    MusicActions.updateInstrument(instrument);
   }
 });
 

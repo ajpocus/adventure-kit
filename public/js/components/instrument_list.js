@@ -1,29 +1,17 @@
 let React = require('react');
 
+import MusicActions from '../actions/music_actions';
 import EditInstrument from './edit_instrument';
 
 let InstrumentList = React.createClass({
-  getInitialState: function () {
-    return {
-      instruments: this.props.instruments,
-      activeInstrument: this.props.activeInstrument
-    };
-  },
-
-  componentDidUpdate: function (prevProps, prevState) {
-    if (this.state !== prevState) {
-      this.props.onUpdate(this.state);
-    }
-  },
-
   render: function () {
-    let instruments = this.state.instruments;
+    let instruments = this.props.instruments;
     let instrumentViews = [];
 
     for (let i = 0; i < instruments.length; i++) {
       let instrument = instruments[i];
       let className = 'instrument';
-      if (i === this.state.activeInstrument) {
+      if (i === this.props.activeInstrument) {
         className += ' active';
       }
 
@@ -47,40 +35,18 @@ let InstrumentList = React.createClass({
           {instrumentViews}
         </ul>
       </div>
-
     );
   },
 
   handleClick: function (idx) {
-    this.setState({ activeInstrument: idx });
+    MusicActions.setActiveInstrument(idx);
   },
 
   newInstrument: function () {
-    let instruments = this.state.instruments;
-    let name = 'New Instrument';
-    instruments.push({ name: name });
-    let idx = instruments.length - 1;
-    let activeInstrument = idx;
-
-    React.render(<EditInstrument onInstrumentChange={this.onInstrumentChange}/>,
+    MusicActions.newInstrument();
+    let instrument = this.props.instruments[this.props.activeInstrument];
+    React.render(<EditInstrument instrument={instrument}/>,
                  document.getElementById('modal-container'));
-
-    this.setState({
-      instruments: instruments,
-      activeInstrument: idx
-    });
-  },
-
-  onInstrumentChange: function (instrument) {
-    let instruments = this.state.instruments;
-    let activeInstrument = this.state.activeInstrument;
-    instruments[activeInstrument] = instrument;
-
-    this.setState({
-      instruments: instruments
-    });
-
-    this.props.onUpdate(this.state);
   }
 });
 

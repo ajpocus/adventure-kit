@@ -12,7 +12,7 @@ import Header from './components/header';
 import Footer from './components/footer';
 import DrawCtrl from './components/draw_ctrl';
 import Map from './components/map';
-import Music from './components/music';
+import MusicCtrl from './components/music_ctrl';
 import Play from './components/play';
 
 $(function () {
@@ -39,7 +39,7 @@ $(function () {
     <Route name="app" path="/" handler={App}>
       <Route name="draw" handler={DrawCtrl}/>
       <Route name="map" handler={Map}/>
-      <Route name="music" handler={Music}/>
+      <Route name="music" handler={MusicCtrl}/>
       <Route name="play" handler={Play}/>
       <DefaultRoute handler={DrawCtrl}/>
     </Route>

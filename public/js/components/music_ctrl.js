@@ -1,44 +1,26 @@
 let React = require('react');
 
+import MusicStore from '../stores/music_store';
 import TrackManager from './track_manager';
 import InstrumentList from './instrument_list';
 import Keyboard from './keyboard';
 import VolumeControl from './volume_control';
 
-let Music = React.createClass({
+let MusicCtrl = React.createClass({
   getInitialState: function () {
-    return {
-      instruments: [
-        {
-          name: '8-bit Synth',
-          components: [
-            {
-              harmonic: 0,
-              gain: 0.3,
-              type: 'sawtooth',
-              key: Math.random()
-            },
-            {
-              harmonic: 1,
-              gain: 0.5,
-              type: 'sine',
-              key: Math.random()
-            },
-            {
-              harmonic: 2,
-              gain: 0.2,
-              type: 'square',
-              key: Math.random()
-            }
-          ]
-        }
-      ],
-      activeInstrument: 0,
-      volume: 0.3,
-      recording: [],
-      tracks: [],
-      isRecording: true
-    };
+    return MusicStore.getState();
+  },
+
+  componentDidMount: function () {
+    MusicStore.listen(this.onChange);
+  },
+
+  componentWillUnmount: function () {
+    MusicStore.unlisten(this.onChange);
+  },
+
+  onChange: function (state) {
+    this.setState(state);
   },
 
   render: function () {
@@ -49,7 +31,7 @@ let Music = React.createClass({
           <div className="sidebar">
             <InstrumentList instruments={this.state.instruments}
                             activeInstrument={this.state.activeInstrument}
-                            onUpdate={this.onUpdate}/>
+                            instrumentCopy={this.state.instrumentCopy}/>
           </div>
 
           <div className="main">
@@ -85,4 +67,4 @@ let Music = React.createClass({
   }
 });
 
-export default Music;
+export default MusicCtrl;

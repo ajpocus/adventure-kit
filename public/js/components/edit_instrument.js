@@ -1,40 +1,24 @@
 let React = require('react');
 
+import MusicActions from '../actions/music_actions';
 import InstrumentComponent from './instrument_component';
 
 let EditInstrument = React.createClass({
-  getInitialState: function () {
-    return {
-      name: 'New Instrument',
-      components: [
-        {
-          harmonic: 0,
-          gain: 0.5,
-          type: 'sawtooth',
-          key: Math.random()
-        }
-      ]
-    };
-  },
-
   componentDidUpdate: function () {
-    this.props.onInstrumentChange(this.state);
+    MusicActions.updateInstrument();
   },
 
   render: function () {
-    let components = this.state.components;
+    let instrument = this.props.instrument;
+    let components = instrument.components;
     let componentViews = [];
 
     for (let i = 0; i < components.length; i++) {
       let wave = components[i];
-      console.log(wave);
       componentViews.push(
-        <InstrumentComponent key={wave.key}
-                             idx={i}
-                             harmonic={wave.harmonic}
-                             gain={wave.gain}
-                             type={wave.type}
-                             onChange={this.handleChange}/>
+        <InstrumentComponent instrument={instrument}
+                             key={wave.key}
+                             idx={i}/>
       );
     }
 
@@ -53,7 +37,7 @@ let EditInstrument = React.createClass({
             <div className="content">
               <div className="instrument">
                 <input name="name"
-                       value={this.state.name}
+                       value={this.props.name}
                        onChange={this.handleNameChange}/>
                 <div className="components">
                   <button className="new-component undertone"
@@ -88,59 +72,46 @@ let EditInstrument = React.createClass({
     );
   },
 
-  handleChange: function (newState, idx) {
-    let components = this.state.components;
-    let component = components[idx];
-    for (let prop in newState) {
-      if (newState.hasOwnProperty(prop)) {
-        component[prop] = newState[prop];
-      }
-    }
-
-    components[idx] = component;
-    this.setState({ components: components }, function () {
-      this.props.onInstrumentChange(this.state);
-    });
-  },
-
   handleNameChange: function (ev) {
-    this.setState({
-      name: ev.target.value
-    }, function () {
-      this.props.onInstrumentChange(this.state);
-    });
+    let instrument = this.props.instrument;
+    instrument.name = ev.target.value;
+    MusicActions.updateInstrument(instrument);
   },
 
   addUndertone: function () {
-    let components = this.state.components;
+    let instrument = this.props.instrument;
+    let components = instrument.components;
     let firstComponent = components[0];
     let harmonic = firstComponent.harmonic - 1;
-    let key = Math.random();
+    let key = firstComponent.key - 1;
 
     components.unshift({
-      harmonic: harmonic,
+      harmonic,
       gain: 0.5,
       type: 'square',
-      key: key
+      key
     });
 
-    this.setState({ components: components });
+    instrument.components = components;
+    MusicActions.updateInstrument(instrument);
   },
 
   addOvertone: function () {
-    let components = this.state.components;
+    let instrument = this.props.instrument;
+    let components = instrument.components;
     let lastComponent = components[components.length - 1];
     let harmonic = lastComponent.harmonic + 1;
-    let key = Math.random();
+    let key = lastComponent.key + 1;
 
     components.push({
-      harmonic: harmonic,
+      harmonic,
       gain: 0.5,
       type: 'square',
-      key: key
+      key
     });
 
-    this.setState({ components: components });
+    instrument.components = components;
+    MusicActions.updateInstrument(instrument);
   },
 
   handleClose: function () {

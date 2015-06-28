@@ -80670,7 +80670,52 @@ var DrawActions = (function () {
 exports['default'] = _alt2['default'].createActions(DrawActions);
 module.exports = exports['default'];
 
-},{"../alt":502}],502:[function(require,module,exports){
+},{"../alt":503}],502:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _alt = require('../alt');
+
+var _alt2 = _interopRequireDefault(_alt);
+
+var MusicActions = (function () {
+  function MusicActions() {
+    _classCallCheck(this, MusicActions);
+  }
+
+  _createClass(MusicActions, [{
+    key: 'setActiveInstrument',
+    value: function setActiveInstrument(idx) {
+      this.dispatch(idx);
+    }
+  }, {
+    key: 'newInstrument',
+    value: function newInstrument() {
+      this.dispatch();
+    }
+  }, {
+    key: 'updateInstrument',
+    value: function updateInstrument(instrument) {
+      this.dispatch(instrument);
+    }
+  }]);
+
+  return MusicActions;
+})();
+
+exports['default'] = _alt2['default'].createActions(MusicActions);
+module.exports = exports['default'];
+
+},{"../alt":503}],503:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80683,7 +80728,7 @@ var alt = new Alt();
 exports['default'] = alt;
 module.exports = exports['default'];
 
-},{"alt":2}],503:[function(require,module,exports){
+},{"alt":2}],504:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -80704,9 +80749,9 @@ var _componentsMap = require('./components/map');
 
 var _componentsMap2 = _interopRequireDefault(_componentsMap);
 
-var _componentsMusic = require('./components/music');
+var _componentsMusic_ctrl = require('./components/music_ctrl');
 
-var _componentsMusic2 = _interopRequireDefault(_componentsMusic);
+var _componentsMusic_ctrl2 = _interopRequireDefault(_componentsMusic_ctrl);
 
 var _componentsPlay = require('./components/play');
 
@@ -80748,7 +80793,7 @@ $(function () {
     { name: 'app', path: '/', handler: App },
     React.createElement(Route, { name: 'draw', handler: _componentsDraw_ctrl2['default'] }),
     React.createElement(Route, { name: 'map', handler: _componentsMap2['default'] }),
-    React.createElement(Route, { name: 'music', handler: _componentsMusic2['default'] }),
+    React.createElement(Route, { name: 'music', handler: _componentsMusic_ctrl2['default'] }),
     React.createElement(Route, { name: 'play', handler: _componentsPlay2['default'] }),
     React.createElement(DefaultRoute, { handler: _componentsDraw_ctrl2['default'] })
   );
@@ -80758,7 +80803,7 @@ $(function () {
   });
 });
 
-},{"./components/draw_ctrl":506,"./components/footer":511,"./components/header":512,"./components/map":517,"./components/music":519,"./components/play":521,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],504:[function(require,module,exports){
+},{"./components/draw_ctrl":507,"./components/footer":512,"./components/header":513,"./components/map":518,"./components/music_ctrl":520,"./components/play":522,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],505:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80817,7 +80862,7 @@ var ColorPicker = React.createClass({
 exports['default'] = ColorPicker;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"react":484}],505:[function(require,module,exports){
+},{"../actions/draw_actions":501,"react":484}],506:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80881,7 +80926,7 @@ var ContextMenu = React.createClass({
 exports['default'] = ContextMenu;
 module.exports = exports['default'];
 
-},{"react":484}],506:[function(require,module,exports){
+},{"react":484}],507:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80973,7 +81018,7 @@ var DrawCtrl = React.createClass({
 exports['default'] = DrawCtrl;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":531,"./color_picker":504,"./draw_surface":507,"./draw_tool_list":508,"./palette_manager":520,"react":484}],507:[function(require,module,exports){
+},{"../stores/draw_store":532,"./color_picker":505,"./draw_surface":508,"./draw_tool_list":509,"./palette_manager":521,"react":484}],508:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81411,7 +81456,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../actions/draw_actions":501,"../mixins/transparency":529,"../models/pixel":530,"./manage_tool_list":516,"./resize_prompt":522,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],508:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"../models/pixel":531,"./manage_tool_list":517,"./resize_prompt":523,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],509:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81469,7 +81514,7 @@ var DrawToolList = React.createClass({
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"./tool_list":523,"react":484}],509:[function(require,module,exports){
+},{"../actions/draw_actions":501,"./tool_list":524,"react":484}],510:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81477,6 +81522,10 @@ Object.defineProperty(exports, '__esModule', {
 });
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _actionsMusic_actions = require('../actions/music_actions');
+
+var _actionsMusic_actions2 = _interopRequireDefault(_actionsMusic_actions);
 
 var _instrument_component = require('./instrument_component');
 
@@ -81487,35 +81536,20 @@ var React = require('react');
 var EditInstrument = React.createClass({
   displayName: 'EditInstrument',
 
-  getInitialState: function getInitialState() {
-    return {
-      name: 'New Instrument',
-      components: [{
-        harmonic: 0,
-        gain: 0.5,
-        type: 'sawtooth',
-        key: Math.random()
-      }]
-    };
-  },
-
   componentDidUpdate: function componentDidUpdate() {
-    this.props.onInstrumentChange(this.state);
+    _actionsMusic_actions2['default'].updateInstrument();
   },
 
   render: function render() {
-    var components = this.state.components;
+    var instrument = this.props.instrument;
+    var components = instrument.components;
     var componentViews = [];
 
     for (var i = 0; i < components.length; i++) {
       var wave = components[i];
-      console.log(wave);
-      componentViews.push(React.createElement(_instrument_component2['default'], { key: wave.key,
-        idx: i,
-        harmonic: wave.harmonic,
-        gain: wave.gain,
-        type: wave.type,
-        onChange: this.handleChange }));
+      componentViews.push(React.createElement(_instrument_component2['default'], { instrument: instrument,
+        key: wave.key,
+        idx: i }));
     }
 
     return React.createElement(
@@ -81549,7 +81583,7 @@ var EditInstrument = React.createClass({
               'div',
               { className: 'instrument' },
               React.createElement('input', { name: 'name',
-                value: this.state.name,
+                value: this.props.name,
                 onChange: this.handleNameChange }),
               React.createElement(
                 'div',
@@ -81591,34 +81625,18 @@ var EditInstrument = React.createClass({
     );
   },
 
-  handleChange: function handleChange(newState, idx) {
-    var components = this.state.components;
-    var component = components[idx];
-    for (var prop in newState) {
-      if (newState.hasOwnProperty(prop)) {
-        component[prop] = newState[prop];
-      }
-    }
-
-    components[idx] = component;
-    this.setState({ components: components }, function () {
-      this.props.onInstrumentChange(this.state);
-    });
-  },
-
   handleNameChange: function handleNameChange(ev) {
-    this.setState({
-      name: ev.target.value
-    }, function () {
-      this.props.onInstrumentChange(this.state);
-    });
+    var instrument = this.props.instrument;
+    instrument.name = ev.target.value;
+    _actionsMusic_actions2['default'].updateInstrument(instrument);
   },
 
   addUndertone: function addUndertone() {
-    var components = this.state.components;
+    var instrument = this.props.instrument;
+    var components = instrument.components;
     var firstComponent = components[0];
     var harmonic = firstComponent.harmonic - 1;
-    var key = Math.random();
+    var key = firstComponent.key - 1;
 
     components.unshift({
       harmonic: harmonic,
@@ -81627,14 +81645,16 @@ var EditInstrument = React.createClass({
       key: key
     });
 
-    this.setState({ components: components });
+    instrument.components = components;
+    _actionsMusic_actions2['default'].updateInstrument(instrument);
   },
 
   addOvertone: function addOvertone() {
-    var components = this.state.components;
+    var instrument = this.props.instrument;
+    var components = instrument.components;
     var lastComponent = components[components.length - 1];
     var harmonic = lastComponent.harmonic + 1;
-    var key = Math.random();
+    var key = lastComponent.key + 1;
 
     components.push({
       harmonic: harmonic,
@@ -81643,7 +81663,8 @@ var EditInstrument = React.createClass({
       key: key
     });
 
-    this.setState({ components: components });
+    instrument.components = components;
+    _actionsMusic_actions2['default'].updateInstrument(instrument);
   },
 
   handleClose: function handleClose() {
@@ -81664,7 +81685,7 @@ var EditInstrument = React.createClass({
 exports['default'] = EditInstrument;
 module.exports = exports['default'];
 
-},{"./instrument_component":513,"react":484}],510:[function(require,module,exports){
+},{"../actions/music_actions":502,"./instrument_component":514,"react":484}],511:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81828,7 +81849,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":529,"jquery":161,"react":484}],511:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"jquery":161,"react":484}],512:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -81870,7 +81891,7 @@ var Footer = React.createClass({
 exports["default"] = Footer;
 module.exports = exports["default"];
 
-},{"react":484}],512:[function(require,module,exports){
+},{"react":484}],513:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81939,7 +81960,7 @@ var Header = React.createClass({
 exports['default'] = Header;
 module.exports = exports['default'];
 
-},{"react":484,"react-router":315}],513:[function(require,module,exports){
+},{"react":484,"react-router":315}],514:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -81950,15 +81971,10 @@ var React = require("react");
 var InstrumentComponent = React.createClass({
   displayName: "InstrumentComponent",
 
-  getInitialState: function getInitialState() {
-    return {
-      harmonic: this.props.harmonic,
-      gain: this.props.gain,
-      type: this.props.type
-    };
-  },
-
   render: function render() {
+    var instrument = this.props.instrument;
+    var component = instrument.components[this.props.idx];
+
     return React.createElement(
       "div",
       { className: "component" },
@@ -81972,7 +81988,7 @@ var InstrumentComponent = React.createClass({
         ),
         React.createElement("input", { type: "number",
           name: "harmonic",
-          value: this.state.harmonic,
+          value: component.harmonic,
           onChange: this.onHarmonicChange })
       ),
       React.createElement(
@@ -81985,14 +82001,14 @@ var InstrumentComponent = React.createClass({
         ),
         React.createElement("input", { type: "range",
           name: "gain",
-          value: this.state.gain,
+          value: component.gain,
           min: "0",
           max: "1",
           step: "0.01",
           onChange: this.onGainChange }),
         React.createElement("input", { type: "number",
           name: "gain",
-          value: parseFloat(this.state.gain).toFixed(2),
+          value: parseFloat(component.gain).toFixed(2),
           min: "0",
           max: "1",
           onChange: this.onGainChange })
@@ -82008,7 +82024,7 @@ var InstrumentComponent = React.createClass({
         React.createElement(
           "select",
           { name: "waveType",
-            defaultValue: this.state.type,
+            defaultValue: component.type,
             onChange: this.onTypeChange },
           React.createElement(
             "option",
@@ -82036,28 +82052,25 @@ var InstrumentComponent = React.createClass({
   },
 
   onHarmonicChange: function onHarmonicChange(ev) {
-    var newState = { harmonic: ev.target.value };
-    this.setState(newState);
-    this.props.onChange(newState, this.props.idx);
+    instrument.components[this.props.idx].harmonic = ev.target.value;
+    MusicActions.updateInstrument(instrument);
   },
 
   onGainChange: function onGainChange(ev) {
-    var newState = { gain: ev.target.value };
-    this.setState(newState);
-    this.props.onChange(newState, this.props.idx);
+    instrument.components[this.props.idx].gain = ev.target.value;
+    MusicActions.updateInstrument(instrument);
   },
 
   onTypeChange: function onTypeChange(ev) {
-    var newState = { type: ev.target.value };
-    this.setState(newState);
-    this.props.onChange(newState, this.props.idx);
+    instrument.components[this.props.idx].type = ev.target.value;
+    MusicActions.updateInstrument(instrument);
   }
 });
 
 exports["default"] = InstrumentComponent;
 module.exports = exports["default"];
 
-},{"react":484}],514:[function(require,module,exports){
+},{"react":484}],515:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82065,6 +82078,10 @@ Object.defineProperty(exports, '__esModule', {
 });
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _actionsMusic_actions = require('../actions/music_actions');
+
+var _actionsMusic_actions2 = _interopRequireDefault(_actionsMusic_actions);
 
 var _edit_instrument = require('./edit_instrument');
 
@@ -82075,27 +82092,14 @@ var React = require('react');
 var InstrumentList = React.createClass({
   displayName: 'InstrumentList',
 
-  getInitialState: function getInitialState() {
-    return {
-      instruments: this.props.instruments,
-      activeInstrument: this.props.activeInstrument
-    };
-  },
-
-  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.state !== prevState) {
-      this.props.onUpdate(this.state);
-    }
-  },
-
   render: function render() {
-    var instruments = this.state.instruments;
+    var instruments = this.props.instruments;
     var instrumentViews = [];
 
     for (var i = 0; i < instruments.length; i++) {
       var instrument = instruments[i];
       var className = 'instrument';
-      if (i === this.state.activeInstrument) {
+      if (i === this.props.activeInstrument) {
         className += ' active';
       }
 
@@ -82135,41 +82139,20 @@ var InstrumentList = React.createClass({
   },
 
   handleClick: function handleClick(idx) {
-    this.setState({ activeInstrument: idx });
+    _actionsMusic_actions2['default'].setActiveInstrument(idx);
   },
 
   newInstrument: function newInstrument() {
-    var instruments = this.state.instruments;
-    var name = 'New Instrument';
-    instruments.push({ name: name });
-    var idx = instruments.length - 1;
-    var activeInstrument = idx;
-
-    React.render(React.createElement(_edit_instrument2['default'], { onInstrumentChange: this.onInstrumentChange }), document.getElementById('modal-container'));
-
-    this.setState({
-      instruments: instruments,
-      activeInstrument: idx
-    });
-  },
-
-  onInstrumentChange: function onInstrumentChange(instrument) {
-    var instruments = this.state.instruments;
-    var activeInstrument = this.state.activeInstrument;
-    instruments[activeInstrument] = instrument;
-
-    this.setState({
-      instruments: instruments
-    });
-
-    this.props.onUpdate(this.state);
+    _actionsMusic_actions2['default'].newInstrument();
+    var instrument = this.props.instruments[this.props.activeInstrument];
+    React.render(React.createElement(_edit_instrument2['default'], { instrument: instrument }), document.getElementById('modal-container'));
   }
 });
 
 exports['default'] = InstrumentList;
 module.exports = exports['default'];
 
-},{"./edit_instrument":509,"react":484}],515:[function(require,module,exports){
+},{"../actions/music_actions":502,"./edit_instrument":510,"react":484}],516:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82412,7 +82395,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../mixins/key_map_mixin":528,"jquery":161,"react":484,"teoria":485}],516:[function(require,module,exports){
+},{"../mixins/key_map_mixin":529,"jquery":161,"react":484,"teoria":485}],517:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82477,7 +82460,7 @@ var ManageToolList = React.createClass({
 exports['default'] = ManageToolList;
 module.exports = exports['default'];
 
-},{"./tool_list":523,"react":484}],517:[function(require,module,exports){
+},{"./tool_list":524,"react":484}],518:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82504,7 +82487,7 @@ var MapController = React.createClass({
 exports["default"] = MapController;
 module.exports = exports["default"];
 
-},{"react":484}],518:[function(require,module,exports){
+},{"react":484}],519:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82536,7 +82519,7 @@ var Modal = React.createClass({
 exports['default'] = Modal;
 module.exports = exports['default'];
 
-},{"react":484}],519:[function(require,module,exports){
+},{"react":484}],520:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82544,6 +82527,10 @@ Object.defineProperty(exports, '__esModule', {
 });
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _storesMusic_store = require('../stores/music_store');
+
+var _storesMusic_store2 = _interopRequireDefault(_storesMusic_store);
 
 var _track_manager = require('./track_manager');
 
@@ -82563,36 +82550,23 @@ var _volume_control2 = _interopRequireDefault(_volume_control);
 
 var React = require('react');
 
-var Music = React.createClass({
-  displayName: 'Music',
+var MusicCtrl = React.createClass({
+  displayName: 'MusicCtrl',
 
   getInitialState: function getInitialState() {
-    return {
-      instruments: [{
-        name: '8-bit Synth',
-        components: [{
-          harmonic: 0,
-          gain: 0.3,
-          type: 'sawtooth',
-          key: Math.random()
-        }, {
-          harmonic: 1,
-          gain: 0.5,
-          type: 'sine',
-          key: Math.random()
-        }, {
-          harmonic: 2,
-          gain: 0.2,
-          type: 'square',
-          key: Math.random()
-        }]
-      }],
-      activeInstrument: 0,
-      volume: 0.3,
-      recording: [],
-      tracks: [],
-      isRecording: true
-    };
+    return _storesMusic_store2['default'].getState();
+  },
+
+  componentDidMount: function componentDidMount() {
+    _storesMusic_store2['default'].listen(this.onChange);
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    _storesMusic_store2['default'].unlisten(this.onChange);
+  },
+
+  onChange: function onChange(state) {
+    this.setState(state);
   },
 
   render: function render() {
@@ -82608,7 +82582,7 @@ var Music = React.createClass({
           { className: 'sidebar' },
           React.createElement(_instrument_list2['default'], { instruments: this.state.instruments,
             activeInstrument: this.state.activeInstrument,
-            onUpdate: this.onUpdate })
+            instrumentCopy: this.state.instrumentCopy })
         ),
         React.createElement(
           'div',
@@ -82647,10 +82621,10 @@ var Music = React.createClass({
   }
 });
 
-exports['default'] = Music;
+exports['default'] = MusicCtrl;
 module.exports = exports['default'];
 
-},{"./instrument_list":514,"./keyboard":515,"./track_manager":525,"./volume_control":527,"react":484}],520:[function(require,module,exports){
+},{"../stores/music_store":533,"./instrument_list":515,"./keyboard":516,"./track_manager":526,"./volume_control":528,"react":484}],521:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82787,7 +82761,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":529,"./edit_palette":510,"./modal":518,"jquery":161,"react":484,"tinycolor2":500}],521:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"./edit_palette":511,"./modal":519,"jquery":161,"react":484,"tinycolor2":500}],522:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82806,7 +82780,7 @@ var Play = React.createClass({
 exports["default"] = Play;
 module.exports = exports["default"];
 
-},{"react":484}],522:[function(require,module,exports){
+},{"react":484}],523:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82915,7 +82889,7 @@ var ResizePrompt = React.createClass({
 exports["default"] = ResizePrompt;
 module.exports = exports["default"];
 
-},{"react":484}],523:[function(require,module,exports){
+},{"react":484}],524:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82976,7 +82950,7 @@ var ToolList = React.createClass({
 exports["default"] = ToolList;
 module.exports = exports["default"];
 
-},{"react":484}],524:[function(require,module,exports){
+},{"react":484}],525:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83326,7 +83300,7 @@ module.exports = exports['default'];
 
 // TODO: do something with selected option
 
-},{"./context_menu":505,"./track_tool_list":526,"react":484,"tinycolor2":500}],525:[function(require,module,exports){
+},{"./context_menu":506,"./track_tool_list":527,"react":484,"tinycolor2":500}],526:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83419,7 +83393,7 @@ var TrackManager = React.createClass({
 exports['default'] = TrackManager;
 module.exports = exports['default'];
 
-},{"./track":524,"react":484}],526:[function(require,module,exports){
+},{"./track":525,"react":484}],527:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83473,7 +83447,7 @@ var TrackToolList = React.createClass({
 exports['default'] = TrackToolList;
 module.exports = exports['default'];
 
-},{"./tool_list":523,"react":484}],527:[function(require,module,exports){
+},{"./tool_list":524,"react":484}],528:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83526,7 +83500,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":484}],528:[function(require,module,exports){
+},{"react":484}],529:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83633,7 +83607,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],529:[function(require,module,exports){
+},{}],530:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83646,7 +83620,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],530:[function(require,module,exports){
+},{}],531:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83667,7 +83641,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],531:[function(require,module,exports){
+},{}],532:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83885,7 +83859,98 @@ var DrawStore = (function () {
 exports['default'] = _alt2['default'].createStore(DrawStore, 'DrawStore');
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../alt":502,"../models/pixel":530,"pixi.js":266}]},{},[503])
+},{"../actions/draw_actions":501,"../alt":503,"../models/pixel":531,"pixi.js":266}],533:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _alt = require('../alt');
+
+var _alt2 = _interopRequireDefault(_alt);
+
+var _actionsMusic_actions = require('../actions/music_actions');
+
+var _actionsMusic_actions2 = _interopRequireDefault(_actionsMusic_actions);
+
+var MusicStore = (function () {
+  function MusicStore() {
+    _classCallCheck(this, MusicStore);
+
+    this.instruments = [{
+      name: '8-bit Synth',
+      components: [{
+        harmonic: 0,
+        gain: 0.3,
+        type: 'sawtooth',
+        key: 0
+      }, {
+        harmonic: 1,
+        gain: 0.5,
+        type: 'sine',
+        key: 1
+      }, {
+        harmonic: 2,
+        gain: 0.2,
+        type: 'square',
+        key: 2
+      }]
+    }];
+    this.activeInstrument = 0;
+    this.volume = 0.3;
+    this.recording = [];
+    this.tracks = [];
+    this.isRecording = true;
+
+    this.bindListeners({
+      setActiveInstrument: _actionsMusic_actions2['default'].SET_ACTIVE_INSTRUMENT,
+      newInstrument: _actionsMusic_actions2['default'].NEW_INSTRUMENT,
+      updateInstrument: _actionsMusic_actions2['default'].UPDATE_INSTRUMENT
+    });
+  }
+
+  _createClass(MusicStore, [{
+    key: 'setActiveInstrument',
+    value: function setActiveInstrument(idx) {
+      this.activeInstrument = idx;
+    }
+  }, {
+    key: 'newInstrument',
+    value: function newInstrument() {
+      var instrument = {
+        name: 'New Instrument',
+        components: [{
+          harmonic: 0,
+          gain: 0.5,
+          type: 'sawtooth',
+          key: 0
+        }]
+      };
+      this.instruments.push(instrument);
+      this.activeInstrument = this.instruments.length - 1;
+      this.instrumentCopy = instrument;
+    }
+  }, {
+    key: 'updateInstrument',
+    value: function updateInstrument(instrument) {
+      this.instruments[this.activeInstrument] = instrument;
+    }
+  }]);
+
+  return MusicStore;
+})();
+
+exports['default'] = _alt2['default'].createStore(MusicStore, 'MusicStore');
+module.exports = exports['default'];
+
+},{"../actions/music_actions":502,"../alt":503}]},{},[504])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map
