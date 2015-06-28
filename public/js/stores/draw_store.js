@@ -2,6 +2,7 @@ let PIXI = require('pixi.js');
 
 import alt from '../alt';
 import DrawActions from '../actions/draw_actions';
+import Pixel from '../models/pixel';
 
 class DrawStore {
   constructor() {
@@ -31,16 +32,6 @@ class DrawStore {
     this.isMouseDown = false;
     this.title = 'Untitled';
 
-    this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
-    this.stage = new PIXI.Container();
-    this.bgGfx = new PIXI.Graphics();
-    this.drawGfx = new PIXI.Graphics();
-    this.overlayGfx = new PIXI.Graphics();
-
-    this.stage.addChild(this.bgGfx);
-    this.stage.addChild(this.drawGfx);
-    this.stage.addChild(this.overlayGfx);
-
     this.bindListeners({
       setActiveTool: DrawActions.SET_ACTIVE_TOOL,
       setPrimaryColor: DrawActions.SET_PRIMARY_COLOR,
@@ -53,7 +44,13 @@ class DrawStore {
       updateColor: DrawActions.UPDATE_COLOR,
       updatePalette: DrawActions.UPDATE_PALETTE,
       closeEditPalette: DrawActions.CLOSE_EDIT_PALETTE,
-      createGrid: DrawActions.CREATE_GRID
+      createGrid: DrawActions.CREATE_GRID,
+      updateGrid: DrawActions.UPDATE_GRID,
+      resizeGrid: DrawActions.RESIZE_GRID,
+      setIsMouseDown: DrawActions.SET_IS_MOUSE_DOWN,
+      updateZoom: DrawActions.UPDATE_ZOOM,
+      updateTitle: DrawActions.UPDATE_TITLE,
+      resizeSurface: DrawActions.RESIZE_SURFACE
     });
   }
 
@@ -121,6 +118,54 @@ class DrawStore {
     }
 
     this.grid = grid;
+  }
+
+  updateGrid(grid) {
+    this.grid = grid;
+  }
+
+  resizeGrid() {
+    let oldGrid = this.props.grid;
+    let newGrid = [];
+
+    for (let x = 0; x < this.width; x++) {
+      newGrid[x] = [];
+      for (let y = 0; y < this.height; y++) {
+        if (x < oldGrid.length && y < oldGrid[x].length) {
+          newGrid[x][y] = oldGrid[x][y];
+        } else {
+          newGrid[x].push(new Pixel(x, y));
+        }
+      }
+    }
+
+    this.grid = newGrid;
+  }
+
+  setIsMouseDown(val) {
+    this.isMouseDown = val;
+  }
+
+  updateZoom(zoom) {
+    this.zoom = zoom;
+    this.actualWidth = this.totalWidth * this.zoom;
+    this.actualHeight = this.totalHeight * this.zoom;
+    this.tileWidth = this.actualWidth / this.width;
+    this.tileHeight = this.actualHeight / this.height;
+  }
+
+  updateTitle(title) {
+    this.title = title;
+  }
+
+  resizeSurface(data) {
+    let { width, height } = data;
+    this.width = width;
+    this.height = height;
+    this.actualWidth = this.totalWidth * this.zoom;
+    this.actualHeight = this.totalHeight * this.zoom;
+    this.tileWidth = this.actualWidth / this.width;
+    this.tileHeight = this.actualHeight / this.height;
   }
 }
 

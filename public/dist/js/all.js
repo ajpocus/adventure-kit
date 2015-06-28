@@ -80632,6 +80632,36 @@ var DrawActions = (function () {
     value: function createGrid() {
       this.dispatch();
     }
+  }, {
+    key: 'updateGrid',
+    value: function updateGrid(grid) {
+      this.dispatch(grid);
+    }
+  }, {
+    key: 'resizeGrid',
+    value: function resizeGrid() {
+      this.dispatch();
+    }
+  }, {
+    key: 'setIsMouseDown',
+    value: function setIsMouseDown(val) {
+      this.dispatch(val);
+    }
+  }, {
+    key: 'updateZoom',
+    value: function updateZoom(zoom) {
+      this.dispatch(zoom);
+    }
+  }, {
+    key: 'updateTitle',
+    value: function updateTitle(title) {
+      this.dispatch(title);
+    }
+  }, {
+    key: 'resizeSurface',
+    value: function resizeSurface(data) {
+      this.dispatch(data);
+    }
   }]);
 
   return DrawActions;
@@ -80940,11 +80970,6 @@ var Draw = React.createClass({
         tileHeight: this.state.tileHeight,
         isMouseDown: this.state.isMouseDown,
         title: this.state.title,
-        renderer: this.state.renderer,
-        stage: this.state.stage,
-        bgGfx: this.state.bgGfx,
-        drawGfx: this.state.drawGfx,
-        overlayGfx: this.state.overlayGfx,
         grid: this.state.grid })
     );
   }
@@ -80961,6 +80986,10 @@ Object.defineProperty(exports, '__esModule', {
 });
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _actionsDraw_actions = require('../actions/draw_actions');
+
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
 
 var _manage_tool_list = require('./manage_tool_list');
 
@@ -81000,7 +81029,7 @@ var DrawSurface = React.createClass({
     var width = this.props.actualWidth;
     var height = this.props.actualHeight;
     var renderer = PIXI.autoDetectRenderer(width, height);
-    this.refs.surface.getDOMNode().appendChild(this.props.renderer.view);
+    this.refs.surface.getDOMNode().appendChild(renderer.view);
     var stage = new PIXI.Container();
 
     var bgGfx = new PIXI.Graphics();
@@ -81018,20 +81047,16 @@ var DrawSurface = React.createClass({
       drawGfx: drawGfx,
       overlayGfx: overlayGfx
     }, function () {
-      this.initGrid(function () {
-        requestAnimationFrame(this.animate);
-      });
+      _actionsDraw_actions2['default'].createGrid();
+      this.drawBackground();
+      requestAnimationFrame(this.animate);
     });
   },
 
   componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-    if (this.state.actualWidth !== prevState.actualWidth || this.state.actualHeight !== prevState.actualHeight || this.state.width !== prevState.width || this.state.height !== prevState.height) {
+    if (this.props.actualWidth !== prevProps.actualWidth || this.props.actualHeight !== prevProps.actualHeight || this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
       this.drawBackground();
-      this.updateGrid();
-    }
-
-    if (this.state.bgGfx && !prevState.bgGfx) {
-      this.drawBackground();
+      this.resizeGrid();
     }
   },
 
@@ -81093,7 +81118,7 @@ var DrawSurface = React.createClass({
     var zoom = this.props.zoom;
     var renderer = this.state.renderer;
     var stage = this.state.stage;
-    var grid = this.state.grid;
+    var grid = this.props.grid;
 
     renderer.resize(this.props.actualWidth, this.props.actualHeight);
     drawGfx.clear();
@@ -81127,7 +81152,7 @@ var DrawSurface = React.createClass({
     var x = _getTileCoordinates.x;
     var y = _getTileCoordinates.y;
 
-    var grid = this.state.grid;
+    var grid = this.props.grid;
     var numPixels = grid.length;
     var currentPixel = grid[x][y];
 
@@ -81158,7 +81183,7 @@ var DrawSurface = React.createClass({
 
   clearHighlight: function clearHighlight(currentPixel) {
     var overlayGfx = this.state.overlayGfx;
-    var grid = this.state.grid;
+    var grid = this.props.grid;
     overlayGfx.clear();
 
     if (currentPixel) {
@@ -81187,10 +81212,8 @@ var DrawSurface = React.createClass({
       }
     }
 
-    this.setState({
-      grid: grid,
-      overlayGfx: overlayGfx
-    });
+    _actionsDraw_actions2['default'].updateGrid(grid);
+    this.setState({ overlayGfx: overlayGfx });
   },
 
   draw: function draw(ev) {
@@ -81199,7 +81222,7 @@ var DrawSurface = React.createClass({
     var x = _getTileCoordinates2.x;
     var y = _getTileCoordinates2.y;
 
-    var grid = this.state.grid;
+    var grid = this.props.grid;
     var drawGfx = this.state.drawGfx;
 
     var _getFillParams4 = this.getFillParams(x, y);
@@ -81262,15 +81285,13 @@ var DrawSurface = React.createClass({
         return;
     }
 
-    this.setState({
-      grid: grid,
-      drawGfx: drawGfx,
-      isMouseDown: true
-    });
+    _actionsDraw_actions2['default'].updateGrid(grid);
+    _actionsDraw_actions2['default'].setIsMouseDown(true);
+    this.setState({ drawGfx: drawGfx });
   },
 
   setMouseUp: function setMouseUp(ev) {
-    this.setState({ isMouseDown: false });
+    _actionsDraw_actions2['default'].setIsMouseDown(false);
   },
 
   onZoom: function onZoom(ev, data) {
@@ -81305,22 +81326,12 @@ var DrawSurface = React.createClass({
       return;
     }
 
-    actualWidth = this.props.totalWidth * zoom;
-    actualHeight = this.props.totalHeight * zoom;
-    tileWidth = actualWidth / this.props.width;
-    tileHeight = actualHeight / this.props.height;
-
-    this.setState({
-      zoom: zoom,
-      actualWidth: actualWidth,
-      actualHeight: actualHeight,
-      tileWidth: tileWidth,
-      tileHeight: tileHeight
-    });
+    _actionsDraw_actions2['default'].updateZoom(zoom);
   },
 
   onTitleChange: function onTitleChange(ev) {
-    this.setState({ title: ev.target.value });
+    var title = ev.target.value;
+    _actionsDraw_actions2['default'].updateTitle(title);
   },
 
   onResizeClick: function onResizeClick() {
@@ -81330,26 +81341,7 @@ var DrawSurface = React.createClass({
   },
 
   handleResize: function handleResize(width, height) {
-    var tileWidth = this.props.tileWidth;
-    var tileHeight = this.props.tileHeight;
-    var actualWidth = this.props.actualWidth;
-    var actualHeight = this.props.actualHeight;
-    var zoom = this.props.zoom;
-
-    actualWidth = this.props.totalWidth * zoom;
-    actualHeight = this.props.totalHeight * zoom;
-    tileWidth = actualWidth / width;
-    tileHeight = actualHeight / height;
-
-    this.setState({
-      width: width,
-      height: height,
-      actualWidth: actualWidth,
-      actualHeight: actualHeight,
-      tileWidth: tileWidth,
-      tileHeight: tileHeight,
-      zoom: zoom
-    });
+    _actionsDraw_actions2['default'].resizeSurface({ width: width, height: height });
   },
 
   onExportClick: function onExportClick() {},
@@ -81398,24 +81390,8 @@ var DrawSurface = React.createClass({
     this.setState({ grid: grid }, callback);
   },
 
-  updateGrid: function updateGrid(callback) {
-    var width = this.props.width;
-    var height = this.props.height;
-    var oldGrid = this.state.grid;
-    var newGrid = [];
-
-    for (var x = 0; x < width; x++) {
-      newGrid[x] = [];
-      for (var y = 0; y < height; y++) {
-        if (x < oldGrid.length && y < oldGrid[x].length) {
-          newGrid[x][y] = oldGrid[x][y];
-        } else {
-          newGrid[x].push(new _modelsPixel2['default'](x, y));
-        }
-      }
-    }
-
-    this.setState({ grid: newGrid }, callback);
+  resizeGrid: function resizeGrid() {
+    _actionsDraw_actions2['default'].resizeGrid();
   },
 
   getTileCoordinates: function getTileCoordinates(ev) {
@@ -81455,7 +81431,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../mixins/transparency":530,"../models/pixel":531,"./manage_tool_list":516,"./resize_prompt":522,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],508:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"../models/pixel":531,"./manage_tool_list":516,"./resize_prompt":522,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],508:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83753,6 +83729,10 @@ var _actionsDraw_actions = require('../actions/draw_actions');
 
 var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
 
+var _modelsPixel = require('../models/pixel');
+
+var _modelsPixel2 = _interopRequireDefault(_modelsPixel);
+
 var PIXI = require('pixi.js');
 
 var DrawStore = (function () {
@@ -83782,16 +83762,6 @@ var DrawStore = (function () {
     this.isMouseDown = false;
     this.title = 'Untitled';
 
-    this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
-    this.stage = new PIXI.Container();
-    this.bgGfx = new PIXI.Graphics();
-    this.drawGfx = new PIXI.Graphics();
-    this.overlayGfx = new PIXI.Graphics();
-
-    this.stage.addChild(this.bgGfx);
-    this.stage.addChild(this.drawGfx);
-    this.stage.addChild(this.overlayGfx);
-
     this.bindListeners({
       setActiveTool: _actionsDraw_actions2['default'].SET_ACTIVE_TOOL,
       setPrimaryColor: _actionsDraw_actions2['default'].SET_PRIMARY_COLOR,
@@ -83804,7 +83774,13 @@ var DrawStore = (function () {
       updateColor: _actionsDraw_actions2['default'].UPDATE_COLOR,
       updatePalette: _actionsDraw_actions2['default'].UPDATE_PALETTE,
       closeEditPalette: _actionsDraw_actions2['default'].CLOSE_EDIT_PALETTE,
-      createGrid: _actionsDraw_actions2['default'].CREATE_GRID
+      createGrid: _actionsDraw_actions2['default'].CREATE_GRID,
+      updateGrid: _actionsDraw_actions2['default'].UPDATE_GRID,
+      resizeGrid: _actionsDraw_actions2['default'].RESIZE_GRID,
+      setIsMouseDown: _actionsDraw_actions2['default'].SET_IS_MOUSE_DOWN,
+      updateZoom: _actionsDraw_actions2['default'].UPDATE_ZOOM,
+      updateTitle: _actionsDraw_actions2['default'].UPDATE_TITLE,
+      resizeSurface: _actionsDraw_actions2['default'].RESIZE_SURFACE
     });
   }
 
@@ -83880,11 +83856,67 @@ var DrawStore = (function () {
         grid[x] = [];
 
         for (var y = 0; y < this.height; y++) {
-          grid[x].push(new Pixel(x, y));
+          grid[x].push(new _modelsPixel2['default'](x, y));
         }
       }
 
       this.grid = grid;
+    }
+  }, {
+    key: 'updateGrid',
+    value: function updateGrid(grid) {
+      this.grid = grid;
+    }
+  }, {
+    key: 'resizeGrid',
+    value: function resizeGrid() {
+      var oldGrid = this.props.grid;
+      var newGrid = [];
+
+      for (var x = 0; x < this.width; x++) {
+        newGrid[x] = [];
+        for (var y = 0; y < this.height; y++) {
+          if (x < oldGrid.length && y < oldGrid[x].length) {
+            newGrid[x][y] = oldGrid[x][y];
+          } else {
+            newGrid[x].push(new _modelsPixel2['default'](x, y));
+          }
+        }
+      }
+
+      this.grid = newGrid;
+    }
+  }, {
+    key: 'setIsMouseDown',
+    value: function setIsMouseDown(val) {
+      this.isMouseDown = val;
+    }
+  }, {
+    key: 'updateZoom',
+    value: function updateZoom(zoom) {
+      this.zoom = zoom;
+      this.actualWidth = this.totalWidth * this.zoom;
+      this.actualHeight = this.totalHeight * this.zoom;
+      this.tileWidth = this.actualWidth / this.width;
+      this.tileHeight = this.actualHeight / this.height;
+    }
+  }, {
+    key: 'updateTitle',
+    value: function updateTitle(title) {
+      this.title = title;
+    }
+  }, {
+    key: 'resizeSurface',
+    value: function resizeSurface(data) {
+      var width = data.width;
+      var height = data.height;
+
+      this.width = width;
+      this.height = height;
+      this.actualWidth = this.totalWidth * this.zoom;
+      this.actualHeight = this.totalHeight * this.zoom;
+      this.tileWidth = this.actualWidth / this.width;
+      this.tileHeight = this.actualHeight / this.height;
     }
   }]);
 
@@ -83894,7 +83926,7 @@ var DrawStore = (function () {
 exports['default'] = _alt2['default'].createStore(DrawStore, 'DrawStore');
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../alt":502,"pixi.js":266}]},{},[503])
+},{"../actions/draw_actions":501,"../alt":502,"../models/pixel":531,"pixi.js":266}]},{},[503])
 
 
 //# sourceMappingURL=public/dist/js/all.js.map

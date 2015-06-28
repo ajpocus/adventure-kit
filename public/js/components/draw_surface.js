@@ -4,6 +4,7 @@ let PNG = require('pngjs').PNG;
 let tinycolor = require('tinycolor2');
 let PIXI = require('pixi.js');
 
+import DrawActions from '../actions/draw_actions';
 import ManageToolList from './manage_tool_list';
 import ResizePrompt from './resize_prompt';
 import Pixel from '../models/pixel';
@@ -23,7 +24,7 @@ let DrawSurface = React.createClass({
     let width = this.props.actualWidth;
     let height = this.props.actualHeight;
     let renderer = PIXI.autoDetectRenderer(width, height);
-    this.refs.surface.getDOMNode().appendChild(this.props.renderer.view);
+    this.refs.surface.getDOMNode().appendChild(renderer.view);
     let stage = new PIXI.Container();
 
     let bgGfx = new PIXI.Graphics();
@@ -41,23 +42,19 @@ let DrawSurface = React.createClass({
       drawGfx,
       overlayGfx
     }, function () {
-      this.initGrid(function () {
-        requestAnimationFrame(this.animate);
-      });
+      DrawActions.createGrid();
+      this.drawBackground();
+      requestAnimationFrame(this.animate);
     });
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    if (this.state.actualWidth !== prevState.actualWidth ||
-        this.state.actualHeight !== prevState.actualHeight ||
-        this.state.width !== prevState.width ||
-        this.state.height !== prevState.height) {
+    if (this.props.actualWidth !== prevProps.actualWidth ||
+        this.props.actualHeight !== prevProps.actualHeight ||
+        this.props.width !== prevProps.width ||
+        this.props.height !== prevProps.height) {
       this.drawBackground();
-      this.updateGrid();
-    }
-
-    if (this.state.bgGfx && !prevState.bgGfx) {
-      this.drawBackground();
+      this.resizeGrid();
     }
   },
 
@@ -112,7 +109,7 @@ let DrawSurface = React.createClass({
     let zoom = this.props.zoom;
     let renderer = this.state.renderer;
     let stage = this.state.stage;
-    let grid = this.state.grid;
+    let grid = this.props.grid;
 
     renderer.resize(this.props.actualWidth, this.props.actualHeight);
     drawGfx.clear();
@@ -135,7 +132,7 @@ let DrawSurface = React.createClass({
   highlightPixel: function (ev) {
     let overlayGfx = this.state.overlayGfx;
     let { x, y } = this.getTileCoordinates(ev);
-    let grid = this.state.grid;
+    let grid = this.props.grid;
     let numPixels = grid.length;
     let currentPixel = grid[x][y];
 
@@ -160,7 +157,7 @@ let DrawSurface = React.createClass({
 
   clearHighlight: function (currentPixel) {
     let overlayGfx = this.state.overlayGfx;
-    let grid = this.state.grid;
+    let grid = this.props.grid;
     overlayGfx.clear();
 
     if (currentPixel) {
@@ -183,15 +180,13 @@ let DrawSurface = React.createClass({
       }
     }
 
-    this.setState({
-      grid,
-      overlayGfx
-    });
+    DrawActions.updateGrid(grid);
+    this.setState({ overlayGfx });
   },
 
   draw: function (ev) {
     let {x, y} = this.getTileCoordinates(ev);
-    let grid = this.state.grid;
+    let grid = this.props.grid;
     let drawGfx = this.state.drawGfx;
 
     let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
@@ -251,15 +246,13 @@ let DrawSurface = React.createClass({
         return;
     }
 
-    this.setState({
-      grid,
-      drawGfx,
-      isMouseDown: true
-    });
+    DrawActions.updateGrid(grid);
+    DrawActions.setIsMouseDown(true);
+    this.setState({ drawGfx });
   },
 
   setMouseUp: function (ev) {
-    this.setState({ isMouseDown: false });
+    DrawActions.setIsMouseDown(false);
   },
 
   onZoom: function (ev, data) {
@@ -294,22 +287,12 @@ let DrawSurface = React.createClass({
       return;
     }
 
-    actualWidth = this.props.totalWidth * zoom;
-    actualHeight = this.props.totalHeight * zoom;
-    tileWidth = actualWidth / this.props.width;
-    tileHeight = actualHeight / this.props.height;
-
-    this.setState({
-      zoom: zoom,
-      actualWidth: actualWidth,
-      actualHeight: actualHeight,
-      tileWidth: tileWidth,
-      tileHeight: tileHeight
-    });
+    DrawActions.updateZoom(zoom);
   },
 
   onTitleChange: function (ev) {
-    this.setState({ title: ev.target.value });
+    let title = ev.target.value;
+    DrawActions.updateTitle(title);
   },
 
   onResizeClick: function () {
@@ -320,26 +303,7 @@ let DrawSurface = React.createClass({
   },
 
   handleResize: function (width, height) {
-    let tileWidth = this.props.tileWidth;
-    let tileHeight = this.props.tileHeight;
-    let actualWidth = this.props.actualWidth;
-    let actualHeight = this.props.actualHeight;
-    let zoom = this.props.zoom;
-
-    actualWidth = this.props.totalWidth * zoom;
-    actualHeight = this.props.totalHeight * zoom;
-    tileWidth = actualWidth / width;
-    tileHeight = actualHeight / height;
-
-    this.setState({
-      width: width,
-      height: height,
-      actualWidth: actualWidth,
-      actualHeight: actualHeight,
-      tileWidth: tileWidth,
-      tileHeight: tileHeight,
-      zoom: zoom
-    });
+    DrawActions.resizeSurface({ width, height });
   },
 
   onExportClick: function () {
@@ -390,24 +354,8 @@ let DrawSurface = React.createClass({
     this.setState({ grid }, callback);
   },
 
-  updateGrid: function (callback) {
-    let width = this.props.width;
-    let height = this.props.height;
-    let oldGrid = this.state.grid;
-    let newGrid = [];
-
-    for (let x = 0; x < width; x++) {
-      newGrid[x] = [];
-      for (let y = 0; y < height; y++) {
-        if (x < oldGrid.length && y < oldGrid[x].length) {
-          newGrid[x][y] = oldGrid[x][y];
-        } else {
-          newGrid[x].push(new Pixel(x, y));
-        }
-      }
-    }
-
-    this.setState({ grid: newGrid }, callback);
+  resizeGrid: function () {
+    DrawActions.resizeGrid();
   },
 
   getTileCoordinates: function (ev) {
