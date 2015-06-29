@@ -192,21 +192,13 @@ let Keyboard = React.createClass({
       MusicActions.updateOscillators(oscillators);
       MusicActions.updateNotes(notesPlaying);
 
-      this.setState({
-        ctx,
-        oscillators,
-        notesPlaying,
-        recording,
-        recordingIndices
-      }, function () {
-        this.props.onRecordingUpdate(this.state.recording);
-      });
+      this.setState({ ctx });
     }
   },
 
   handleKeyUp: function (ev) {
     let key = this.keyCodeToChar(ev.keyCode);
-    let notesPlaying = this.state.notesPlaying;
+    let notesPlaying = this.props.notesPlaying;
 
     if (notesPlaying[key]) {
       let oscillators = this.state.oscillators;
