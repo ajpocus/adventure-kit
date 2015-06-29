@@ -208,11 +208,11 @@ let Track = React.createClass({
   },
 
   handleMouseDown: function (ev) {
-    this.setState({ isMouseDown: true });
+    MusicActions.setIsMouseDown(true);
   },
 
   handleMouseUp: function (ev) {
-    this.setState({ isMouseDown: false });
+    MusicActions.setIsMouseDown(false);
   },
 
   handleMouseMove: function (ev) {

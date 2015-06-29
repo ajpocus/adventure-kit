@@ -83233,11 +83233,11 @@ var Track = React.createClass({
   },
 
   handleMouseDown: function handleMouseDown(ev) {
-    this.setState({ isMouseDown: true });
+    _actionsMusic_actions2['default'].setIsMouseDown(true);
   },
 
   handleMouseUp: function handleMouseUp(ev) {
-    this.setState({ isMouseDown: false });
+    _actionsMusic_actions2['default'].setIsMouseDown(false);
   },
 
   handleMouseMove: function handleMouseMove(ev) {
