@@ -36,23 +36,6 @@ let MusicCtrl = React.createClass({
           </div>
 
           <div className="main">
-            this.noteHeight = 8;
-            this.noteColor = '#ffcc00';
-            this.trackWidth = 850;
-            this.trackHeight = 96;
-            this.contextOptions = [
-              'Cut',
-              'Copy',
-              'Paste'
-            ];
-            this.bpm = 120;
-            this.numMeasures = 4;
-            this.beatsPerMeasure = 4;
-            this.beatsPerSecond = this.bpm / 60;
-            this.msPerBeat = 1000 / this.beatsPerSecond;
-            this.beatsPerWidth = this.beatsPerMeasure * this.numMeasures;
-            this.msPerWidth = this.msPerBeat * this.beatsPerWidth;
-            this.isMouseDown = false;
             <TrackManager tracks={this.state.tracks}
                           trackStates={this.state.trackStates}/>
           </div>
@@ -60,25 +43,19 @@ let MusicCtrl = React.createClass({
 
         <div className="bottom">
           <div className="controls">
-            <VolumeControl volume={this.state.volume}
-                           onVolumeChange={this.onVolumeChange}/>
+            <VolumeControl volume={this.state.volume}/>
             <Keyboard instrument={instrument}
                       volume={this.state.volume}
-                      isRecording={this.state.isRecording}
-                      onRecordingUpdate={this.onRecordingUpdate}/>
+                      notesPlaying={this.state.notesPlaying}
+                      oscillators={this.state.oscillators}
+                      octaveShift={this.state.octaveShift}
+                      recording={this.state.recording}
+                      recordingIndices={this.state.recordingIndices}/>
           </div>
         </div>
       </div>
     );
-  },
-
-  onUpdate: function (newState) {
-    this.setState(newState);
-  },
-
-  onVolumeChange: function (volume) {
-    this.setState({ volume: volume });
-  },
+  }
 
   onRecordingUpdate: function (recording) {
     this.setState({ recording: recording });

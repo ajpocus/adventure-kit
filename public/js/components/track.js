@@ -202,9 +202,7 @@ let Track = React.createClass({
       this.selectNote(ev);
     }
 
-    this.setState({
-      isPaused: true
-    });
+    MusicActions.pauseTrack(this.props.trackNumber);
   },
 
   handleMouseDown: function (ev) {

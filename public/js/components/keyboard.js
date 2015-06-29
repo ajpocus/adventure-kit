@@ -2,6 +2,7 @@ let React = require('react');
 let $ = require('jquery');
 let teoria = require('teoria');
 
+import MusicActions from '../actions/music_actions';
 import KeyMapMixin from '../mixins/key_map_mixin';
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -56,12 +57,7 @@ let Keyboard = React.createClass({
 
   getInitialState: function () {
     return {
-      notesPlaying: {},
-      ctx: new window.AudioContext(),
-      oscillators: {},
-      octaveShift: 2,
-      recording: [],
-      recordingIndices: {}
+      ctx: new window.AudioContext()
     };
   },
 
@@ -139,22 +135,18 @@ let Keyboard = React.createClass({
 
   handleKeyDown: function (ev) {
     let key = this.keyCodeToChar(ev.keyCode);
-    let recordingIndices = this.state.recordingIndices;
+    let recording = this.props.recording;
+    let recordingIndices = this.props.recordingIndices;
 
     if (this.state.notesPlaying[key]) {
       let idx = recordingIndices[key];
-      let recording = this.state.recording;
       recording[idx].endTime = Number(new Date());
 
-      this.setState({
-        recording: recording
-      }, function () {
-        this.props.onRecordingUpdate(this.state.recording);
-      });
+      MusicActions.updateRecording({ recording, recordingIndices });
     } else {
       let ctx = this.state.ctx;
-      let oscillators = this.state.oscillators;
-      let notesPlaying = this.state.notesPlaying;
+      let oscillators = this.props.oscillators;
+      let notesPlaying = this.props.notesPlaying;
       let instrument = this.props.instrument;
       oscillators[key] = [];
 
@@ -163,7 +155,7 @@ let Keyboard = React.createClass({
         return;
       }
 
-      midi += this.state.octaveShift * 12
+      midi += this.props.octaveShift * 12
       let note = teoria.note.fromMIDI(midi);
       let freq = note.fq();
 
@@ -186,16 +178,19 @@ let Keyboard = React.createClass({
 
       notesPlaying[key] = true;
 
-      let recording = this.state.recording;
-      if (this.props.isRecording) {
-        let now = Number(new Date());
-        recording.push({
-          midi: midi,
-          startTime: now
-        });
+      let recording = this.props.recording;
+      let now = Number(new Date());
+      let chunk = {
+        midi: midi,
+        startTime: now
+      };
 
-        recordingIndices[key] = recording.length - 1;
-      }
+      recording.push(chunk);
+      recordingIndices[key] = recording.length - 1;
+
+      MusicActions.updateRecording({ chunk, recording, recordingIndices });
+      MusicActions.updateOscillators(oscillators);
+      MusicActions.updateNotes(notesPlaying);
 
       this.setState({
         ctx,

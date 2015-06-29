@@ -32,6 +32,22 @@ class MusicActions {
   setIsMouseDown(bool) {
     this.dispatch(bool);
   }
+
+  setVolume(volume) {
+    this.dispatch(volume);
+  }
+
+  updateRecording(data) {
+    this.dispatch(data);
+  }
+
+  updateOscillators(oscillators) {
+    this.dispatch(oscillators);
+  }
+
+  updateNotes(notes) {
+    this.dispatch(notes);
+  }
 }
 
 export default alt.createActions(MusicActions);

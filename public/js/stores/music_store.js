@@ -39,8 +39,8 @@ class MusicStore {
     this.trackCount = 5;
     this.trackStates = [];
 
-    let lastIdx = trackCount - 1;
-    for (let i = 0; i < trackCount; i++) {
+    let lastIdx = this.trackCount - 1;
+    for (let i = 0; i < this.trackCount; i++) {
       let isRecording = false;
       let isStopped = true;
       let activeTool = 'Stop';
@@ -51,7 +51,7 @@ class MusicStore {
         activeTool = 'Record';
       }
 
-      trackStates.push({
+      this.trackStates.push({
         isRecording,
         isPlaying: false,
         isPaused: false,
@@ -66,9 +66,17 @@ class MusicStore {
         endBound: null,
         marker: 0
       });
+
+      this.tracks.push([]);
     }
 
     this.isMouseDown = false;
+
+    this.notesPlaying = {};
+    this.oscillators = {};
+    this.octaveShift = 2;
+    this.recording = [];
+    this.recordingIndices = {};
 
     this.bindListeners({
       setActiveInstrument: MusicActions.SET_ACTIVE_INSTRUMENT,
@@ -78,7 +86,11 @@ class MusicStore {
       recordTrack: MusicActions.RECORD_TRACK,
       playTrack: MusicActions.PLAY_TRACK,
       pauseTrack: MusicActions.PAUSE_TRACK,
-      setIsMouseDown: MusicActions.SET_IS_MOUSE_DOWN
+      setIsMouseDown: MusicActions.SET_IS_MOUSE_DOWN,
+      setVolume: MusicActions.SET_VOLUME,
+      updateRecording: MusicActions.UPDATE_RECORDING,
+      updateOscillators: MusicActions.UPDATE_OSCILLATORS,
+      updateNotes: MusicActions.UPDATE_NOTES
     });
   }
 
@@ -148,6 +160,33 @@ class MusicStore {
 
   setIsMouseDown(bool) {
     this.isMouseDown = bool;
+  }
+
+  setVolume(volume) {
+    this.volume = volume;
+  }
+
+  updateRecording(data) {
+    let { chunk, recording, recordingIndices } = data;
+    this.recording = recording;
+    this.recordingIndices = recordingIndices;
+
+    for (let i = 0; i < this.tracks.length; i++) {
+      let track = this.tracks[i];
+      let trackState = this.trackStates[i];
+
+      if (trackState.isRecording) {
+        track.push(chunk);
+      }
+    }
+  }
+
+  updateOscillators(oscillators) {
+    this.oscillators = oscillators;
+  }
+
+  updateNotes(notes) {
+    this.notesPlaying = notes;
   }
 }
 
