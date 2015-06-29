@@ -1,6 +1,7 @@
 let React = require('react');
 let tinycolor = require('tinycolor2');
 
+import MusicActions from '../actions/music_actions';
 import TrackToolList from './track_tool_list';
 import ContextMenu from './context_menu';
 
@@ -179,12 +180,15 @@ let Track = React.createClass({
     let trackNumber = this.props.trackNumber;
 
     switch (name) {
+      case 'Record':
+        MusicActions.recordTrack(trackNumber);
+        break;
+
       case 'Play':
         MusicActions.playTrack(trackNumber);
         break;
 
       case 'Pause':
-        // pause the track recording / playback
         MusicActions.pauseTrack(trackNumber);
         break;
 

@@ -77,7 +77,8 @@ class MusicStore {
       closeEditInstrument: MusicActions.CLOSE_EDIT_INSTRUMENT,
       recordTrack: MusicActions.RECORD_TRACK,
       playTrack: MusicActions.PLAY_TRACK,
-      pauseTrack: MusicActions.PAUSE_TRACK
+      pauseTrack: MusicActions.PAUSE_TRACK,
+      setIsMouseDown: MusicActions.SET_IS_MOUSE_DOWN
     });
   }
 
@@ -143,6 +144,10 @@ class MusicStore {
     trackState.endBound = Number(new Date());
 
     this.trackStates[trackNumber] = trackState;
+  }
+
+  setIsMouseDown(bool) {
+    this.isMouseDown = bool;
   }
 }
 

@@ -28,6 +28,10 @@ class MusicActions {
   pauseTrack(trackNumber) {
     this.dispatch(trackNumber);
   }
+
+  setIsMouseDown(bool) {
+    this.dispatch(bool);
+  }
 }
 
 export default alt.createActions(MusicActions);

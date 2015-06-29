@@ -80727,6 +80727,11 @@ var MusicActions = (function () {
     value: function pauseTrack(trackNumber) {
       this.dispatch(trackNumber);
     }
+  }, {
+    key: 'setIsMouseDown',
+    value: function setIsMouseDown(bool) {
+      this.dispatch(bool);
+    }
   }]);
 
   return MusicActions;
@@ -82998,6 +83003,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _slicedToArray(arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }
 
+var _actionsMusic_actions = require('../actions/music_actions');
+
+var _actionsMusic_actions2 = _interopRequireDefault(_actionsMusic_actions);
+
 var _track_tool_list = require('./track_tool_list');
 
 var _track_tool_list2 = _interopRequireDefault(_track_tool_list);
@@ -83196,13 +83205,16 @@ var Track = React.createClass({
     var trackNumber = this.props.trackNumber;
 
     switch (name) {
+      case 'Record':
+        _actionsMusic_actions2['default'].recordTrack(trackNumber);
+        break;
+
       case 'Play':
-        MusicActions.playTrack(trackNumber);
+        _actionsMusic_actions2['default'].playTrack(trackNumber);
         break;
 
       case 'Pause':
-        // pause the track recording / playback
-        MusicActions.pauseTrack(trackNumber);
+        _actionsMusic_actions2['default'].pauseTrack(trackNumber);
         break;
 
       default:
@@ -83306,7 +83318,7 @@ module.exports = exports['default'];
 
 // TODO: do something with selected option
 
-},{"./context_menu":506,"./track_tool_list":527,"react":484,"tinycolor2":500}],526:[function(require,module,exports){
+},{"../actions/music_actions":502,"./context_menu":506,"./track_tool_list":527,"react":484,"tinycolor2":500}],526:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83910,7 +83922,8 @@ var MusicStore = (function () {
       closeEditInstrument: _actionsMusic_actions2['default'].CLOSE_EDIT_INSTRUMENT,
       recordTrack: _actionsMusic_actions2['default'].RECORD_TRACK,
       playTrack: _actionsMusic_actions2['default'].PLAY_TRACK,
-      pauseTrack: _actionsMusic_actions2['default'].PAUSE_TRACK
+      pauseTrack: _actionsMusic_actions2['default'].PAUSE_TRACK,
+      setIsMouseDown: _actionsMusic_actions2['default'].SET_IS_MOUSE_DOWN
     });
   }
 
@@ -83982,6 +83995,11 @@ var MusicStore = (function () {
       trackState.endBound = Number(new Date());
 
       this.trackStates[trackNumber] = trackState;
+    }
+  }, {
+    key: 'setIsMouseDown',
+    value: function setIsMouseDown(bool) {
+      this.isMouseDown = bool;
     }
   }]);
 
