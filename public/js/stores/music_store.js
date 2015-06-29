@@ -38,7 +38,8 @@ class MusicStore {
     this.bindListeners({
       setActiveInstrument: MusicActions.SET_ACTIVE_INSTRUMENT,
       newInstrument: MusicActions.NEW_INSTRUMENT,
-      updateInstrument: MusicActions.UPDATE_INSTRUMENT
+      updateInstrument: MusicActions.UPDATE_INSTRUMENT,
+      closeEditInstrument: MusicActions.CLOSE_EDIT_INSTRUMENT
     });
   }
 
@@ -66,6 +67,10 @@ class MusicStore {
 
   updateInstrument(instrument) {
     this.instruments[this.activeInstrument] = instrument;
+  }
+
+  closeEditInstrument() {
+    this.isEditingInstrument = false;
   }
 }
 

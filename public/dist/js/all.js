@@ -80707,6 +80707,11 @@ var MusicActions = (function () {
     value: function updateInstrument(instrument) {
       this.dispatch(instrument);
     }
+  }, {
+    key: 'closeEditInstrument',
+    value: function closeEditInstrument() {
+      this.dispatch();
+    }
   }]);
 
   return MusicActions;
@@ -81579,7 +81584,7 @@ var EditInstrument = React.createClass({
               'div',
               { className: 'instrument' },
               React.createElement('input', { name: 'name',
-                value: this.props.name,
+                value: instrument.name,
                 onChange: this.handleNameChange }),
               React.createElement(
                 'div',
@@ -81664,7 +81669,7 @@ var EditInstrument = React.createClass({
   },
 
   handleClose: function handleClose() {
-    React.unmountComponentAtNode(document.getElementById('modal-container'));
+    _actionsMusic_actions2['default'].closeEditInstrument();
   },
 
   handleCancel: function handleCancel() {
@@ -83929,7 +83934,8 @@ var MusicStore = (function () {
     this.bindListeners({
       setActiveInstrument: _actionsMusic_actions2['default'].SET_ACTIVE_INSTRUMENT,
       newInstrument: _actionsMusic_actions2['default'].NEW_INSTRUMENT,
-      updateInstrument: _actionsMusic_actions2['default'].UPDATE_INSTRUMENT
+      updateInstrument: _actionsMusic_actions2['default'].UPDATE_INSTRUMENT,
+      closeEditInstrument: _actionsMusic_actions2['default'].CLOSE_EDIT_INSTRUMENT
     });
   }
 
@@ -83959,6 +83965,11 @@ var MusicStore = (function () {
     key: 'updateInstrument',
     value: function updateInstrument(instrument) {
       this.instruments[this.activeInstrument] = instrument;
+    }
+  }, {
+    key: 'closeEditInstrument',
+    value: function closeEditInstrument() {
+      this.isEditingInstrument = false;
     }
   }]);
 

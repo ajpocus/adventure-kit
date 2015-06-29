@@ -31,7 +31,7 @@
 }
 
 .instrument-list .instrument.active {
-  background: rgba(255, 255, 255, 0.2);
+  background: #f8b217;
 }
 
 .edit-instrument .components {

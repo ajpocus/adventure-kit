@@ -33,7 +33,7 @@ let EditInstrument = React.createClass({
             <div className="content">
               <div className="instrument">
                 <input name="name"
-                       value={this.props.name}
+                       value={instrument.name}
                        onChange={this.handleNameChange}/>
                 <div className="components">
                   <button className="new-component undertone"
@@ -111,7 +111,7 @@ let EditInstrument = React.createClass({
   },
 
   handleClose: function () {
-    React.unmountComponentAtNode(document.getElementById('modal-container'));
+    MusicActions.closeEditInstrument();
   },
 
   handleCancel: function () {

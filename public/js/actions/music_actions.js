@@ -12,6 +12,10 @@ class MusicActions {
   updateInstrument(instrument) {
     this.dispatch(instrument);
   }
+
+  closeEditInstrument() {
+    this.dispatch();
+  }
 }
 
 export default alt.createActions(MusicActions);
