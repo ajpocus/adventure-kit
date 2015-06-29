@@ -4,10 +4,6 @@ import MusicActions from '../actions/music_actions';
 import InstrumentComponent from './instrument_component';
 
 let EditInstrument = React.createClass({
-  componentDidUpdate: function () {
-    MusicActions.updateInstrument();
-  },
-
   render: function () {
     let instrument = this.props.instrument;
     let components = instrument.components;

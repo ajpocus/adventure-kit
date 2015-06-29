@@ -9,9 +9,7 @@ let InstrumentList = React.createClass({
     let instruments = this.props.instruments;
     let instrumentViews = [];
 
-    console.log(instruments.length);
     for (let i = 0; i < instruments.length; i++) {
-      console.log(i);
       let instrument = instruments[i];
       let className = 'instrument';
       if (i === this.props.activeInstrument) {
@@ -28,6 +26,7 @@ let InstrumentList = React.createClass({
     }
 
     let activeInstrument = instruments[this.props.activeInstrument];
+    console.log(activeInstrument);
 
     return (
       <div className="instrument-list">

@@ -31,7 +31,8 @@ let MusicCtrl = React.createClass({
           <div className="sidebar">
             <InstrumentList instruments={this.state.instruments}
                             activeInstrument={this.state.activeInstrument}
-                            instrumentCopy={this.state.instrumentCopy}/>
+                            instrumentCopy={this.state.instrumentCopy}
+                            isEditingInstrument={this.state.isEditingInstrument}/>
           </div>
 
           <div className="main">

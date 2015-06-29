@@ -81536,10 +81536,6 @@ var React = require('react');
 var EditInstrument = React.createClass({
   displayName: 'EditInstrument',
 
-  componentDidUpdate: function componentDidUpdate() {
-    _actionsMusic_actions2['default'].updateInstrument();
-  },
-
   render: function render() {
     var instrument = this.props.instrument;
     var components = instrument.components;
@@ -82100,9 +82096,7 @@ var InstrumentList = React.createClass({
     var instruments = this.props.instruments;
     var instrumentViews = [];
 
-    console.log(instruments.length);
     for (var i = 0; i < instruments.length; i++) {
-      console.log(i);
       var instrument = instruments[i];
       var className = 'instrument';
       if (i === this.props.activeInstrument) {
@@ -82123,6 +82117,7 @@ var InstrumentList = React.createClass({
     }
 
     var activeInstrument = instruments[this.props.activeInstrument];
+    console.log(activeInstrument);
 
     return React.createElement(
       'div',
@@ -82593,7 +82588,8 @@ var MusicCtrl = React.createClass({
           { className: 'sidebar' },
           React.createElement(_instrument_list2['default'], { instruments: this.state.instruments,
             activeInstrument: this.state.activeInstrument,
-            instrumentCopy: this.state.instrumentCopy })
+            instrumentCopy: this.state.instrumentCopy,
+            isEditingInstrument: this.state.isEditingInstrument })
         ),
         React.createElement(
           'div',
@@ -83936,7 +83932,6 @@ var MusicStore = (function () {
   }, {
     key: 'newInstrument',
     value: function newInstrument() {
-      console.log(this.instruments);
       var instrument = {
         name: 'New Instrument',
         components: [{
@@ -83946,7 +83941,7 @@ var MusicStore = (function () {
           key: 0
         }]
       };
-      console.log(this.instruments);
+
       this.instruments.push(instrument);
       this.activeInstrument = this.instruments.length - 1;
       this.isEditingInstrument = true;
