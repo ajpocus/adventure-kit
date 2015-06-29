@@ -80712,6 +80712,21 @@ var MusicActions = (function () {
     value: function closeEditInstrument() {
       this.dispatch();
     }
+  }, {
+    key: 'recordTrack',
+    value: function recordTrack(trackNumber) {
+      this.dispatch(trackNumber);
+    }
+  }, {
+    key: 'playTrack',
+    value: function playTrack(trackNumber) {
+      this.dispatch(trackNumber);
+    }
+  }, {
+    key: 'pauseTrack',
+    value: function pauseTrack(trackNumber) {
+      this.dispatch(trackNumber);
+    }
   }]);
 
   return MusicActions;
@@ -82608,8 +82623,9 @@ var MusicCtrl = React.createClass({
         React.createElement(
           'div',
           { className: 'main' },
+          'this.noteHeight = 8; this.noteColor = \'#ffcc00\'; this.trackWidth = 850; this.trackHeight = 96; this.contextOptions = [ \'Cut\', \'Copy\', \'Paste\' ]; this.bpm = 120; this.numMeasures = 4; this.beatsPerMeasure = 4; this.beatsPerSecond = this.bpm / 60; this.msPerBeat = 1000 / this.beatsPerSecond; this.beatsPerWidth = this.beatsPerMeasure * this.numMeasures; this.msPerWidth = this.msPerBeat * this.beatsPerWidth; this.isMouseDown = false;',
           React.createElement(_track_manager2['default'], { tracks: this.state.tracks,
-            recording: this.state.recording })
+            trackStates: this.state.trackStates })
         )
       ),
       React.createElement(
@@ -83022,19 +83038,6 @@ var Track = React.createClass({
     };
   },
 
-  getInitialState: function getInitialState() {
-    return {
-      isRecording: this.props.isRecording,
-      isPlaying: this.props.isPlaying,
-      isPaused: this.props.isPaused,
-      isStopped: this.props.isStopped,
-      isMouseDown: false,
-      noteSelected: false,
-      trackSelected: false,
-      isSelectingTrack: false
-    };
-  },
-
   componentDidMount: function componentDidMount() {
     var width = this.props.canvasWidth;
     var height = this.props.canvasHeight;
@@ -83059,16 +83062,10 @@ var Track = React.createClass({
 
   componentDidUpdate: function componentDidUpdate() {
     requestAnimationFrame(this.draw);
-
-    if (this.state.isPaused && this.state.isRecording || this.state.isPaused && this.state.isPlaying) {
-      this.setState({
-        isRecording: false,
-        isPlaying: false
-      });
-    }
   },
 
   render: function render() {
+    var trackState = this.props.trackState;
     return React.createElement(
       'li',
       { className: 'track',
@@ -83080,16 +83077,16 @@ var Track = React.createClass({
       React.createElement(
         'div',
         { className: 'track-controls' },
-        React.createElement(_track_tool_list2['default'], { activeTool: this.props.activeTool,
+        React.createElement(_track_tool_list2['default'], { activeTool: trackState.activeTool,
           onSetActiveTool: this.handleSetActiveTool })
       )
     );
   },
 
   draw: function draw() {
-    var data = this.props.data;
     var renderer = this.state.renderer;
     var stage = this.state.stage;
+    var data = this.props.data;
     var gfx = stage.getChildAt(0);
 
     if (!data || !data.length) {
@@ -83121,7 +83118,7 @@ var Track = React.createClass({
       var width = _getNoteBounds.width;
       var height = _getNoteBounds.height;
 
-      if (note.startTime + (note.endTime - note.startTime) < startBound) {
+      if (note.endTime < startBound) {
         break;
       }
 
@@ -83135,6 +83132,7 @@ var Track = React.createClass({
 
   getTrackBounds: function getTrackBounds() {
     var data = this.props.data;
+    var trackState = this.props.trackState;
 
     if (!data || !data.length) {
       return;
@@ -83147,7 +83145,7 @@ var Track = React.createClass({
     if (boundTime < this.props.msPerWidth) {
       endBound = startBound + this.props.msPerWidth;
     } else {
-      endBound = this.state.endBound || Number(new Date());
+      endBound = trackState.endBound || Number(new Date());
       startBound = endBound - this.props.msPerWidth;
     }
 
@@ -83195,34 +83193,21 @@ var Track = React.createClass({
   },
 
   handleSetActiveTool: function handleSetActiveTool(name) {
-    var isRecording = this.state.isRecording;
-    var isPlaying = this.state.isPlaying;
-    var isPaused = this.state.isPaused;
-    var endBound = this.state.endBound;
+    var trackNumber = this.props.trackNumber;
 
     switch (name) {
       case 'Play':
-        // stop recording, set the marker to 0, and play the recording
-        isRecording = false;
+        MusicActions.playTrack(trackNumber);
         break;
 
       case 'Pause':
         // pause the track recording / playback
-        isPaused = !isPaused;
-        isPlaying = false;
-        isRecording = false;
-        endBound = Number(new Date());
+        MusicActions.pauseTrack(trackNumber);
         break;
 
       default:
         return;
     }
-
-    this.setState({
-      activeTool: name,
-      isPaused: isPaused,
-      endBound: endBound
-    });
   },
 
   handleClick: function handleClick(ev) {
@@ -83339,63 +83324,20 @@ var React = require('react');
 var TrackManager = React.createClass({
   displayName: 'TrackManager',
 
-  getDefaultProps: function getDefaultProps() {
-    return {
-      trackCount: 5
-    };
-  },
-
-  getInitialState: function getInitialState() {
-    var trackCount = this.props.trackCount;
-    var trackStates = [];
-    for (var i = 0; i < trackCount; i++) {
-      var isRecording = false;
-      var isStopped = true;
-      var lastIdx = trackCount - 1;
-      var activeTool = 'Stop';
-
-      if (i === lastIdx) {
-        isRecording = true;
-        isStopped = false;
-        activeTool = 'Record';
-      }
-
-      trackStates.push({
-        isRecording: isRecording,
-        isPlaying: false,
-        isPaused: false,
-        isStopped: isStopped,
-        activeTool: activeTool
-      });
-    }
-
-    return {
-      trackStates: trackStates
-    };
-  },
-
   render: function render() {
+    var tracks = this.props.tracks;
+    var trackStates = this.props.trackStates;
+    var lastIdx = tracks.length - 1;
     var trackViews = [];
-    var trackStates = this.state.trackStates;
-    var lastIdx = this.props.trackCount - 1;
 
-    for (var i = 0; i < this.props.trackCount; i++) {
+    for (var i = 0; i < tracks.length; i++) {
+      var track = tracks[i];
       var trackState = trackStates[i];
-      var data = undefined;
-      if (i === lastIdx) {
-        data = this.props.recording;
-      }
 
-      trackViews.push(React.createElement(_track2['default'], { data: this.props.tracks[i],
-        key: i,
+      trackViews.push(React.createElement(_track2['default'], { key: i,
+        data: track,
         trackNumber: i,
-        data: data,
-        isRecording: trackState.isRecording,
-        isPlaying: trackState.isPlaying,
-        isPaused: trackState.isPaused,
-        isStopped: trackState.isStopped,
-        activeTool: trackState.activeTool,
-        onTrackStateChange: this.onTrackStateChange }));
+        trackState: trackState }));
     }
 
     return React.createElement(
@@ -83403,11 +83345,6 @@ var TrackManager = React.createClass({
       { className: 'track-list' },
       trackViews
     );
-  },
-
-  onTrackStateChange: function onTrackStateChange(trackNumber, newState) {
-    var trackStates = this.state.trackStates;
-    trackStates[trackNumber] = newState;
   }
 });
 
@@ -83924,6 +83861,7 @@ var MusicStore = (function () {
         key: 2
       }]
     }];
+
     this.activeInstrument = 0;
     this.isEditingInstrument = false;
     this.volume = 0.3;
@@ -83931,11 +83869,48 @@ var MusicStore = (function () {
     this.tracks = [];
     this.isRecording = true;
 
+    this.trackCount = 5;
+    this.trackStates = [];
+
+    var lastIdx = trackCount - 1;
+    for (var i = 0; i < trackCount; i++) {
+      var isRecording = false;
+      var isStopped = true;
+      var activeTool = 'Stop';
+
+      if (i === lastIdx) {
+        isRecording = true;
+        isStopped = false;
+        activeTool = 'Record';
+      }
+
+      trackStates.push({
+        isRecording: isRecording,
+        isPlaying: false,
+        isPaused: false,
+        isStopped: isStopped,
+        activeTool: activeTool,
+        isSelectingTrack: false,
+        isTrackSelected: false,
+        selectedNote: null,
+        selectionStart: null,
+        selectionEnd: null,
+        startBound: null,
+        endBound: null,
+        marker: 0
+      });
+    }
+
+    this.isMouseDown = false;
+
     this.bindListeners({
       setActiveInstrument: _actionsMusic_actions2['default'].SET_ACTIVE_INSTRUMENT,
       newInstrument: _actionsMusic_actions2['default'].NEW_INSTRUMENT,
       updateInstrument: _actionsMusic_actions2['default'].UPDATE_INSTRUMENT,
-      closeEditInstrument: _actionsMusic_actions2['default'].CLOSE_EDIT_INSTRUMENT
+      closeEditInstrument: _actionsMusic_actions2['default'].CLOSE_EDIT_INSTRUMENT,
+      recordTrack: _actionsMusic_actions2['default'].RECORD_TRACK,
+      playTrack: _actionsMusic_actions2['default'].PLAY_TRACK,
+      pauseTrack: _actionsMusic_actions2['default'].PAUSE_TRACK
     });
   }
 
@@ -83970,6 +83945,43 @@ var MusicStore = (function () {
     key: 'closeEditInstrument',
     value: function closeEditInstrument() {
       this.isEditingInstrument = false;
+    }
+  }, {
+    key: 'recordTrack',
+    value: function recordTrack(trackNumber) {
+      var trackState = this.trackStates[trackNumber];
+      trackState.isRecording = true;
+      trackState.isPlaying = false;
+      trackState.isPaused = false;
+      trackState.isStopped = false;
+      trackState.activeTool = 'Record';
+
+      this.trackStates[trackNumber] = trackState;
+    }
+  }, {
+    key: 'playTrack',
+    value: function playTrack(trackNumber) {
+      var trackState = this.trackStates[trackNumber];
+      trackState.isRecording = false;
+      trackState.isPlaying = true;
+      trackState.isPaused = false;
+      trackState.isStopped = false;
+      trackState.activeTool = 'Play';
+
+      this.trackStates[trackNumber] = trackState;
+    }
+  }, {
+    key: 'pauseTrack',
+    value: function pauseTrack(trackNumber) {
+      var trackState = this.trackStates[trackNumber];
+      trackState.isRecording = false;
+      trackState.isPlaying = false;
+      trackState.isPaused = true;
+      trackState.isStopped = false;
+      trackState.activeTool = 'Pause';
+      trackState.endBound = Number(new Date());
+
+      this.trackStates[trackNumber] = trackState;
     }
   }]);
 

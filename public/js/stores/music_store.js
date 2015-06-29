@@ -28,6 +28,7 @@ class MusicStore {
         ]
       }
     ];
+
     this.activeInstrument = 0;
     this.isEditingInstrument = false;
     this.volume = 0.3;
@@ -35,11 +36,48 @@ class MusicStore {
     this.tracks = [];
     this.isRecording = true;
 
+    this.trackCount = 5;
+    this.trackStates = [];
+
+    let lastIdx = trackCount - 1;
+    for (let i = 0; i < trackCount; i++) {
+      let isRecording = false;
+      let isStopped = true;
+      let activeTool = 'Stop';
+
+      if (i === lastIdx) {
+        isRecording = true;
+        isStopped = false;
+        activeTool = 'Record';
+      }
+
+      trackStates.push({
+        isRecording,
+        isPlaying: false,
+        isPaused: false,
+        isStopped,
+        activeTool,
+        isSelectingTrack: false,
+        isTrackSelected: false,
+        selectedNote: null,
+        selectionStart: null,
+        selectionEnd: null,
+        startBound: null,
+        endBound: null,
+        marker: 0
+      });
+    }
+
+    this.isMouseDown = false;
+
     this.bindListeners({
       setActiveInstrument: MusicActions.SET_ACTIVE_INSTRUMENT,
       newInstrument: MusicActions.NEW_INSTRUMENT,
       updateInstrument: MusicActions.UPDATE_INSTRUMENT,
-      closeEditInstrument: MusicActions.CLOSE_EDIT_INSTRUMENT
+      closeEditInstrument: MusicActions.CLOSE_EDIT_INSTRUMENT,
+      recordTrack: MusicActions.RECORD_TRACK,
+      playTrack: MusicActions.PLAY_TRACK,
+      pauseTrack: MusicActions.PAUSE_TRACK
     });
   }
 
@@ -71,6 +109,40 @@ class MusicStore {
 
   closeEditInstrument() {
     this.isEditingInstrument = false;
+  }
+
+  recordTrack(trackNumber) {
+    let trackState = this.trackStates[trackNumber];
+    trackState.isRecording = true;
+    trackState.isPlaying = false;
+    trackState.isPaused = false;
+    trackState.isStopped = false;
+    trackState.activeTool = 'Record';
+
+    this.trackStates[trackNumber] = trackState;
+  }
+
+  playTrack(trackNumber) {
+    let trackState = this.trackStates[trackNumber];
+    trackState.isRecording = false;
+    trackState.isPlaying = true;
+    trackState.isPaused = false;
+    trackState.isStopped = false;
+    trackState.activeTool = 'Play';
+
+    this.trackStates[trackNumber] = trackState;
+  }
+
+  pauseTrack(trackNumber) {
+    let trackState = this.trackStates[trackNumber];
+    trackState.isRecording = false;
+    trackState.isPlaying = false;
+    trackState.isPaused = true;
+    trackState.isStopped = false;
+    trackState.activeTool = 'Pause';
+    trackState.endBound = Number(new Date());
+
+    this.trackStates[trackNumber] = trackState;
   }
 }
 

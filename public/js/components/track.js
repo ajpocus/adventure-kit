@@ -35,19 +35,6 @@ let Track = React.createClass({
     };
   },
 
-  getInitialState: function () {
-    return {
-      isRecording: this.props.isRecording,
-      isPlaying: this.props.isPlaying,
-      isPaused: this.props.isPaused,
-      isStopped: this.props.isStopped,
-      isMouseDown: false,
-      noteSelected: false,
-      trackSelected: false,
-      isSelectingTrack: false
-    };
-  },
-
   componentDidMount: function () {
     let width = this.props.canvasWidth;
     let height = this.props.canvasHeight;
@@ -72,17 +59,10 @@ let Track = React.createClass({
 
   componentDidUpdate: function () {
     requestAnimationFrame(this.draw);
-
-    if (this.state.isPaused && this.state.isRecording ||
-        this.state.isPaused && this.state.isPlaying) {
-      this.setState({
-        isRecording: false,
-        isPlaying: false
-      });
-    }
   },
 
   render: function () {
+    let trackState = this.props.trackState;
     return (
       <li className="track"
           onClick={this.handleClick}
@@ -91,7 +71,7 @@ let Track = React.createClass({
           onMouseMove={this.handleMouseMove}
           onContextMenu={this.handleContextMenu}>
         <div className="track-controls">
-          <TrackToolList activeTool={this.props.activeTool}
+          <TrackToolList activeTool={trackState.activeTool}
                          onSetActiveTool={this.handleSetActiveTool}/>
         </div>
       </li>
@@ -99,9 +79,9 @@ let Track = React.createClass({
   },
 
   draw: function () {
-    let data = this.props.data;
     let renderer = this.state.renderer;
     let stage = this.state.stage;
+    let data = this.props.data;
     let gfx = stage.getChildAt(0);
 
     if (!data || !data.length) {
@@ -121,7 +101,7 @@ let Track = React.createClass({
     for (let i = lastIdx; i >= 0; i--) {
       let note = data[i];
       let { x, y, width, height } = this.getNoteBounds(note, startBound, endBound);
-      if ((note.startTime + (note.endTime - note.startTime)) < startBound) {
+      if (note.endTime < startBound) {
         break;
       }
 
@@ -135,6 +115,7 @@ let Track = React.createClass({
 
   getTrackBounds: function () {
     let data = this.props.data;
+    let trackState = this.props.trackState;
 
     if (!data || !data.length) {
       return;
@@ -147,7 +128,7 @@ let Track = React.createClass({
     if (boundTime < this.props.msPerWidth) {
       endBound = startBound + this.props.msPerWidth;
     } else {
-      endBound = this.state.endBound || Number(new Date());
+      endBound = trackState.endBound || Number(new Date());
       startBound = endBound - this.props.msPerWidth;
     }
 
@@ -195,34 +176,21 @@ let Track = React.createClass({
   },
 
   handleSetActiveTool: function (name) {
-    let isRecording = this.state.isRecording;
-    let isPlaying = this.state.isPlaying;
-    let isPaused = this.state.isPaused;
-    let endBound = this.state.endBound;
+    let trackNumber = this.props.trackNumber;
 
     switch (name) {
       case 'Play':
-        // stop recording, set the marker to 0, and play the recording
-        isRecording = false;
+        MusicActions.playTrack(trackNumber);
         break;
 
       case 'Pause':
         // pause the track recording / playback
-        isPaused = !isPaused;
-        isPlaying = false;
-        isRecording = false;
-        endBound = Number(new Date());
+        MusicActions.pauseTrack(trackNumber);
         break;
 
       default:
         return;
     }
-
-    this.setState({
-      activeTool: name,
-      isPaused,
-      endBound
-    });
   },
 
   handleClick: function (ev) {

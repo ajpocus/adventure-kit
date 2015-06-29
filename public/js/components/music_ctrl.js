@@ -36,8 +36,25 @@ let MusicCtrl = React.createClass({
           </div>
 
           <div className="main">
+            this.noteHeight = 8;
+            this.noteColor = '#ffcc00';
+            this.trackWidth = 850;
+            this.trackHeight = 96;
+            this.contextOptions = [
+              'Cut',
+              'Copy',
+              'Paste'
+            ];
+            this.bpm = 120;
+            this.numMeasures = 4;
+            this.beatsPerMeasure = 4;
+            this.beatsPerSecond = this.bpm / 60;
+            this.msPerBeat = 1000 / this.beatsPerSecond;
+            this.beatsPerWidth = this.beatsPerMeasure * this.numMeasures;
+            this.msPerWidth = this.msPerBeat * this.beatsPerWidth;
+            this.isMouseDown = false;
             <TrackManager tracks={this.state.tracks}
-                          recording={this.state.recording}/>
+                          trackStates={this.state.trackStates}/>
           </div>
         </div>
 

@@ -16,6 +16,18 @@ class MusicActions {
   closeEditInstrument() {
     this.dispatch();
   }
+
+  recordTrack(trackNumber) {
+    this.dispatch(trackNumber);
+  }
+
+  playTrack(trackNumber) {
+    this.dispatch(trackNumber);
+  }
+
+  pauseTrack(trackNumber) {
+    this.dispatch(trackNumber);
+  }
 }
 
 export default alt.createActions(MusicActions);
