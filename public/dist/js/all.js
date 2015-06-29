@@ -81957,90 +81957,97 @@ exports['default'] = Header;
 module.exports = exports['default'];
 
 },{"react":484,"react-router":315}],514:[function(require,module,exports){
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var React = require("react");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _actionsMusic_actions = require('../actions/music_actions');
+
+var _actionsMusic_actions2 = _interopRequireDefault(_actionsMusic_actions);
+
+var React = require('react');
 
 var InstrumentComponent = React.createClass({
-  displayName: "InstrumentComponent",
+  displayName: 'InstrumentComponent',
 
   render: function render() {
     var instrument = this.props.instrument;
     var component = instrument.components[this.props.idx];
 
     return React.createElement(
-      "div",
-      { className: "component" },
+      'div',
+      { className: 'component' },
       React.createElement(
-        "div",
-        { className: "field" },
+        'div',
+        { className: 'field' },
         React.createElement(
-          "label",
-          { htmlFor: "harmonic" },
-          "Harmonic"
+          'label',
+          { htmlFor: 'harmonic' },
+          'Harmonic'
         ),
-        React.createElement("input", { type: "number",
-          name: "harmonic",
+        React.createElement('input', { type: 'number',
+          name: 'harmonic',
           value: component.harmonic,
           onChange: this.onHarmonicChange })
       ),
       React.createElement(
-        "div",
-        { className: "field" },
+        'div',
+        { className: 'field' },
         React.createElement(
-          "label",
-          { htmlFor: "gain" },
-          "Gain"
+          'label',
+          { htmlFor: 'gain' },
+          'Gain'
         ),
-        React.createElement("input", { type: "range",
-          name: "gain",
+        React.createElement('input', { type: 'range',
+          name: 'gain',
           value: component.gain,
-          min: "0",
-          max: "1",
-          step: "0.01",
+          min: '0',
+          max: '1',
+          step: '0.01',
           onChange: this.onGainChange }),
-        React.createElement("input", { type: "number",
-          name: "gain",
+        React.createElement('input', { type: 'number',
+          name: 'gain',
           value: parseFloat(component.gain).toFixed(2),
-          min: "0",
-          max: "1",
+          min: '0',
+          max: '1',
           onChange: this.onGainChange })
       ),
       React.createElement(
-        "div",
-        { className: "field" },
+        'div',
+        { className: 'field' },
         React.createElement(
-          "label",
-          { htmlFor: "waveType" },
-          "Wave type"
+          'label',
+          { htmlFor: 'waveType' },
+          'Wave type'
         ),
         React.createElement(
-          "select",
-          { name: "waveType",
+          'select',
+          { name: 'waveType',
             defaultValue: component.type,
             onChange: this.onTypeChange },
           React.createElement(
-            "option",
-            { value: "sine" },
-            "Sine"
+            'option',
+            { value: 'sine' },
+            'Sine'
           ),
           React.createElement(
-            "option",
-            { value: "square" },
-            "Square"
+            'option',
+            { value: 'square' },
+            'Square'
           ),
           React.createElement(
-            "option",
-            { value: "sawtooth" },
-            "Sawtooth"
+            'option',
+            { value: 'sawtooth' },
+            'Sawtooth'
           ),
           React.createElement(
-            "option",
-            { value: "triangle" },
-            "Triangle"
+            'option',
+            { value: 'triangle' },
+            'Triangle'
           )
         )
       )
@@ -82048,25 +82055,28 @@ var InstrumentComponent = React.createClass({
   },
 
   onHarmonicChange: function onHarmonicChange(ev) {
+    var instrument = this.props.instrument;
     instrument.components[this.props.idx].harmonic = ev.target.value;
-    MusicActions.updateInstrument(instrument);
+    _actionsMusic_actions2['default'].updateInstrument(instrument);
   },
 
   onGainChange: function onGainChange(ev) {
+    var instrument = this.props.instrument;
     instrument.components[this.props.idx].gain = ev.target.value;
-    MusicActions.updateInstrument(instrument);
+    _actionsMusic_actions2['default'].updateInstrument(instrument);
   },
 
   onTypeChange: function onTypeChange(ev) {
+    var instrument = this.props.instrument;
     instrument.components[this.props.idx].type = ev.target.value;
-    MusicActions.updateInstrument(instrument);
+    _actionsMusic_actions2['default'].updateInstrument(instrument);
   }
 });
 
-exports["default"] = InstrumentComponent;
-module.exports = exports["default"];
+exports['default'] = InstrumentComponent;
+module.exports = exports['default'];
 
-},{"react":484}],515:[function(require,module,exports){
+},{"../actions/music_actions":502,"react":484}],515:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82117,7 +82127,6 @@ var InstrumentList = React.createClass({
     }
 
     var activeInstrument = instruments[this.props.activeInstrument];
-    console.log(activeInstrument);
 
     return React.createElement(
       'div',

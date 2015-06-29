@@ -310,7 +310,6 @@ let DrawSurface = React.createClass({
     dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
     images[this.props.title] = dataUrl;
     localStorage.setItem('images', JSON.stringify(images));
-    console.log(localStorage.getItem('images'));
   },
 
   drawBackground: function () {

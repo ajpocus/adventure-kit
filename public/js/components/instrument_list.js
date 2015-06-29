@@ -26,7 +26,6 @@ let InstrumentList = React.createClass({
     }
 
     let activeInstrument = instruments[this.props.activeInstrument];
-    console.log(activeInstrument);
 
     return (
       <div className="instrument-list">

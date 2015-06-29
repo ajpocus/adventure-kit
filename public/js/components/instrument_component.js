@@ -1,5 +1,7 @@
 let React = require('react');
 
+import MusicActions from '../actions/music_actions';
+
 let InstrumentComponent = React.createClass({
   render: function () {
     let instrument = this.props.instrument;
@@ -48,16 +50,19 @@ let InstrumentComponent = React.createClass({
   },
 
   onHarmonicChange: function (ev) {
+    let instrument = this.props.instrument;
     instrument.components[this.props.idx].harmonic = ev.target.value;
     MusicActions.updateInstrument(instrument);
   },
 
   onGainChange: function (ev) {
+    let instrument = this.props.instrument;
     instrument.components[this.props.idx].gain = ev.target.value;
     MusicActions.updateInstrument(instrument);
   },
 
   onTypeChange: function (ev) {
+    let instrument = this.props.instrument;
     instrument.components[this.props.idx].type = ev.target.value;
     MusicActions.updateInstrument(instrument);
   }
