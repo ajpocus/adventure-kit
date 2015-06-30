@@ -41,10 +41,6 @@ class MusicActions {
     this.dispatch(data);
   }
 
-  updateOscillators(oscillators) {
-    this.dispatch(oscillators);
-  }
-
   updateNotes(notes) {
     this.dispatch(notes);
   }

@@ -38,6 +38,7 @@ class MusicStore {
 
     this.trackCount = 5;
     this.trackStates = [];
+    this.trackIndices = [];
 
     let lastIdx = this.trackCount - 1;
     for (let i = 0; i < this.trackCount; i++) {
@@ -68,6 +69,7 @@ class MusicStore {
       });
 
       this.tracks.push([]);
+      this.trackIndices.push({});
     }
 
     this.isMouseDown = false;
@@ -89,7 +91,6 @@ class MusicStore {
       setIsMouseDown: MusicActions.SET_IS_MOUSE_DOWN,
       setVolume: MusicActions.SET_VOLUME,
       updateRecording: MusicActions.UPDATE_RECORDING,
-      updateOscillators: MusicActions.UPDATE_OSCILLATORS,
       updateNotes: MusicActions.UPDATE_NOTES
     });
   }
@@ -176,13 +177,22 @@ class MusicStore {
       let trackState = this.trackStates[i];
 
       if (trackState.isRecording) {
-        track.push(chunk);
+        let indices = this.trackIndices[i];
+        let idx = indices[chunk.midi];
+
+        if (idx) {
+          track[idx] = chunk;
+          if (chunk.endTime) {
+            delete track[idx];
+          }
+        } else {
+          track.push(chunk);
+          idx = track.length - 1;
+          indices[chunk.midi] = idx;
+          this.trackIndices[i] = indices;
+        }
       }
     }
-  }
-
-  updateOscillators(oscillators) {
-    this.oscillators = oscillators;
   }
 
   updateNotes(notes) {

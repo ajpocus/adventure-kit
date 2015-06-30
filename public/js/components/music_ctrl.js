@@ -50,15 +50,12 @@ let MusicCtrl = React.createClass({
                       oscillators={this.state.oscillators}
                       octaveShift={this.state.octaveShift}
                       recording={this.state.recording}
-                      recordingIndices={this.state.recordingIndices}/>
+                      recordingIndices={this.state.recordingIndices}
+                      trackIndices={this.state.trackIndices}/>
           </div>
         </div>
       </div>
     );
-  }
-
-  onRecordingUpdate: function (recording) {
-    this.setState({ recording: recording });
   }
 });
 

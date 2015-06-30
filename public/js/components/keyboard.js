@@ -57,7 +57,8 @@ let Keyboard = React.createClass({
 
   getInitialState: function () {
     return {
-      ctx: new window.AudioContext()
+      ctx: new window.AudioContext(),
+      oscillators: {}
     };
   },
 
@@ -76,7 +77,7 @@ let Keyboard = React.createClass({
     let blackKeys = this.props.keys.black;
     let whiteKeyViews = [];
     let blackKeyViews = [];
-    let octaveShift = this.state.octaveShift;
+    let octaveShift = this.props.octaveShift;
     let notesPerOctave = this.props.notesPerOctave;
 
     for (let i = 0; i < whiteKeys.length; i++) {
@@ -138,14 +139,14 @@ let Keyboard = React.createClass({
     let recording = this.props.recording;
     let recordingIndices = this.props.recordingIndices;
 
-    if (this.state.notesPlaying[key]) {
+    if (this.props.notesPlaying[key]) {
       let idx = recordingIndices[key];
       recording[idx].endTime = Number(new Date());
 
       MusicActions.updateRecording({ recording, recordingIndices });
     } else {
       let ctx = this.state.ctx;
-      let oscillators = this.props.oscillators;
+      let oscillators = this.state.oscillators;
       let notesPlaying = this.props.notesPlaying;
       let instrument = this.props.instrument;
       oscillators[key] = [];
@@ -185,14 +186,13 @@ let Keyboard = React.createClass({
         startTime: now
       };
 
-      recording.push(chunk);
       recordingIndices[key] = recording.length - 1;
+      recording.push(chunk);
 
-      MusicActions.updateRecording({ chunk, recording, recordingIndices });
-      MusicActions.updateOscillators(oscillators);
       MusicActions.updateNotes(notesPlaying);
+      MusicActions.updateRecording({ chunk, recording, recordingIndices });
 
-      this.setState({ ctx });
+      this.setState({ ctx, oscillators });
     }
   },
 
@@ -211,20 +211,17 @@ let Keyboard = React.createClass({
       delete oscillators[key];
       delete notesPlaying[key];
 
-      let recordingIndices = this.state.recordingIndices;
-      let recording = this.state.recording;
-      let idx = this.state.recordingIndices[key];
-      recording[idx].endTime = Number(new Date());
+      let recordingIndices = this.props.recordingIndices;
+      let recording = this.props.recording;
+      let idx = this.props.recordingIndices[key];
+      let chunk = recording[idx];
+      chunk.endTime = Number(new Date());
       delete recordingIndices[key];
 
-      this.setState({
-        oscillators: oscillators,
-        notesPlaying: notesPlaying,
-        recording: recording,
-        recordingIndices: recordingIndices
-      }, function () {
-        this.props.onRecordingUpdate(this.state.recording);
-      });
+      MusicActions.updateRecording({ chunk, recording, recordingIndices });
+      MusicActions.updateNotes(notesPlaying);
+
+      this.setState({ oscillators });
     }
   }
 });
