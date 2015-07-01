@@ -150,7 +150,7 @@ let Track = React.createClass({
     let endTime = (note.endTime || Number(new Date())) - startBound;
     let midi = note.midi;
     let factor = midi % 12;
-    let noteMs = (note.endTime || Number(new Date())) - note.startTime;
+    let noteMs = endTime - startTime;
 
     let width = (noteMs / this.props.msPerWidth) * this.props.canvasWidth;
     let height = this.props.noteHeight;
