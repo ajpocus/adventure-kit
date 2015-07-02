@@ -59,7 +59,6 @@ let Keyboard = React.createClass({
     return {
       ctx: new window.AudioContext(),
       oscillators: {},
-      keysDown: {},
       notesPlaying: {},
       recordingIndices: {}
     };
@@ -68,8 +67,6 @@ let Keyboard = React.createClass({
   componentDidMount: function () {
     $(document).on('keydown', this.handleKeyDown);
     $(document).on('keyup', this.handleKeyUp);
-
-    requestAnimationFrame(this.animate);
   },
 
   componentWillUnmount: function () {
@@ -139,8 +136,9 @@ let Keyboard = React.createClass({
     );
   },
 
-  animate: function () {
-    let keysDown = this.state.keysDown;
+  handleKeyDown: function (ev) {
+    let key = this.keyCodeToChar(ev.keyCode);
+
     let notesPlaying = this.state.notesPlaying;
     let oscillators = this.state.oscillators;
     let ctx = this.state.ctx;
@@ -149,90 +147,87 @@ let Keyboard = React.createClass({
     let recordingIndices = this.state.recordingIndices;
     let instrument = this.props.instrument;
 
-    for (let key in keysDown) {
-      if (keysDown.hasOwnProperty(key)) {
-        if (keysDown[key]) {
-          if (notesPlaying[key]) {
-            let idx = recordingIndices[key];
-            recording[idx].endTime = Number(new Date());
-          } else {
-            oscillators[key] = [];
+    if (notesPlaying[key]) {
+      let idx = recordingIndices[key];
+      recording[idx].endTime = Number(new Date());
 
-            let midi = this.keyToNote(key);
-            if (!midi) {
-              return;
-            }
+      this.setState({ recordingIndices });
+      MusicActions.updateRecording(recording);
+    } else {
+      oscillators[key] = [];
 
-            midi += this.props.octaveShift * 12
-            let note = teoria.note.fromMIDI(midi);
-            let freq = note.fq();
-
-            for (let i = 0; i < instrument.components.length; i++) {
-              let wave = instrument.components[i];
-
-              let osc = ctx.createOscillator();
-              osc.frequency.value = freq * Math.pow(2, wave.harmonic);
-              osc.type = wave.type;
-
-              let gainNode = ctx.createGain();
-              gainNode.gain.value = wave.gain * this.props.volume * 2;
-
-              osc.connect(gainNode);
-              gainNode.connect(ctx.destination);
-
-              osc.start();
-              oscillators[key].push(osc);
-            }
-
-            notesPlaying[key] = true;
-
-            let recording = this.props.recording;
-            let now = Number(new Date());
-            let chunk = {
-              midi: midi,
-              startTime: now
-            };
-
-            recording.push(chunk);
-            recordingIndices[key] = recording.length - 1;
-          }
-        } else {
-          if (notesPlaying[key]) {
-            let noteOscillators = oscillators[key];
-            let idx = recordingIndices[key];
-
-            for (let i = 0; i < noteOscillators.length; i++) {
-              let osc = noteOscillators[i];
-              osc.stop();
-            }
-
-            recording[idx].endTime = Number(new Date());
-            delete oscillators[key];
-            delete notesPlaying[key];
-            delete recordingIndices[key];
-          }
-        }
-
-        this.setState({ ctx, oscillators, notesPlaying, recordingIndices });
-        MusicActions.updateRecording(recording);
+      let midi = this.keyToNote(key);
+      if (!midi) {
+        return;
       }
+
+      midi += this.props.octaveShift * 12
+      let note = teoria.note.fromMIDI(midi);
+      let freq = note.fq();
+
+      for (let i = 0; i < instrument.components.length; i++) {
+        let wave = instrument.components[i];
+
+        let osc = ctx.createOscillator();
+        osc.frequency.value = freq * Math.pow(2, wave.harmonic);
+        osc.type = wave.type;
+
+        let gainNode = ctx.createGain();
+        gainNode.gain.value = wave.gain * this.props.volume * 2;
+
+        osc.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        osc.start();
+        oscillators[key].push(osc);
+      }
+
+      notesPlaying[key] = true;
+
+      let recording = this.props.recording;
+      let now = Number(new Date());
+      let chunk = {
+        midi: midi,
+        startTime: now
+      };
+
+      recording.push(chunk);
+      recordingIndices[key] = recording.length - 1;
+
+      this.setState({
+        ctx, oscillators, notesPlaying, recordingIndices
+      });
+      MusicActions.updateRecording(recording);
     }
-
-    requestAnimationFrame(this.animate);
-  },
-
-  handleKeyDown: function (ev) {
-    let key = this.keyCodeToChar(ev.keyCode);
-    let keysDown = this.state.keysDown;
-    keysDown[key] = true;
-    this.setState({ keysDown });
   },
 
   handleKeyUp: function (ev) {
     let key = this.keyCodeToChar(ev.keyCode);
-    let keysDown = this.state.keysDown;
-    keysDown[key] = false;
-    this.setState({ keysDown });
+
+    let notesPlaying = this.state.notesPlaying;
+    let oscillators = this.state.oscillators;
+    let ctx = this.state.ctx;
+
+    let recording = this.props.recording;
+    let recordingIndices = this.state.recordingIndices;
+
+    if (notesPlaying[key]) {
+      let noteOscillators = oscillators[key];
+      let idx = recordingIndices[key];
+
+      for (let i = 0; i < noteOscillators.length; i++) {
+        let osc = noteOscillators[i];
+        osc.stop();
+      }
+
+      recording[idx].endTime = Number(new Date());
+      delete oscillators[key];
+      delete notesPlaying[key];
+      delete recordingIndices[key];
+
+      this.setState({ oscillators, notesPlaying, recordingIndices });
+      MusicActions.updateRecording(recording);
+    }
   }
 });
 
