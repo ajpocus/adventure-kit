@@ -129,14 +129,15 @@ let Track = React.createClass({
       return;
     }
 
+    let lastIdx = data.length - 1;
     let startBound = data[0].startTime;
-    let endBound = Number(new Date());
+    let endBound = data[lastIdx].endTime || Number(new Date());
     let boundTime = endBound - startBound;
 
     if (boundTime < this.props.msPerWidth) {
+      startBound = data[0].startTime;
       endBound = startBound + this.props.msPerWidth;
     } else {
-      endBound = trackState.endBound || Number(new Date());
       startBound = endBound - this.props.msPerWidth;
     }
 
