@@ -53,6 +53,7 @@ class MusicStore {
       endBound: null,
       marker: 0
     };
+
     let lastIdx = this.trackCount - 1;
     for (let i = 0; i < this.trackCount; i++) {
       this.trackStates.push(defaultTrackState);
@@ -63,7 +64,6 @@ class MusicStore {
     this.scratchTrackState = defaultTrackState;
 
     this.isMouseDown = false;
-
     this.notesPlaying = {};
     this.oscillators = {};
     this.octaveShift = 2;

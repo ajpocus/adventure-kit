@@ -17,7 +17,8 @@ let TrackManager = React.createClass({
         <Track key={i}
                data={track}
                trackNumber={i}
-               trackState={trackState}/>
+               trackState={trackState}
+               isControllable={true}/>
       );
     }
 
@@ -25,9 +26,12 @@ let TrackManager = React.createClass({
       <ul className="track-list">
         {trackViews}
 
-        <Track key="scratch"
-               data={this.props.scratchTrack}
-               trackState={this.props.scratchTrackState}/>
+        <div className="scratch">
+          <Track key="scratch"
+                 data={this.props.scratchTrack}
+                 trackState={this.props.scratchTrackState}
+                 isControllable={false}/>
+        </div>
       </ul>
     );
   }

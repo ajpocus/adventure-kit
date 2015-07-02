@@ -64,6 +64,16 @@ let Track = React.createClass({
 
   render: function () {
     let trackState = this.props.trackState;
+    let trackTools;
+    if (this.props.isControllable) {
+      trackTools = (
+        <div className="track-controls">
+          <TrackToolList activeTool={trackState.activeTool}
+                         onSetActiveTool={this.handleSetActiveTool}/>
+        </div>
+      );
+    }
+
     return (
       <li className="track"
           onClick={this.handleClick}
@@ -71,10 +81,7 @@ let Track = React.createClass({
           onMouseUp={this.handleMouseUp}
           onMouseMove={this.handleMouseMove}
           onContextMenu={this.handleContextMenu}>
-        <div className="track-controls">
-          <TrackToolList activeTool={trackState.activeTool}
-                         onSetActiveTool={this.handleSetActiveTool}/>
-        </div>
+        {trackTools}
       </li>
     );
   },
@@ -198,7 +205,9 @@ let Track = React.createClass({
       this.selectNote(ev);
     }
 
-    MusicActions.pauseTrack(this.props.trackNumber);
+    if (this.props.isControllable) {
+      MusicActions.pauseTrack(this.props.trackNumber);
+    }
   },
 
   handleMouseDown: function (ev) {

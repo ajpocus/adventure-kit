@@ -134,3 +134,7 @@
 .track-tools .tool-list .btn.active {
   background: #f8b217;
 }
+
+.track-list .scratch {
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+}

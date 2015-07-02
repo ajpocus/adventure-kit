@@ -83055,6 +83055,16 @@ var Track = React.createClass({
 
   render: function render() {
     var trackState = this.props.trackState;
+    var trackTools = undefined;
+    if (this.props.isControllable) {
+      trackTools = React.createElement(
+        'div',
+        { className: 'track-controls' },
+        React.createElement(_track_tool_list2['default'], { activeTool: trackState.activeTool,
+          onSetActiveTool: this.handleSetActiveTool })
+      );
+    }
+
     return React.createElement(
       'li',
       { className: 'track',
@@ -83063,12 +83073,7 @@ var Track = React.createClass({
         onMouseUp: this.handleMouseUp,
         onMouseMove: this.handleMouseMove,
         onContextMenu: this.handleContextMenu },
-      React.createElement(
-        'div',
-        { className: 'track-controls' },
-        React.createElement(_track_tool_list2['default'], { activeTool: trackState.activeTool,
-          onSetActiveTool: this.handleSetActiveTool })
-      )
+      trackTools
     );
   },
 
@@ -83203,7 +83208,9 @@ var Track = React.createClass({
       this.selectNote(ev);
     }
 
-    _actionsMusic_actions2['default'].pauseTrack(this.props.trackNumber);
+    if (this.props.isControllable) {
+      _actionsMusic_actions2['default'].pauseTrack(this.props.trackNumber);
+    }
   },
 
   handleMouseDown: function handleMouseDown(ev) {
@@ -83323,16 +83330,22 @@ var TrackManager = React.createClass({
       trackViews.push(React.createElement(_track2['default'], { key: i,
         data: track,
         trackNumber: i,
-        trackState: trackState }));
+        trackState: trackState,
+        isControllable: true }));
     }
 
     return React.createElement(
       'ul',
       { className: 'track-list' },
       trackViews,
-      React.createElement(_track2['default'], { key: 'scratch',
-        data: this.props.scratchTrack,
-        trackState: this.props.scratchTrackState })
+      React.createElement(
+        'div',
+        { className: 'scratch' },
+        React.createElement(_track2['default'], { key: 'scratch',
+          data: this.props.scratchTrack,
+          trackState: this.props.scratchTrackState,
+          isControllable: false })
+      )
     );
   }
 });
@@ -83872,6 +83885,7 @@ var MusicStore = (function () {
       endBound: null,
       marker: 0
     };
+
     var lastIdx = this.trackCount - 1;
     for (var i = 0; i < this.trackCount; i++) {
       this.trackStates.push(defaultTrackState);
@@ -83882,7 +83896,6 @@ var MusicStore = (function () {
     this.scratchTrackState = defaultTrackState;
 
     this.isMouseDown = false;
-
     this.notesPlaying = {};
     this.oscillators = {};
     this.octaveShift = 2;
