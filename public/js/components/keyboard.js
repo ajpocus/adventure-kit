@@ -58,13 +58,16 @@ let Keyboard = React.createClass({
   getInitialState: function () {
     return {
       ctx: new window.AudioContext(),
-      oscillators: {}
+      oscillators: {},
+      keysDown: {}
     };
   },
 
   componentDidMount: function () {
     $(document).on('keydown', this.handleKeyDown);
     $(document).on('keyup', this.handleKeyUp);
+
+    requestAnimationFrame(this.animate);
   },
 
   componentWillUnmount: function () {
@@ -134,6 +137,12 @@ let Keyboard = React.createClass({
     );
   },
 
+  animate: function () {
+    for (prop in this.state.keysDown) {
+    }
+    requestAnimationFrame(this.animate);
+  },
+
   handleKeyDown: function (ev) {
     let key = this.keyCodeToChar(ev.keyCode);
     let recording = this.props.recording;
@@ -190,7 +199,7 @@ let Keyboard = React.createClass({
       recording.push(chunk);
 
       MusicActions.updateNotes(notesPlaying);
-      MusicActions.updateRecording({ chunk, recording, recordingIndices });
+      MusicActions.updateRecording({ recording, recordingIndices });
 
       this.setState({ ctx, oscillators });
     }
@@ -214,11 +223,10 @@ let Keyboard = React.createClass({
       let recordingIndices = this.props.recordingIndices;
       let recording = this.props.recording;
       let idx = this.props.recordingIndices[key];
-      let chunk = recording[idx];
-      chunk.endTime = Number(new Date());
+      recording[idx].endTime = Number(new Date());
       delete recordingIndices[key];
 
-      MusicActions.updateRecording({ chunk, recording, recordingIndices });
+      MusicActions.updateRecording({ recording, recordingIndices });
       MusicActions.updateNotes(notesPlaying);
 
       this.setState({ oscillators });

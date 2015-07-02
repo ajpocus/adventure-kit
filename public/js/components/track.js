@@ -180,10 +180,6 @@ let Track = React.createClass({
     let trackNumber = this.props.trackNumber;
 
     switch (name) {
-      case 'Record':
-        MusicActions.recordTrack(trackNumber);
-        break;
-
       case 'Play':
         MusicActions.playTrack(trackNumber);
         break;

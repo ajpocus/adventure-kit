@@ -24,6 +24,10 @@ let TrackManager = React.createClass({
     return (
       <ul className="track-list">
         {trackViews}
+
+        <Track key="scratch"
+               data={this.props.scratchTrack}
+               trackState={this.props.scratchTrackState}/>
       </ul>
     );
   }

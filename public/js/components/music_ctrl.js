@@ -37,7 +37,9 @@ let MusicCtrl = React.createClass({
 
           <div className="main">
             <TrackManager tracks={this.state.tracks}
-                          trackStates={this.state.trackStates}/>
+                          trackStates={this.state.trackStates}
+                          scratchTrack={this.state.scratchTrack}
+                          scratchTrackState={this.state.scratchTrackState}/>
           </div>
         </div>
 

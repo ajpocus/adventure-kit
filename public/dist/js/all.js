@@ -80713,11 +80713,6 @@ var MusicActions = (function () {
       this.dispatch();
     }
   }, {
-    key: 'recordTrack',
-    value: function recordTrack(trackNumber) {
-      this.dispatch(trackNumber);
-    }
-  }, {
     key: 'playTrack',
     value: function playTrack(trackNumber) {
       this.dispatch(trackNumber);
@@ -82241,13 +82236,16 @@ var Keyboard = React.createClass({
   getInitialState: function getInitialState() {
     return {
       ctx: new window.AudioContext(),
-      oscillators: {}
+      oscillators: {},
+      keysDown: {}
     };
   },
 
   componentDidMount: function componentDidMount() {
     $(document).on('keydown', this.handleKeyDown);
     $(document).on('keyup', this.handleKeyUp);
+
+    requestAnimationFrame(this.animate);
   },
 
   componentWillUnmount: function componentWillUnmount() {
@@ -82335,6 +82333,11 @@ var Keyboard = React.createClass({
     );
   },
 
+  animate: function animate() {
+    for (prop in this.state.keysDown) {}
+    requestAnimationFrame(this.animate);
+  },
+
   handleKeyDown: function handleKeyDown(ev) {
     var key = this.keyCodeToChar(ev.keyCode);
     var recording = this.props.recording;
@@ -82391,7 +82394,7 @@ var Keyboard = React.createClass({
       _recording.push(chunk);
 
       _actionsMusic_actions2['default'].updateNotes(notesPlaying);
-      _actionsMusic_actions2['default'].updateRecording({ chunk: chunk, recording: _recording, recordingIndices: recordingIndices });
+      _actionsMusic_actions2['default'].updateRecording({ recording: _recording, recordingIndices: recordingIndices });
 
       this.setState({ ctx: ctx, oscillators: oscillators });
     }
@@ -82415,11 +82418,10 @@ var Keyboard = React.createClass({
       var recordingIndices = this.props.recordingIndices;
       var recording = this.props.recording;
       var idx = this.props.recordingIndices[key];
-      var chunk = recording[idx];
-      chunk.endTime = Number(new Date());
+      recording[idx].endTime = Number(new Date());
       delete recordingIndices[key];
 
-      _actionsMusic_actions2['default'].updateRecording({ chunk: chunk, recording: recording, recordingIndices: recordingIndices });
+      _actionsMusic_actions2['default'].updateRecording({ recording: recording, recordingIndices: recordingIndices });
       _actionsMusic_actions2['default'].updateNotes(notesPlaying);
 
       this.setState({ oscillators: oscillators });
@@ -82624,7 +82626,9 @@ var MusicCtrl = React.createClass({
           'div',
           { className: 'main' },
           React.createElement(_track_manager2['default'], { tracks: this.state.tracks,
-            trackStates: this.state.trackStates })
+            trackStates: this.state.trackStates,
+            scratchTrack: this.state.scratchTrack,
+            scratchTrackState: this.state.scratchTrackState })
         )
       ),
       React.createElement(
@@ -83190,10 +83194,6 @@ var Track = React.createClass({
     var trackNumber = this.props.trackNumber;
 
     switch (name) {
-      case 'Record':
-        _actionsMusic_actions2['default'].recordTrack(trackNumber);
-        break;
-
       case 'Play':
         _actionsMusic_actions2['default'].playTrack(trackNumber);
         break;
@@ -83338,7 +83338,10 @@ var TrackManager = React.createClass({
     return React.createElement(
       'ul',
       { className: 'track-list' },
-      trackViews
+      trackViews,
+      React.createElement(_track2['default'], { key: 'scratch',
+        data: this.props.scratchTrack,
+        trackState: this.props.scratchTrackState })
     );
   }
 });
@@ -83371,9 +83374,6 @@ var TrackToolList = React.createClass({
   getDefaultProps: function getDefaultProps() {
     return {
       tools: [{
-        name: 'Record',
-        imgUrl: '/img/icons/glyphicons-170-record.png'
-      }, {
         name: 'Play',
         imgUrl: '/img/icons/glyphicons-174-play.png'
       }, {
@@ -83866,39 +83866,29 @@ var MusicStore = (function () {
 
     this.trackCount = 5;
     this.trackStates = [];
-    this.trackIndices = [];
 
+    var defaultTrackState = {
+      isPlaying: false,
+      isPaused: false,
+      isStopped: true,
+      activeTool: 'Stop',
+      isSelectingTrack: false,
+      isTrackSelected: false,
+      selectedNote: null,
+      selectionStart: null,
+      selectionEnd: null,
+      startBound: null,
+      endBound: null,
+      marker: 0
+    };
     var lastIdx = this.trackCount - 1;
     for (var i = 0; i < this.trackCount; i++) {
-      var isRecording = false;
-      var isStopped = true;
-      var activeTool = 'Stop';
-
-      if (i === lastIdx) {
-        isRecording = true;
-        isStopped = false;
-        activeTool = 'Record';
-      }
-
-      this.trackStates.push({
-        isRecording: isRecording,
-        isPlaying: false,
-        isPaused: false,
-        isStopped: isStopped,
-        activeTool: activeTool,
-        isSelectingTrack: false,
-        isTrackSelected: false,
-        selectedNote: null,
-        selectionStart: null,
-        selectionEnd: null,
-        startBound: null,
-        endBound: null,
-        marker: 0
-      });
-
+      this.trackStates.push(defaultTrackState);
       this.tracks.push([]);
-      this.trackIndices.push({});
     }
+
+    this.scratchTrack = [];
+    this.scratchTrackState = defaultTrackState;
 
     this.isMouseDown = false;
 
@@ -83913,7 +83903,6 @@ var MusicStore = (function () {
       newInstrument: _actionsMusic_actions2['default'].NEW_INSTRUMENT,
       updateInstrument: _actionsMusic_actions2['default'].UPDATE_INSTRUMENT,
       closeEditInstrument: _actionsMusic_actions2['default'].CLOSE_EDIT_INSTRUMENT,
-      recordTrack: _actionsMusic_actions2['default'].RECORD_TRACK,
       playTrack: _actionsMusic_actions2['default'].PLAY_TRACK,
       pauseTrack: _actionsMusic_actions2['default'].PAUSE_TRACK,
       setIsMouseDown: _actionsMusic_actions2['default'].SET_IS_MOUSE_DOWN,
@@ -83956,18 +83945,6 @@ var MusicStore = (function () {
       this.isEditingInstrument = false;
     }
   }, {
-    key: 'recordTrack',
-    value: function recordTrack(trackNumber) {
-      var trackState = this.trackStates[trackNumber];
-      trackState.isRecording = true;
-      trackState.isPlaying = false;
-      trackState.isPaused = false;
-      trackState.isStopped = false;
-      trackState.activeTool = 'Record';
-
-      this.trackStates[trackNumber] = trackState;
-    }
-  }, {
     key: 'playTrack',
     value: function playTrack(trackNumber) {
       var trackState = this.trackStates[trackNumber];
@@ -84005,34 +83982,12 @@ var MusicStore = (function () {
   }, {
     key: 'updateRecording',
     value: function updateRecording(data) {
-      var chunk = data.chunk;
       var recording = data.recording;
       var recordingIndices = data.recordingIndices;
 
       this.recording = recording;
       this.recordingIndices = recordingIndices;
-
-      for (var i = 0; i < this.tracks.length; i++) {
-        var track = this.tracks[i];
-        var trackState = this.trackStates[i];
-
-        if (trackState.isRecording) {
-          var indices = this.trackIndices[i];
-          var idx = indices[chunk.midi];
-
-          if (idx) {
-            track[idx] = chunk;
-            if (chunk.endTime) {
-              delete track[idx];
-            }
-          } else {
-            track.push(chunk);
-            idx = track.length - 1;
-            indices[chunk.midi] = idx;
-            this.trackIndices[i] = indices;
-          }
-        }
-      }
+      this.scratchTrack = recording;
     }
   }, {
     key: 'updateNotes',

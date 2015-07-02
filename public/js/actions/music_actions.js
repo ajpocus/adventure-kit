@@ -17,10 +17,6 @@ class MusicActions {
     this.dispatch();
   }
 
-  recordTrack(trackNumber) {
-    this.dispatch(trackNumber);
-  }
-
   playTrack(trackNumber) {
     this.dispatch(trackNumber);
   }
