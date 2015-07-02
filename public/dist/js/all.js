@@ -80734,13 +80734,8 @@ var MusicActions = (function () {
     }
   }, {
     key: 'updateRecording',
-    value: function updateRecording(data) {
-      this.dispatch(data);
-    }
-  }, {
-    key: 'updateNotes',
-    value: function updateNotes(notes) {
-      this.dispatch(notes);
+    value: function updateRecording(recording) {
+      this.dispatch(recording);
     }
   }]);
 
@@ -82237,7 +82232,9 @@ var Keyboard = React.createClass({
     return {
       ctx: new window.AudioContext(),
       oscillators: {},
-      keysDown: {}
+      keysDown: {},
+      notesPlaying: {},
+      recordingIndices: {}
     };
   },
 
@@ -82334,98 +82331,99 @@ var Keyboard = React.createClass({
   },
 
   animate: function animate() {
-    for (prop in this.state.keysDown) {}
+    var keysDown = this.state.keysDown;
+    var notesPlaying = this.state.notesPlaying;
+    var oscillators = this.state.oscillators;
+    var ctx = this.state.ctx;
+
+    var recording = this.props.recording;
+    var recordingIndices = this.state.recordingIndices;
+    var instrument = this.props.instrument;
+
+    for (var key in keysDown) {
+      if (keysDown.hasOwnProperty(key)) {
+        if (keysDown[key]) {
+          if (notesPlaying[key]) {
+            var idx = recordingIndices[key];
+            recording[idx].endTime = Number(new Date());
+          } else {
+            oscillators[key] = [];
+
+            var midi = this.keyToNote(key);
+            if (!midi) {
+              return;
+            }
+
+            midi += this.props.octaveShift * 12;
+            var note = teoria.note.fromMIDI(midi);
+            var freq = note.fq();
+
+            for (var i = 0; i < instrument.components.length; i++) {
+              var wave = instrument.components[i];
+
+              var osc = ctx.createOscillator();
+              osc.frequency.value = freq * Math.pow(2, wave.harmonic);
+              osc.type = wave.type;
+
+              var gainNode = ctx.createGain();
+              gainNode.gain.value = wave.gain * this.props.volume * 2;
+
+              osc.connect(gainNode);
+              gainNode.connect(ctx.destination);
+
+              osc.start();
+              oscillators[key].push(osc);
+            }
+
+            notesPlaying[key] = true;
+
+            var _recording = this.props.recording;
+            var now = Number(new Date());
+            var chunk = {
+              midi: midi,
+              startTime: now
+            };
+
+            _recording.push(chunk);
+            recordingIndices[key] = _recording.length - 1;
+          }
+        } else {
+          if (notesPlaying[key]) {
+            var noteOscillators = oscillators[key];
+            var idx = recordingIndices[key];
+
+            for (var i = 0; i < noteOscillators.length; i++) {
+              var osc = noteOscillators[i];
+              osc.stop();
+            }
+
+            recording[idx].endTime = Number(new Date());
+            delete oscillators[key];
+            delete notesPlaying[key];
+            delete recordingIndices[key];
+          }
+        }
+
+        this.setState({ ctx: ctx, oscillators: oscillators, notesPlaying: notesPlaying, recordingIndices: recordingIndices });
+        _actionsMusic_actions2['default'].updateRecording(recording);
+      }
+    }
+
     requestAnimationFrame(this.animate);
   },
 
   handleKeyDown: function handleKeyDown(ev) {
     var key = this.keyCodeToChar(ev.keyCode);
-    var recording = this.props.recording;
-    var recordingIndices = this.props.recordingIndices;
-
-    if (this.props.notesPlaying[key]) {
-      var idx = recordingIndices[key];
-      recording[idx].endTime = Number(new Date());
-
-      _actionsMusic_actions2['default'].updateRecording({ recording: recording, recordingIndices: recordingIndices });
-    } else {
-      var ctx = this.state.ctx;
-      var oscillators = this.state.oscillators;
-      var notesPlaying = this.props.notesPlaying;
-      var instrument = this.props.instrument;
-      oscillators[key] = [];
-
-      var midi = this.keyToNote(key);
-      if (!midi) {
-        return;
-      }
-
-      midi += this.props.octaveShift * 12;
-      var note = teoria.note.fromMIDI(midi);
-      var freq = note.fq();
-
-      for (var i = 0; i < instrument.components.length; i++) {
-        var wave = instrument.components[i];
-
-        var osc = ctx.createOscillator();
-        osc.frequency.value = freq * Math.pow(2, wave.harmonic);
-        osc.type = wave.type;
-
-        var gainNode = ctx.createGain();
-        gainNode.gain.value = wave.gain * this.props.volume * 2;
-
-        osc.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        osc.start();
-        oscillators[key].push(osc);
-      }
-
-      notesPlaying[key] = true;
-
-      var _recording = this.props.recording;
-      var now = Number(new Date());
-      var chunk = {
-        midi: midi,
-        startTime: now
-      };
-
-      recordingIndices[key] = _recording.length - 1;
-      _recording.push(chunk);
-
-      _actionsMusic_actions2['default'].updateNotes(notesPlaying);
-      _actionsMusic_actions2['default'].updateRecording({ recording: _recording, recordingIndices: recordingIndices });
-
-      this.setState({ ctx: ctx, oscillators: oscillators });
-    }
+    var keysDown = this.state.keysDown;
+    keysDown[key] = true;
+    this.setState({ keysDown: keysDown });
   },
 
   handleKeyUp: function handleKeyUp(ev) {
     var key = this.keyCodeToChar(ev.keyCode);
-    var notesPlaying = this.props.notesPlaying;
-
-    if (notesPlaying[key]) {
-      var oscillators = this.state.oscillators;
-
-      for (var i = 0; i < oscillators[key].length; i++) {
-        var osc = oscillators[key][i];
-        osc.stop();
-      }
-
-      delete oscillators[key];
-      delete notesPlaying[key];
-
-      var recordingIndices = this.props.recordingIndices;
-      var recording = this.props.recording;
-      var idx = this.props.recordingIndices[key];
-      recording[idx].endTime = Number(new Date());
-      delete recordingIndices[key];
-
-      _actionsMusic_actions2['default'].updateRecording({ recording: recording, recordingIndices: recordingIndices });
-      _actionsMusic_actions2['default'].updateNotes(notesPlaying);
-
-      this.setState({ oscillators: oscillators });
-    }
+    var keysDown = this.state.keysDown;
+    keysDown[key] = false;
+    this.setState({ keysDown: keysDown });
   }
 });
 
@@ -82640,8 +82638,6 @@ var MusicCtrl = React.createClass({
           React.createElement(_volume_control2['default'], { volume: this.state.volume }),
           React.createElement(_keyboard2['default'], { instrument: instrument,
             volume: this.state.volume,
-            notesPlaying: this.state.notesPlaying,
-            oscillators: this.state.oscillators,
             octaveShift: this.state.octaveShift,
             recording: this.state.recording,
             recordingIndices: this.state.recordingIndices,
@@ -83907,8 +83903,7 @@ var MusicStore = (function () {
       pauseTrack: _actionsMusic_actions2['default'].PAUSE_TRACK,
       setIsMouseDown: _actionsMusic_actions2['default'].SET_IS_MOUSE_DOWN,
       setVolume: _actionsMusic_actions2['default'].SET_VOLUME,
-      updateRecording: _actionsMusic_actions2['default'].UPDATE_RECORDING,
-      updateNotes: _actionsMusic_actions2['default'].UPDATE_NOTES
+      updateRecording: _actionsMusic_actions2['default'].UPDATE_RECORDING
     });
   }
 
@@ -83981,18 +83976,9 @@ var MusicStore = (function () {
     }
   }, {
     key: 'updateRecording',
-    value: function updateRecording(data) {
-      var recording = data.recording;
-      var recordingIndices = data.recordingIndices;
-
+    value: function updateRecording(recording) {
       this.recording = recording;
-      this.recordingIndices = recordingIndices;
       this.scratchTrack = recording;
-    }
-  }, {
-    key: 'updateNotes',
-    value: function updateNotes(notes) {
-      this.notesPlaying = notes;
     }
   }]);
 

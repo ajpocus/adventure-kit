@@ -33,12 +33,8 @@ class MusicActions {
     this.dispatch(volume);
   }
 
-  updateRecording(data) {
-    this.dispatch(data);
-  }
-
-  updateNotes(notes) {
-    this.dispatch(notes);
+  updateRecording(recording) {
+    this.dispatch(recording);
   }
 }
 

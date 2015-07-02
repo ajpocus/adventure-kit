@@ -79,8 +79,7 @@ class MusicStore {
       pauseTrack: MusicActions.PAUSE_TRACK,
       setIsMouseDown: MusicActions.SET_IS_MOUSE_DOWN,
       setVolume: MusicActions.SET_VOLUME,
-      updateRecording: MusicActions.UPDATE_RECORDING,
-      updateNotes: MusicActions.UPDATE_NOTES
+      updateRecording: MusicActions.UPDATE_RECORDING
     });
   }
 
@@ -145,15 +144,9 @@ class MusicStore {
     this.volume = volume;
   }
 
-  updateRecording(data) {
-    let { recording, recordingIndices } = data;
+  updateRecording(recording) {
     this.recording = recording;
-    this.recordingIndices = recordingIndices;
     this.scratchTrack = recording;
-  }
-
-  updateNotes(notes) {
-    this.notesPlaying = notes;
   }
 }
 
