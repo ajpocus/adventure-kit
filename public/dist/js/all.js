@@ -83641,11 +83641,11 @@ var DrawStore = (function () {
     this.paletteCopy = this.palettes[this.activePalette].slice();
     this.activeColor = this.paletteCopy[0];
 
-    this.width = 32;
-    this.height = 32;
+    this.width = 16;
+    this.height = 16;
     this.zoom = 0.875;
-    this.totalWidth = 1024;
-    this.totalHeight = 1024;
+    this.totalWidth = 768;
+    this.totalHeight = 768;
     this.actualWidth = this.totalWidth * this.zoom;
     this.actualHeight = this.totalHeight * this.zoom;
     this.tileWidth = this.actualWidth / this.width;
