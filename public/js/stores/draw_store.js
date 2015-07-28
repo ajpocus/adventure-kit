@@ -9,20 +9,22 @@ class DrawStore {
     this.activeTool = 'Pencil'
     this.primaryColor = '#000000';
     this.secondaryColor = '#ffffff';
-    this.palettes = {
-      'Rainbow': [
-        '#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff',
-        '#770099'
-      ]
-    };
-    this.activePalette = 'Rainbow';
-    this.isEditingPalette = false;
-    this.paletteCopy = this.palettes[this.activePalette].slice();
-    this.activeColor = this.paletteCopy[0];
+    this.palette = [
+      '#7c7c7c', '#bcbcbc', '#fcfcfc', '#ffffff', '#0000fc', '#0078f8',
+      '#3cbcfc', '#a4e4fc', '#0000bc', '#0058f8', '#6888fc', '#b8b8f8',
+      '#4428bc', '#6844fc', '#9878f8', '#d8b8f8', '#940084', '#d800cc',
+      '#f878f8', '#f8b8f8', '#a80020', '#e40058', '#f85898', '#f8a4c0',
+      '#a81000', '#f83800', '#f87858', '#f0d0b0', '#881400', '#e45c10',
+      '#fca044', '#fce0a8', '#503000', '#ac7c00', '#f8b800', '#f8d878',
+      '#007800', '#00b800', '#b8f818', '#d8f878', '#006800', '#00a800',
+      '#58d854', '#b8f8b8', '#005800', '#00a844', '#58f898', '#b8f8d8',
+      '#004058', '#008888', '#00e8d8', '#00fcfc', '#000000', '#080808',
+      '#7c7c7c', '#d8d8d8'
+    ];
 
     this.width = 16;
     this.height = 16;
-    this.zoom = 0.875;
+    this.zoom = 1.0;
     this.totalWidth = 768;
     this.totalHeight = 768;
     this.actualWidth = this.totalWidth * this.zoom;
@@ -30,7 +32,6 @@ class DrawStore {
     this.tileWidth = this.actualWidth / this.width;
     this.tileHeight = this.actualHeight / this.height;
     this.isMouseDown = false;
-    this.title = 'Untitled';
 
     this.bindListeners({
       setActiveTool: DrawActions.SET_ACTIVE_TOOL,

@@ -33,10 +33,7 @@ let DrawCtrl = React.createClass({
       <div id="draw">
         <div className="toolbar">
           <DrawToolList activeTool={this.state.activeTool}/>
-          <PaletteManager palettes={this.state.palettes}
-                          activePalette={this.state.activePalette}
-                          isEditingPalette={this.state.isEditingPalette}
-                          paletteCopy={this.state.paletteCopy}/>
+          <PaletteManager palette={this.state.palette}/>
           <ColorPicker primaryColor={this.state.primaryColor}
                        secondaryColor={this.state.secondaryColor}/>
         </div>
@@ -54,7 +51,6 @@ let DrawCtrl = React.createClass({
                      tileWidth={this.state.tileWidth}
                      tileHeight={this.state.tileHeight}
                      isMouseDown={this.state.isMouseDown}
-                     title={this.state.title}
                      grid={this.state.grid}/>
       </div>
     );

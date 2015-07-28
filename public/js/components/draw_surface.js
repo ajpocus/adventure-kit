@@ -71,14 +71,6 @@ let DrawSurface = React.createClass({
     return (
       <div className="render-container">
         <div className="render-column">
-          <div className="title-container">
-            <input name="title"
-                   className="title"
-                   ref="title"
-                   value={this.props.title}
-                   onChange={this.onTitleChange}/>
-          </div>
-
           <div id="render">
             <div className="background">
               <div className="surface"

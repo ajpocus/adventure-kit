@@ -81019,10 +81019,7 @@ var DrawCtrl = React.createClass({
         'div',
         { className: 'toolbar' },
         React.createElement(_draw_tool_list2['default'], { activeTool: this.state.activeTool }),
-        React.createElement(_palette_manager2['default'], { palettes: this.state.palettes,
-          activePalette: this.state.activePalette,
-          isEditingPalette: this.state.isEditingPalette,
-          paletteCopy: this.state.paletteCopy }),
+        React.createElement(_palette_manager2['default'], { palette: this.state.palette }),
         React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
           secondaryColor: this.state.secondaryColor })
       ),
@@ -81039,7 +81036,6 @@ var DrawCtrl = React.createClass({
         tileWidth: this.state.tileWidth,
         tileHeight: this.state.tileHeight,
         isMouseDown: this.state.isMouseDown,
-        title: this.state.title,
         grid: this.state.grid })
     );
   }
@@ -81146,15 +81142,6 @@ var DrawSurface = React.createClass({
       React.createElement(
         'div',
         { className: 'render-column' },
-        React.createElement(
-          'div',
-          { className: 'title-container' },
-          React.createElement('input', { name: 'title',
-            className: 'title',
-            ref: 'title',
-            value: this.props.title,
-            onChange: this.onTitleChange })
-        ),
         React.createElement(
           'div',
           { id: 'render' },
@@ -82678,38 +82665,11 @@ var $ = require('jquery');
 var PaletteManager = React.createClass({
   displayName: 'PaletteManager',
 
-  getInitialState: function getInitialState() {
-    return {
-      palettes: {
-        'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#770099']
-      },
-      activePalette: 'Rainbow',
-      isEditingPalette: false
-    };
-  },
-
   render: function render() {
-    var paletteOptions = [];
-    for (var paletteName in this.props.palettes) {
-      if (this.props.palettes.hasOwnProperty(paletteName)) {
-        paletteOptions.push(React.createElement(
-          'option',
-          { value: paletteName, key: paletteName },
-          paletteName
-        ));
-      }
-    }
-
-    var activePalette = this.props.palettes[this.props.activePalette];
     var paletteColors = [];
-    for (var i = 0; i < activePalette.length; i++) {
-      var color = activePalette[i];
-
-      // When transparent, use a checkerboard pattern.
+    for (var i = 0; i < this.props.palette.length; i++) {
+      var color = this.props.palette[i];
       var liStyle = { background: color };
-      if (color === 'rgba(0, 0, 0, 0)') {
-        liStyle.background = _mixinsTransparency2['default'].background;
-      }
 
       paletteColors.push(React.createElement('li', { className: 'color', style: liStyle, key: i,
         onClick: this.setPrimaryColor.bind(this, color) }));
@@ -82724,59 +82684,15 @@ var PaletteManager = React.createClass({
         'Palette'
       ),
       React.createElement(
-        'button',
-        { className: 'new-palette', onClick: this.createPalette },
-        React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-433-plus.png' })
-      ),
-      React.createElement(
-        'select',
-        { name: 'activePalette', className: 'palette-chooser',
-          value: this.props.activePalette },
-        paletteOptions
-      ),
-      React.createElement(
-        'button',
-        { className: 'edit-palette btn', onClick: this.editPalette },
-        React.createElement('img', { className: 'icon', src: '/img/icons/glyphicons-31-pencil.png' })
-      ),
-      React.createElement(
         'ul',
         { className: 'palette' },
         paletteColors
-      ),
-      React.createElement(
-        _modal2['default'],
-        { isOpen: this.props.isEditingPalette },
-        React.createElement(_edit_palette2['default'], { paletteCopy: this.props.paletteCopy,
-          name: this.props.activePalette,
-          activeColor: this.props.activeColor })
       )
     );
   },
 
   setPrimaryColor: function setPrimaryColor(color) {
     _actionsDraw_actions2['default'].setPrimaryColor(color);
-  },
-
-  createPalette: function createPalette() {
-    var paletteName = prompt('New palette name');
-    if (paletteName.length === 0) {
-      return;
-    }
-
-    if (this.props.palettes[paletteName]) {
-      alert('That palette name is already taken.');
-    }
-
-    _actionsDraw_actions2['default'].createPalette(paletteName);
-  },
-
-  editPalette: function editPalette() {
-    _actionsDraw_actions2['default'].editPalette();
-  },
-
-  closeEditPalette: function closeEditPalette() {
-    _actionsDraw_actions2['default'].closeEditPalette();
   }
 });
 
@@ -83633,17 +83549,11 @@ var DrawStore = (function () {
     this.activeTool = 'Pencil';
     this.primaryColor = '#000000';
     this.secondaryColor = '#ffffff';
-    this.palettes = {
-      'Rainbow': ['#ff0000', '#ffaa00', '#ffff00', '#00ff00', '#0000ff', '#7900ff', '#770099']
-    };
-    this.activePalette = 'Rainbow';
-    this.isEditingPalette = false;
-    this.paletteCopy = this.palettes[this.activePalette].slice();
-    this.activeColor = this.paletteCopy[0];
+    this.palette = ['#7c7c7c', '#bcbcbc', '#fcfcfc', '#ffffff', '#0000fc', '#0078f8', '#3cbcfc', '#a4e4fc', '#0000bc', '#0058f8', '#6888fc', '#b8b8f8', '#4428bc', '#6844fc', '#9878f8', '#d8b8f8', '#940084', '#d800cc', '#f878f8', '#f8b8f8', '#a80020', '#e40058', '#f85898', '#f8a4c0', '#a81000', '#f83800', '#f87858', '#f0d0b0', '#881400', '#e45c10', '#fca044', '#fce0a8', '#503000', '#ac7c00', '#f8b800', '#f8d878', '#007800', '#00b800', '#b8f818', '#d8f878', '#006800', '#00a800', '#58d854', '#b8f8b8', '#005800', '#00a844', '#58f898', '#b8f8d8', '#004058', '#008888', '#00e8d8', '#00fcfc', '#000000', '#080808', '#7c7c7c', '#d8d8d8'];
 
     this.width = 16;
     this.height = 16;
-    this.zoom = 0.875;
+    this.zoom = 1;
     this.totalWidth = 768;
     this.totalHeight = 768;
     this.actualWidth = this.totalWidth * this.zoom;
@@ -83651,7 +83561,6 @@ var DrawStore = (function () {
     this.tileWidth = this.actualWidth / this.width;
     this.tileHeight = this.actualHeight / this.height;
     this.isMouseDown = false;
-    this.title = 'Untitled';
 
     this.bindListeners({
       setActiveTool: _actionsDraw_actions2['default'].SET_ACTIVE_TOOL,

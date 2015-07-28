@@ -204,7 +204,7 @@ img.pixel {
 }
 
 #draw .palette {
-  width: 48px;
+  width: 96px;
   display: flex;
   flex-wrap: wrap;
 }
