@@ -80833,7 +80833,7 @@ $(function () {
   });
 });
 
-},{"./components/draw_ctrl":507,"./components/footer":513,"./components/header":514,"./components/map":518,"./components/music_ctrl":520,"./components/play":522,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],505:[function(require,module,exports){
+},{"./components/draw_ctrl":507,"./components/footer":512,"./components/header":513,"./components/map":517,"./components/music_ctrl":519,"./components/play":521,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],505:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81044,7 +81044,7 @@ var DrawCtrl = React.createClass({
 exports['default'] = DrawCtrl;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":532,"./color_picker":505,"./draw_surface":509,"./draw_tool_list":510,"./palette_manager":521,"react":484}],508:[function(require,module,exports){
+},{"../stores/draw_store":530,"./color_picker":505,"./draw_surface":509,"./draw_tool_list":510,"./palette_manager":520,"react":484}],508:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81130,7 +81130,7 @@ var ManageToolList = React.createClass({
 exports['default'] = ManageToolList;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"./tool_list":524,"react":484}],509:[function(require,module,exports){
+},{"../actions/draw_actions":501,"./tool_list":522,"react":484}],509:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81146,10 +81146,6 @@ var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
 var _draw_manager = require('./draw_manager');
 
 var _draw_manager2 = _interopRequireDefault(_draw_manager);
-
-var _resize_prompt = require('./resize_prompt');
-
-var _resize_prompt2 = _interopRequireDefault(_resize_prompt);
 
 var _modelsPixel = require('../models/pixel');
 
@@ -81358,6 +81354,8 @@ var DrawSurface = React.createClass({
   },
 
   draw: function draw(ev) {
+    ev.preventDefault();
+
     var _getTileCoordinates2 = this.getTileCoordinates(ev);
 
     var x = _getTileCoordinates2.x;
@@ -81376,7 +81374,7 @@ var DrawSurface = React.createClass({
     var color = this.props.primaryColor;
     var button = ev.which || ev.button;
     if (button === 2) {
-      color = this.props.secondaryColor;
+      color = 'rgba(0, 0, 0, 0)';
     }
 
     switch (this.props.activeTool) {
@@ -81476,7 +81474,7 @@ var DrawSurface = React.createClass({
   },
 
   onResizeClick: function onResizeClick() {
-    React.render(React.createElement(_resize_prompt2['default'], { width: this.props.width,
+    React.render(React.createElement(ResizePrompt, { width: this.props.width,
       height: this.props.height }), document.getElementById('modal-container'));
   },
 
@@ -81552,7 +81550,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"../models/pixel":531,"./draw_manager":508,"./resize_prompt":523,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],510:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":528,"../models/pixel":529,"./draw_manager":508,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],510:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81607,7 +81605,7 @@ var DrawToolList = React.createClass({
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"./tool_list":524,"react":484}],511:[function(require,module,exports){
+},{"../actions/draw_actions":501,"./tool_list":522,"react":484}],511:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81774,171 +81772,7 @@ var EditInstrument = React.createClass({
 exports['default'] = EditInstrument;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"./instrument_component":515,"react":484}],512:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _actionsDraw_actions = require('../actions/draw_actions');
-
-var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
-
-var _mixinsTransparency = require('../mixins/transparency');
-
-var _mixinsTransparency2 = _interopRequireDefault(_mixinsTransparency);
-
-var React = require('react');
-var $ = require('jquery');
-
-var EditPalette = React.createClass({
-  displayName: 'EditPalette',
-
-  componentDidMount: function componentDidMount() {
-    this.refs.paletteColor.getDOMNode().value = this.props.activePaletteColor;
-  },
-
-  componentDidUpdate: function componentDidUpdate() {
-    this.refs.paletteColor.getDOMNode().value = this.props.activePaletteColor;
-  },
-
-  render: function render() {
-    var colorList = [];
-    for (var i = 0; i < this.props.paletteCopy.length; i++) {
-      var color = this.props.paletteCopy[i];
-      var swatchStyle = { background: color };
-      if (color === 'rgba(0, 0, 0, 0)') {
-        swatchStyle.background = _mixinsTransparency2['default'].background;
-      }
-
-      colorList.push(React.createElement(
-        'li',
-        { className: 'color',
-          key: i,
-          onClick: this.setActiveColor.bind(this, color) },
-        React.createElement(
-          'span',
-          { className: 'remove',
-            onClick: this.removeColor.bind(this, color) },
-          'x'
-        ),
-        React.createElement('div', { className: 'swatch', style: swatchStyle })
-      ));
-    }
-
-    colorList.push(React.createElement(
-      'li',
-      { className: 'new color', key: 'new', onClick: this.addColor },
-      React.createElement(
-        'div',
-        { className: 'swatch' },
-        '+'
-      )
-    ));
-
-    return React.createElement(
-      'div',
-      { className: 'edit-palette modal' },
-      React.createElement(
-        'div',
-        { className: 'modal-background' },
-        React.createElement(
-          'div',
-          { className: 'modal-content' },
-          React.createElement(
-            'div',
-            { className: 'header' },
-            React.createElement(
-              'h3',
-              null,
-              'Edit Palette'
-            ),
-            React.createElement(
-              'span',
-              { className: 'palette-name' },
-              this.props.name
-            ),
-            React.createElement(
-              'span',
-              { className: 'close-modal', onClick: this.closeEdit },
-              'x'
-            )
-          ),
-          React.createElement(
-            'div',
-            { className: 'content' },
-            React.createElement(
-              'ul',
-              { className: 'colors' },
-              colorList
-            ),
-            React.createElement(
-              'div',
-              { className: 'sidebar' },
-              React.createElement('input', { type: 'color',
-                ref: 'paletteColor',
-                id: 'palette-color',
-                onChange: this.updateColor }),
-              React.createElement(
-                'button',
-                { className: 'add btn' },
-                'Add color'
-              )
-            )
-          ),
-          React.createElement(
-            'div',
-            { className: 'buttons' },
-            React.createElement(
-              'button',
-              { className: 'cancel btn', onClick: this.closeEdit },
-              'Cancel'
-            ),
-            React.createElement(
-              'button',
-              { className: 'save btn', onClick: this.savePalette },
-              'Save'
-            )
-          )
-        )
-      )
-    );
-  },
-
-  setActiveColor: function setActiveColor(color) {
-    _actionsDraw_actions2['default'].setActiveColor(color);
-  },
-
-  removeColor: function removeColor(color) {
-    _actionsDraw_actions2['default'].removeColor(color);
-  },
-
-  addColor: function addColor() {
-    _actionsDraw_actions2['default'].addColor();
-  },
-
-  updateColor: function updateColor(ev) {
-    var color = ev.target.value;
-    _actionsDraw_actions2['default'].updateColor(color);
-  },
-
-  savePalette: function savePalette() {
-    _actionsDraw_actions2['default'].updatePalette();
-    this.closeEdit();
-  },
-
-  closeEdit: function closeEdit() {
-    _actionsDraw_actions2['default'].closeEditPalette();
-  }
-});
-
-exports['default'] = EditPalette;
-module.exports = exports['default'];
-
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"jquery":161,"react":484}],513:[function(require,module,exports){
+},{"../actions/music_actions":502,"./instrument_component":514,"react":484}],512:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -81980,7 +81814,7 @@ var Footer = React.createClass({
 exports["default"] = Footer;
 module.exports = exports["default"];
 
-},{"react":484}],514:[function(require,module,exports){
+},{"react":484}],513:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82069,7 +81903,7 @@ var Header = React.createClass({
 exports['default'] = Header;
 module.exports = exports['default'];
 
-},{"react":484,"react-router":315}],515:[function(require,module,exports){
+},{"react":484,"react-router":315}],514:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82189,7 +82023,7 @@ var InstrumentComponent = React.createClass({
 exports['default'] = InstrumentComponent;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"react":484}],516:[function(require,module,exports){
+},{"../actions/music_actions":502,"react":484}],515:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82280,7 +82114,7 @@ var InstrumentList = React.createClass({
 exports['default'] = InstrumentList;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"./edit_instrument":511,"./modal":519,"react":484}],517:[function(require,module,exports){
+},{"../actions/music_actions":502,"./edit_instrument":511,"./modal":518,"react":484}],516:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82515,7 +82349,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"../mixins/key_map_mixin":529,"jquery":161,"react":484,"teoria":485}],518:[function(require,module,exports){
+},{"../actions/music_actions":502,"../mixins/key_map_mixin":527,"jquery":161,"react":484,"teoria":485}],517:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82542,7 +82376,7 @@ var MapController = React.createClass({
 exports["default"] = MapController;
 module.exports = exports["default"];
 
-},{"react":484}],519:[function(require,module,exports){
+},{"react":484}],518:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82574,7 +82408,7 @@ var Modal = React.createClass({
 exports['default'] = Modal;
 module.exports = exports['default'];
 
-},{"react":484}],520:[function(require,module,exports){
+},{"react":484}],519:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82671,7 +82505,7 @@ var MusicCtrl = React.createClass({
 exports['default'] = MusicCtrl;
 module.exports = exports['default'];
 
-},{"../stores/music_store":533,"./instrument_list":516,"./keyboard":517,"./track_manager":526,"./volume_control":528,"react":484}],521:[function(require,module,exports){
+},{"../stores/music_store":531,"./instrument_list":515,"./keyboard":516,"./track_manager":524,"./volume_control":526,"react":484}],520:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82683,10 +82517,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 var _actionsDraw_actions = require('../actions/draw_actions');
 
 var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
-
-var _edit_palette = require('./edit_palette');
-
-var _edit_palette2 = _interopRequireDefault(_edit_palette);
 
 var _mixinsTransparency = require('../mixins/transparency');
 
@@ -82717,11 +82547,6 @@ var PaletteManager = React.createClass({
       'div',
       { className: 'palette-manager' },
       React.createElement(
-        'h2',
-        null,
-        'Palette'
-      ),
-      React.createElement(
         'ul',
         { className: 'palette' },
         paletteColors
@@ -82737,7 +82562,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"./edit_palette":512,"./modal":519,"jquery":161,"react":484,"tinycolor2":500}],522:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":528,"./modal":518,"jquery":161,"react":484,"tinycolor2":500}],521:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82756,116 +82581,7 @@ var Play = React.createClass({
 exports["default"] = Play;
 module.exports = exports["default"];
 
-},{"react":484}],523:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var React = require("react");
-
-var ResizePrompt = React.createClass({
-  displayName: "ResizePrompt",
-
-  getInitialState: function getInitialState() {
-    return {
-      width: this.props.width,
-      height: this.props.height
-    };
-  },
-
-  render: function render() {
-    return React.createElement(
-      "div",
-      { className: "resize-prompt modal" },
-      React.createElement(
-        "div",
-        { className: "modal-background" },
-        React.createElement(
-          "div",
-          { className: "modal-content" },
-          React.createElement(
-            "div",
-            { className: "header" },
-            React.createElement(
-              "h2",
-              null,
-              "Resize Canvas"
-            )
-          ),
-          React.createElement(
-            "div",
-            { className: "content" },
-            React.createElement(
-              "span",
-              { className: "close", onClick: this.closePrompt },
-              "x"
-            ),
-            React.createElement(
-              "div",
-              { className: "field" },
-              React.createElement(
-                "label",
-                { htmlFor: "width" },
-                "Width: "
-              ),
-              React.createElement("input", { type: "number",
-                value: this.state.width,
-                onChange: this.setWidth })
-            ),
-            React.createElement(
-              "div",
-              { className: "field" },
-              React.createElement(
-                "label",
-                { htmlFor: "height" },
-                "Height: "
-              ),
-              React.createElement("input", { type: "number",
-                value: this.state.height,
-                onChange: this.setHeight })
-            ),
-            React.createElement(
-              "button",
-              { type: "button", onClick: this.closePrompt },
-              "Cancel"
-            ),
-            React.createElement(
-              "button",
-              { type: "submit", onClick: this.handleResize },
-              "Resize"
-            )
-          )
-        )
-      )
-    );
-  },
-
-  setWidth: function setWidth(ev) {
-    this.setState({ width: ev.target.value });
-  },
-
-  setHeight: function setHeight(ev) {
-    this.setState({ height: ev.target.value });
-  },
-
-  handleResize: function handleResize() {
-    var width = this.state.width;
-    var height = this.state.height;
-    DrawActions.resizeSurface({ width: width, height: height });
-    this.closePrompt();
-  },
-
-  closePrompt: function closePrompt() {
-    var container = document.getElementById("modal-container");
-    React.unmountComponentAtNode(container);
-  }
-});
-
-exports["default"] = ResizePrompt;
-module.exports = exports["default"];
-
-},{"react":484}],524:[function(require,module,exports){
+},{"react":484}],522:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82926,7 +82642,7 @@ var ToolList = React.createClass({
 exports["default"] = ToolList;
 module.exports = exports["default"];
 
-},{"react":484}],525:[function(require,module,exports){
+},{"react":484}],523:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83254,7 +82970,7 @@ module.exports = exports['default'];
 
 // TODO: do something with selected option
 
-},{"../actions/music_actions":502,"./context_menu":506,"./track_tool_list":527,"react":484,"tinycolor2":500}],526:[function(require,module,exports){
+},{"../actions/music_actions":502,"./context_menu":506,"./track_tool_list":525,"react":484,"tinycolor2":500}],524:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83308,7 +83024,7 @@ var TrackManager = React.createClass({
 exports['default'] = TrackManager;
 module.exports = exports['default'];
 
-},{"./track":525,"react":484}],527:[function(require,module,exports){
+},{"./track":523,"react":484}],525:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83359,7 +83075,7 @@ var TrackToolList = React.createClass({
 exports['default'] = TrackToolList;
 module.exports = exports['default'];
 
-},{"./tool_list":524,"react":484}],528:[function(require,module,exports){
+},{"./tool_list":522,"react":484}],526:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83412,7 +83128,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":484}],529:[function(require,module,exports){
+},{"react":484}],527:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83519,7 +83235,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],530:[function(require,module,exports){
+},{}],528:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83532,7 +83248,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],531:[function(require,module,exports){
+},{}],529:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83553,7 +83269,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],532:[function(require,module,exports){
+},{}],530:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83764,7 +83480,7 @@ var DrawStore = (function () {
 exports['default'] = _alt2['default'].createStore(DrawStore, 'DrawStore');
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../alt":503,"../models/pixel":531,"pixi.js":266}],533:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../alt":503,"../models/pixel":529,"pixi.js":266}],531:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

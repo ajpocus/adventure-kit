@@ -3,7 +3,6 @@ let tinycolor = require('tinycolor2');
 let $ = require('jquery');
 
 import DrawActions from '../actions/draw_actions';
-import EditPalette from './edit_palette';
 import Transparency from '../mixins/transparency';
 import Modal from './modal';
 
@@ -22,8 +21,6 @@ let PaletteManager = React.createClass({
 
     return (
       <div className="palette-manager">
-        <h2>Palette</h2>
-
         <ul className="palette">
           {paletteColors}
         </ul>

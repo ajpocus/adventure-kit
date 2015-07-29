@@ -6,7 +6,6 @@ let PIXI = require('pixi.js');
 
 import DrawActions from '../actions/draw_actions';
 import DrawManager from './draw_manager';
-import ResizePrompt from './resize_prompt';
 import Pixel from '../models/pixel';
 import Transparency from '../mixins/transparency';
 
@@ -175,6 +174,7 @@ let DrawSurface = React.createClass({
   },
 
   draw: function (ev) {
+    ev.preventDefault();
     let {x, y} = this.getTileCoordinates(ev);
     let grid = this.props.grid;
     let drawGfx = this.state.drawGfx;
@@ -183,7 +183,7 @@ let DrawSurface = React.createClass({
     let color = this.props.primaryColor;
     let button = ev.which || ev.button;
     if (button === 2) {
-      color = this.props.secondaryColor;
+      color = 'rgba(0, 0, 0, 0)';
     }
 
     switch (this.props.activeTool) {
