@@ -21,7 +21,7 @@ let ToolList = React.createClass({
           <button className={className}
                   onClick={this.setActiveTool.bind(this, tool.name)}>
             <div className="img-container">
-              <img className="icon" src={tool.imgUrl}/>
+              <img className="pixel icon" src={tool.imgUrl}/>
             </div>
           </button>
         </li>

@@ -81492,16 +81492,13 @@ var DrawToolList = React.createClass({
     return {
       tools: [{
         name: 'Pencil',
-        imgUrl: '/img/icons/glyphicons-31-pencil.png'
+        imgUrl: '/img/iconic/pencil.png'
       }, {
         name: 'Bucket',
-        imgUrl: '/img/icons/glyphicons-481-bucket.png'
+        imgUrl: '/img/iconic/droplet.png'
       }, {
-        name: 'Zoom In',
-        imgUrl: '/img/icons/glyphicons-237-zoom-in.png'
-      }, {
-        name: 'Zoom Out',
-        imgUrl: '/img/icons/glyphicons-238-zoom-out.png'
+        name: 'Eyedropper',
+        imgUrl: '/img/iconic/eyedropper.png'
       }]
     };
   },
@@ -82863,7 +82860,7 @@ var ToolList = React.createClass({
           React.createElement(
             "div",
             { className: "img-container" },
-            React.createElement("img", { className: "icon", src: tool.imgUrl })
+            React.createElement("img", { className: "pixel icon", src: tool.imgUrl })
           )
         )
       ));
