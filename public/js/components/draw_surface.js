@@ -5,7 +5,7 @@ let tinycolor = require('tinycolor2');
 let PIXI = require('pixi.js');
 
 import DrawActions from '../actions/draw_actions';
-import ManageToolList from './manage_tool_list';
+import DrawManager from './draw_manager';
 import ResizePrompt from './resize_prompt';
 import Pixel from '../models/pixel';
 import Transparency from '../mixins/transparency';
@@ -88,9 +88,9 @@ let DrawSurface = React.createClass({
         </div>
 
         <div className="manage-surface">
-          <ManageToolList onResizeClick={this.onResizeClick}
-                          onExportClick={this.onExportClick}
-                          onSaveClick={this.onSaveClick}/>
+          <DrawManager onResizeClick={this.onResizeClick}
+                       onExportClick={this.onExportClick}
+                       onSaveClick={this.onSaveClick}/>
         </div>
       </div>
     );

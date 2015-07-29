@@ -126,7 +126,7 @@ class DrawStore {
   }
 
   resizeGrid() {
-    let oldGrid = this.props.grid;
+    let oldGrid = this.grid;
     let newGrid = [];
 
     for (let x = 0; x < this.width; x++) {

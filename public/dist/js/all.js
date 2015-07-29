@@ -80833,7 +80833,7 @@ $(function () {
   });
 });
 
-},{"./components/draw_ctrl":507,"./components/footer":512,"./components/header":513,"./components/map":518,"./components/music_ctrl":520,"./components/play":522,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],505:[function(require,module,exports){
+},{"./components/draw_ctrl":507,"./components/footer":513,"./components/header":514,"./components/map":518,"./components/music_ctrl":520,"./components/play":522,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],505:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81044,7 +81044,7 @@ var DrawCtrl = React.createClass({
 exports['default'] = DrawCtrl;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":532,"./color_picker":505,"./draw_surface":508,"./draw_tool_list":509,"./palette_manager":521,"react":484}],508:[function(require,module,exports){
+},{"../stores/draw_store":532,"./color_picker":505,"./draw_surface":509,"./draw_tool_list":510,"./palette_manager":521,"react":484}],508:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81057,9 +81057,71 @@ var _actionsDraw_actions = require('../actions/draw_actions');
 
 var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
 
-var _manage_tool_list = require('./manage_tool_list');
+var _tool_list = require('./tool_list');
 
-var _manage_tool_list2 = _interopRequireDefault(_manage_tool_list);
+var _tool_list2 = _interopRequireDefault(_tool_list);
+
+var React = require('react');
+
+var ManageToolList = React.createClass({
+  displayName: 'ManageToolList',
+
+  getInitialState: function getInitialState() {
+    return {
+      size: 16
+    };
+  },
+
+  render: function render() {
+    return React.createElement(
+      'div',
+      { className: 'manage-draw' },
+      React.createElement(
+        'div',
+        { className: 'resize' },
+        React.createElement('img', { src: '/img/iconic/resize-both.png',
+          className: 'pixel icon' }),
+        React.createElement('input', { ref: 'size',
+          type: 'range',
+          min: '16',
+          max: '64',
+          step: '16',
+          value: this.state.size,
+          onChange: this.handleResize })
+      )
+    );
+  },
+
+  handleResize: function handleResize(ev) {
+    var sizeInput = this.refs.size.getDOMNode();
+    var size = sizeInput.value;
+    _actionsDraw_actions2['default'].resizeSurface({
+      width: size,
+      height: size
+    });
+    this.setState({ size: size });
+  }
+});
+
+exports['default'] = ManageToolList;
+module.exports = exports['default'];
+
+},{"../actions/draw_actions":501,"./tool_list":524,"react":484}],509:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _actionsDraw_actions = require('../actions/draw_actions');
+
+var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
+
+var _draw_manager = require('./draw_manager');
+
+var _draw_manager2 = _interopRequireDefault(_draw_manager);
 
 var _resize_prompt = require('./resize_prompt');
 
@@ -81163,7 +81225,7 @@ var DrawSurface = React.createClass({
       React.createElement(
         'div',
         { className: 'manage-surface' },
-        React.createElement(_manage_tool_list2['default'], { onResizeClick: this.onResizeClick,
+        React.createElement(_draw_manager2['default'], { onResizeClick: this.onResizeClick,
           onExportClick: this.onExportClick,
           onSaveClick: this.onSaveClick })
       )
@@ -81466,7 +81528,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"../models/pixel":531,"./manage_tool_list":517,"./resize_prompt":523,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],509:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"../models/pixel":531,"./draw_manager":508,"./resize_prompt":523,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],510:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81521,7 +81583,7 @@ var DrawToolList = React.createClass({
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"./tool_list":524,"react":484}],510:[function(require,module,exports){
+},{"../actions/draw_actions":501,"./tool_list":524,"react":484}],511:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81688,7 +81750,7 @@ var EditInstrument = React.createClass({
 exports['default'] = EditInstrument;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"./instrument_component":514,"react":484}],511:[function(require,module,exports){
+},{"../actions/music_actions":502,"./instrument_component":515,"react":484}],512:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81852,7 +81914,7 @@ var EditPalette = React.createClass({
 exports['default'] = EditPalette;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"jquery":161,"react":484}],512:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"jquery":161,"react":484}],513:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -81894,7 +81956,7 @@ var Footer = React.createClass({
 exports["default"] = Footer;
 module.exports = exports["default"];
 
-},{"react":484}],513:[function(require,module,exports){
+},{"react":484}],514:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81963,7 +82025,7 @@ var Header = React.createClass({
 exports['default'] = Header;
 module.exports = exports['default'];
 
-},{"react":484,"react-router":315}],514:[function(require,module,exports){
+},{"react":484,"react-router":315}],515:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82083,7 +82145,7 @@ var InstrumentComponent = React.createClass({
 exports['default'] = InstrumentComponent;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"react":484}],515:[function(require,module,exports){
+},{"../actions/music_actions":502,"react":484}],516:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82174,7 +82236,7 @@ var InstrumentList = React.createClass({
 exports['default'] = InstrumentList;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"./edit_instrument":510,"./modal":519,"react":484}],516:[function(require,module,exports){
+},{"../actions/music_actions":502,"./edit_instrument":511,"./modal":519,"react":484}],517:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82409,72 +82471,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"../mixins/key_map_mixin":529,"jquery":161,"react":484,"teoria":485}],517:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _tool_list = require('./tool_list');
-
-var _tool_list2 = _interopRequireDefault(_tool_list);
-
-var React = require('react');
-
-var ManageToolList = React.createClass({
-  displayName: 'ManageToolList',
-
-  getDefaultProps: function getDefaultProps() {
-    return {
-      tools: [{
-        name: 'Resize',
-        imgUrl: '/img/icons/glyphicons-216-resize-full.png'
-      }, {
-        name: 'Export',
-        imgUrl: '/img/icons/glyphicons-420-disk-export.png'
-      }, {
-        name: 'Save',
-        imgUrl: '/img/icons/glyphicons-447-floppy-save.png'
-      }]
-    };
-  },
-
-  render: function render() {
-    return React.createElement(
-      'div',
-      { className: 'manage-buttons' },
-      React.createElement(_tool_list2['default'], { tools: this.props.tools,
-        onSetActiveTool: this.handleClick })
-    );
-  },
-
-  handleClick: function handleClick(name) {
-    switch (name) {
-      case 'Resize':
-        this.props.onResizeClick();
-        break;
-
-      case 'Export':
-        this.props.onExportClick();
-        break;
-
-      case 'Save':
-        this.props.onSaveClick();
-        break;
-
-      default:
-        return true;
-    }
-  }
-});
-
-exports['default'] = ManageToolList;
-module.exports = exports['default'];
-
-},{"./tool_list":524,"react":484}],518:[function(require,module,exports){
+},{"../actions/music_actions":502,"../mixins/key_map_mixin":529,"jquery":161,"react":484,"teoria":485}],518:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82630,7 +82627,7 @@ var MusicCtrl = React.createClass({
 exports['default'] = MusicCtrl;
 module.exports = exports['default'];
 
-},{"../stores/music_store":533,"./instrument_list":515,"./keyboard":516,"./track_manager":526,"./volume_control":528,"react":484}],521:[function(require,module,exports){
+},{"../stores/music_store":533,"./instrument_list":516,"./keyboard":517,"./track_manager":526,"./volume_control":528,"react":484}],521:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82696,7 +82693,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":530,"./edit_palette":511,"./modal":519,"jquery":161,"react":484,"tinycolor2":500}],522:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":530,"./edit_palette":512,"./modal":519,"jquery":161,"react":484,"tinycolor2":500}],522:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83667,7 +83664,7 @@ var DrawStore = (function () {
   }, {
     key: 'resizeGrid',
     value: function resizeGrid() {
-      var oldGrid = this.props.grid;
+      var oldGrid = this.grid;
       var newGrid = [];
 
       for (var x = 0; x < this.width; x++) {
