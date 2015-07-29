@@ -81993,30 +81993,50 @@ var Link = Router.Link;
 var Header = React.createClass({
   displayName: 'Header',
 
+  getDefaultProps: function getDefaultProps() {
+    return {
+      tabs: [{
+        name: 'Draw',
+        imgUrl: '/img/iconic/pencil.png'
+      }, {
+        name: 'Map',
+        imgUrl: '/img/iconic/map.png'
+      }, {
+        name: 'Music',
+        imgUrl: '/img/iconic/musical-note.png'
+      }, {
+        name: 'Play',
+        imgUrl: '/img/iconic/media-play.png'
+      }]
+    };
+  },
+
   getInitialState: function getInitialState() {
     return {
-      activeTab: 'Draw'
+      activeTab: this.props.tabs[0].name
     };
   },
 
   render: function render() {
-    var tabs = [];
-    var tabNames = ['Draw', 'Map', 'Music', 'Play'];
-    for (var i = 0; i < tabNames.length; i++) {
-      var tabName = tabNames[i];
+    var tabs = this.props.tabs;
+    var tabViews = [];
+
+    for (var i = 0; i < tabs.length; i++) {
+      var tab = tabs[i];
       var className = 'tab';
-      if (tabName === this.state.activeTab) {
+      if (tab.name === this.state.activeTab) {
         className += ' active';
       }
 
-      tabs.push(React.createElement(
+      tabViews.push(React.createElement(
         'li',
-        { className: className, key: tabName },
+        { className: className, key: tab.name },
         React.createElement(
           Link,
-          { to: tabName.toLowerCase(),
-            onClick: this.setActiveTab.bind(this, tabName) },
-          tabName
+          { to: tab.name.toLowerCase(),
+            onClick: this.setActiveTab.bind(this, tab.name) },
+          React.createElement('img', { className: 'pixel icon',
+            src: tab.imgUrl })
         )
       ));
     }
@@ -82035,7 +82055,7 @@ var Header = React.createClass({
         React.createElement(
           'ul',
           { className: 'tabs' },
-          tabs
+          tabViews
         )
       )
     );

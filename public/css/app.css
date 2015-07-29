@@ -47,10 +47,6 @@ body a:visited {
   align-items: flex-end;
 }
 
-#header nav .tab {
-  margin: 0 6px;
-}
-
 #header nav .tab a {
   display: inline-block;
   text-decoration: none;
