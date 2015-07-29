@@ -255,9 +255,9 @@ let DrawSurface = React.createClass({
     if (ev) {
       ev.preventDefault();
       if (ev.deltaY > 0) {
-        zoom -= this.props.zoomDelta;
+        zoom /= 1.5;
       } else if (ev.deltaY < 0) {
-        zoom += this.props.zoomDelta;
+        zoom *= 1.5;
       } else {
         return;
       }
