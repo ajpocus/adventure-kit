@@ -32,7 +32,8 @@ let DrawCtrl = React.createClass({
       <div id="draw">
         <div className="toolbar">
           <DrawToolList activeTool={this.state.activeTool}/>
-          <PaletteManager palette={this.state.palette}/>
+          <PaletteManager palette={this.state.palette}
+                          primaryColor={this.state.primaryColor}/>
         </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}

@@ -12,9 +12,15 @@ let PaletteManager = React.createClass({
     for (let i = 0; i < this.props.palette.length; i++) {
       let color = this.props.palette[i];
       let liStyle = { background: color };
+      let liClassName = 'color';
+      if (color === this.props.primaryColor) {
+        liClassName += ' active';
+      }
 
       paletteColors.push(
-        <li className="color" style={liStyle} key={i}
+        <li className={liClassName}
+            style={liStyle}
+            key={i}
             onClick={this.setPrimaryColor.bind(this, color)}></li>
       );
     }

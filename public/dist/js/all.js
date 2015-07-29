@@ -80956,7 +80956,8 @@ var DrawCtrl = React.createClass({
         'div',
         { className: 'toolbar' },
         React.createElement(_draw_tool_list2['default'], { activeTool: this.state.activeTool }),
-        React.createElement(_palette_manager2['default'], { palette: this.state.palette })
+        React.createElement(_palette_manager2['default'], { palette: this.state.palette,
+          primaryColor: this.state.primaryColor })
       ),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
         secondaryColor: this.state.secondaryColor,
@@ -82449,8 +82450,14 @@ var PaletteManager = React.createClass({
     for (var i = 0; i < this.props.palette.length; i++) {
       var color = this.props.palette[i];
       var liStyle = { background: color };
+      var liClassName = 'color';
+      if (color === this.props.primaryColor) {
+        liClassName += ' active';
+      }
 
-      paletteColors.push(React.createElement('li', { className: 'color', style: liStyle, key: i,
+      paletteColors.push(React.createElement('li', { className: liClassName,
+        style: liStyle,
+        key: i,
         onClick: this.setPrimaryColor.bind(this, color) }));
     }
 
