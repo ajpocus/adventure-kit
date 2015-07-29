@@ -9,25 +9,6 @@
   margin: 12px;
 }
 
-#draw .color-picker {
-  width: 50px;
-  height: 50px;
-}
-
-#draw .color-picker .primary {
-  position: relative;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
-#draw .color-picker .secondary {
-  position: relative;
-  bottom: 14px;
-  left: 14px;
-  z-index: 0;
-}
-
 #draw .draw-tools .tool-list {
   display: flex;
   flex-direction: row;

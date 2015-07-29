@@ -80833,66 +80833,7 @@ $(function () {
   });
 });
 
-},{"./components/draw_ctrl":507,"./components/footer":512,"./components/header":513,"./components/map":517,"./components/music_ctrl":519,"./components/play":521,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],505:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _actionsDraw_actions = require('../actions/draw_actions');
-
-var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
-
-var React = require('react');
-
-var ColorPicker = React.createClass({
-  displayName: 'ColorPicker',
-
-  render: function render() {
-    return React.createElement(
-      'div',
-      { className: 'color-picker' },
-      React.createElement('input', { type: 'color',
-        ref: 'primaryColor',
-        id: 'primary-color',
-        value: this.props.primaryColor,
-        onChange: this.handlePrimaryColorChange }),
-      React.createElement('input', { type: 'color',
-        ref: 'secondaryColor',
-        id: 'secondary-color',
-        value: this.props.secondaryColor,
-        onChange: this.handleSecondaryColorChange })
-    );
-  },
-
-  componentDidMount: function componentDidMount() {
-    this.refs.primaryColor.getDOMNode().value = this.props.primaryColor;
-    this.refs.secondaryColor.getDOMNode().value = this.props.secondaryColor;
-  },
-
-  componentDidUpdate: function componentDidUpdate() {
-    this.refs.primaryColor.getDOMNode().value = this.props.primaryColor;
-    this.refs.secondaryColor.getDOMNode().value = this.props.secondaryColor;
-  },
-
-  handlePrimaryColorChange: function handlePrimaryColorChange(ev) {
-    var color = ev.target.value;
-    _actionsDraw_actions2['default'].setPrimaryColor(color);
-  },
-
-  handleSecondaryColorChange: function handleSecondaryColorChange(ev) {
-    var color = ev.target.value;
-    _actionsDraw_actions2['default'].setSecondaryColor(color);
-  }
-});
-
-exports['default'] = ColorPicker;
-module.exports = exports['default'];
-
-},{"../actions/draw_actions":501,"react":484}],506:[function(require,module,exports){
+},{"./components/draw_ctrl":506,"./components/footer":511,"./components/header":512,"./components/map":516,"./components/music_ctrl":518,"./components/play":520,"babel/polyfill":107,"jquery":161,"react":484,"react-router":315}],505:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80956,7 +80897,7 @@ var ContextMenu = React.createClass({
 exports['default'] = ContextMenu;
 module.exports = exports['default'];
 
-},{"react":484}],507:[function(require,module,exports){
+},{"react":484}],506:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -80976,10 +80917,6 @@ var _draw_tool_list2 = _interopRequireDefault(_draw_tool_list);
 var _palette_manager = require('./palette_manager');
 
 var _palette_manager2 = _interopRequireDefault(_palette_manager);
-
-var _color_picker = require('./color_picker');
-
-var _color_picker2 = _interopRequireDefault(_color_picker);
 
 var _draw_surface = require('./draw_surface');
 
@@ -81019,9 +80956,7 @@ var DrawCtrl = React.createClass({
         'div',
         { className: 'toolbar' },
         React.createElement(_draw_tool_list2['default'], { activeTool: this.state.activeTool }),
-        React.createElement(_palette_manager2['default'], { palette: this.state.palette }),
-        React.createElement(_color_picker2['default'], { primaryColor: this.state.primaryColor,
-          secondaryColor: this.state.secondaryColor })
+        React.createElement(_palette_manager2['default'], { palette: this.state.palette })
       ),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
         secondaryColor: this.state.secondaryColor,
@@ -81044,7 +80979,7 @@ var DrawCtrl = React.createClass({
 exports['default'] = DrawCtrl;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":530,"./color_picker":505,"./draw_surface":509,"./draw_tool_list":510,"./palette_manager":520,"react":484}],508:[function(require,module,exports){
+},{"../stores/draw_store":529,"./draw_surface":508,"./draw_tool_list":509,"./palette_manager":519,"react":484}],507:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81130,7 +81065,7 @@ var ManageToolList = React.createClass({
 exports['default'] = ManageToolList;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"./tool_list":522,"react":484}],509:[function(require,module,exports){
+},{"../actions/draw_actions":501,"./tool_list":521,"react":484}],508:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81550,7 +81485,7 @@ module.exports = exports['default'];
 
 // TODO: post image data to server and download the response as image/png
 
-},{"../actions/draw_actions":501,"../mixins/transparency":528,"../models/pixel":529,"./draw_manager":508,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],510:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":527,"../models/pixel":528,"./draw_manager":507,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],509:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81605,7 +81540,7 @@ var DrawToolList = React.createClass({
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"./tool_list":522,"react":484}],511:[function(require,module,exports){
+},{"../actions/draw_actions":501,"./tool_list":521,"react":484}],510:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81772,7 +81707,7 @@ var EditInstrument = React.createClass({
 exports['default'] = EditInstrument;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"./instrument_component":514,"react":484}],512:[function(require,module,exports){
+},{"../actions/music_actions":502,"./instrument_component":513,"react":484}],511:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -81814,7 +81749,7 @@ var Footer = React.createClass({
 exports["default"] = Footer;
 module.exports = exports["default"];
 
-},{"react":484}],513:[function(require,module,exports){
+},{"react":484}],512:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81903,7 +81838,7 @@ var Header = React.createClass({
 exports['default'] = Header;
 module.exports = exports['default'];
 
-},{"react":484,"react-router":315}],514:[function(require,module,exports){
+},{"react":484,"react-router":315}],513:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82023,7 +81958,7 @@ var InstrumentComponent = React.createClass({
 exports['default'] = InstrumentComponent;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"react":484}],515:[function(require,module,exports){
+},{"../actions/music_actions":502,"react":484}],514:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82114,7 +82049,7 @@ var InstrumentList = React.createClass({
 exports['default'] = InstrumentList;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"./edit_instrument":511,"./modal":518,"react":484}],516:[function(require,module,exports){
+},{"../actions/music_actions":502,"./edit_instrument":510,"./modal":517,"react":484}],515:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82349,7 +82284,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"../mixins/key_map_mixin":527,"jquery":161,"react":484,"teoria":485}],517:[function(require,module,exports){
+},{"../actions/music_actions":502,"../mixins/key_map_mixin":526,"jquery":161,"react":484,"teoria":485}],516:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82376,7 +82311,7 @@ var MapController = React.createClass({
 exports["default"] = MapController;
 module.exports = exports["default"];
 
-},{"react":484}],518:[function(require,module,exports){
+},{"react":484}],517:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82408,7 +82343,7 @@ var Modal = React.createClass({
 exports['default'] = Modal;
 module.exports = exports['default'];
 
-},{"react":484}],519:[function(require,module,exports){
+},{"react":484}],518:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82505,7 +82440,7 @@ var MusicCtrl = React.createClass({
 exports['default'] = MusicCtrl;
 module.exports = exports['default'];
 
-},{"../stores/music_store":531,"./instrument_list":515,"./keyboard":516,"./track_manager":524,"./volume_control":526,"react":484}],520:[function(require,module,exports){
+},{"../stores/music_store":530,"./instrument_list":514,"./keyboard":515,"./track_manager":523,"./volume_control":525,"react":484}],519:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82562,7 +82497,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":528,"./modal":518,"jquery":161,"react":484,"tinycolor2":500}],521:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":527,"./modal":517,"jquery":161,"react":484,"tinycolor2":500}],520:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82581,7 +82516,7 @@ var Play = React.createClass({
 exports["default"] = Play;
 module.exports = exports["default"];
 
-},{"react":484}],522:[function(require,module,exports){
+},{"react":484}],521:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82642,7 +82577,7 @@ var ToolList = React.createClass({
 exports["default"] = ToolList;
 module.exports = exports["default"];
 
-},{"react":484}],523:[function(require,module,exports){
+},{"react":484}],522:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82970,7 +82905,7 @@ module.exports = exports['default'];
 
 // TODO: do something with selected option
 
-},{"../actions/music_actions":502,"./context_menu":506,"./track_tool_list":525,"react":484,"tinycolor2":500}],524:[function(require,module,exports){
+},{"../actions/music_actions":502,"./context_menu":505,"./track_tool_list":524,"react":484,"tinycolor2":500}],523:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83024,7 +82959,7 @@ var TrackManager = React.createClass({
 exports['default'] = TrackManager;
 module.exports = exports['default'];
 
-},{"./track":523,"react":484}],525:[function(require,module,exports){
+},{"./track":522,"react":484}],524:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83075,7 +83010,7 @@ var TrackToolList = React.createClass({
 exports['default'] = TrackToolList;
 module.exports = exports['default'];
 
-},{"./tool_list":522,"react":484}],526:[function(require,module,exports){
+},{"./tool_list":521,"react":484}],525:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83128,7 +83063,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":484}],527:[function(require,module,exports){
+},{"react":484}],526:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83235,7 +83170,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],528:[function(require,module,exports){
+},{}],527:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83248,7 +83183,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],529:[function(require,module,exports){
+},{}],528:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83269,7 +83204,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],530:[function(require,module,exports){
+},{}],529:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83480,7 +83415,7 @@ var DrawStore = (function () {
 exports['default'] = _alt2['default'].createStore(DrawStore, 'DrawStore');
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../alt":503,"../models/pixel":529,"pixi.js":266}],531:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../alt":503,"../models/pixel":528,"pixi.js":266}],530:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

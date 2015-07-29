@@ -3,7 +3,6 @@ let React = require('react');
 import DrawStore from '../stores/draw_store';
 import DrawToolList from './draw_tool_list';
 import PaletteManager from './palette_manager';
-import ColorPicker from './color_picker';
 import DrawSurface from './draw_surface';
 
 let DrawCtrl = React.createClass({
@@ -34,8 +33,6 @@ let DrawCtrl = React.createClass({
         <div className="toolbar">
           <DrawToolList activeTool={this.state.activeTool}/>
           <PaletteManager palette={this.state.palette}/>
-          <ColorPicker primaryColor={this.state.primaryColor}
-                       secondaryColor={this.state.secondaryColor}/>
         </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}
