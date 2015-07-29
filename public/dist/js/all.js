@@ -81374,30 +81374,18 @@ var DrawSurface = React.createClass({
     _actionsDraw_actions2['default'].setIsMouseDown(false);
   },
 
-  onZoom: function onZoom(ev, data) {
+  onZoom: function onZoom(ev) {
+    ev.preventDefault();
     var zoom = this.props.zoom;
     var actualWidth = this.props.actualWidth;
     var actualHeight = this.props.actualHeight;
     var tileWidth = this.props.tileWidth;
     var tileHeight = this.props.tileHeight;
 
-    if (ev) {
-      ev.preventDefault();
-      if (ev.deltaY > 0) {
-        zoom /= 1.5;
-      } else if (ev.deltaY < 0) {
-        zoom *= 1.5;
-      } else {
-        return;
-      }
-    } else if (data) {
-      if (data.delta) {
-        zoom += data.delta;
-      } else if (data.zoom) {
-        zoom = data.zoom;
-      } else {
-        return;
-      }
+    if (ev.deltaY > 0) {
+      zoom /= 1.5;
+    } else if (ev.deltaY < 0) {
+      zoom *= 1.5;
     } else {
       return;
     }
