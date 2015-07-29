@@ -279,25 +279,6 @@ let DrawSurface = React.createClass({
     DrawActions.updateTitle(title);
   },
 
-  onResizeClick: function () {
-    React.render(<ResizePrompt width={this.props.width}
-                               height={this.props.height}/>,
-                 document.getElementById('modal-container'));
-  },
-
-  onExportClick: function () {
-    // TODO: post image data to server and download the response as image/png
-  },
-
-  onSaveClick: function () {
-    // TODO: save image to ResourceManager
-    let images = JSON.parse(localStorage.getItem('images')) || {};
-    let dataUrl = this.refs.drawCanvas.getDOMNode().toDataURL('image/png');
-    dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
-    images[this.props.title] = dataUrl;
-    localStorage.setItem('images', JSON.stringify(images));
-  },
-
   drawBackground: function () {
     let bgGfx = this.state.bgGfx;
     let bgTileSize = this.props.bgTileSize;

@@ -81402,22 +81402,6 @@ var DrawSurface = React.createClass({
     _actionsDraw_actions2['default'].updateTitle(title);
   },
 
-  onResizeClick: function onResizeClick() {
-    React.render(React.createElement(ResizePrompt, { width: this.props.width,
-      height: this.props.height }), document.getElementById('modal-container'));
-  },
-
-  onExportClick: function onExportClick() {},
-
-  onSaveClick: function onSaveClick() {
-    // TODO: save image to ResourceManager
-    var images = JSON.parse(localStorage.getItem('images')) || {};
-    var dataUrl = this.refs.drawCanvas.getDOMNode().toDataURL('image/png');
-    dataUrl.replace(/^data:image\/(png|jpg);base64,/, '');
-    images[this.props.title] = dataUrl;
-    localStorage.setItem('images', JSON.stringify(images));
-  },
-
   drawBackground: function drawBackground() {
     var bgGfx = this.state.bgGfx;
     var bgTileSize = this.props.bgTileSize;
@@ -81476,8 +81460,6 @@ var DrawSurface = React.createClass({
 
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
-
-// TODO: post image data to server and download the response as image/png
 
 },{"../actions/draw_actions":501,"../mixins/transparency":527,"../models/pixel":528,"./draw_manager":507,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],509:[function(require,module,exports){
 'use strict';
