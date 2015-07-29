@@ -130,3 +130,12 @@
 .edit-palette .content {
   display: flex;
 }
+
+.size-labels {
+  margin-left: 21px;
+  display: flex;
+}
+
+.size-label {
+  margin-right: 19px;
+}

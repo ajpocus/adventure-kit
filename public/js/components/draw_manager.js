@@ -23,6 +23,12 @@ let ManageToolList = React.createClass({
                  step="16"
                  value={this.state.size}
                  onChange={this.handleResize}/>
+          <div className="size-labels">
+            <div className="size-label">16</div>
+            <div className="size-label">32</div>
+            <div className="size-label">48</div>
+            <div className="size-label">64</div>
+          </div>
         </div>
       </div>
     );

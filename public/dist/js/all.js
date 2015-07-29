@@ -81087,7 +81087,31 @@ var ManageToolList = React.createClass({
           max: '64',
           step: '16',
           value: this.state.size,
-          onChange: this.handleResize })
+          onChange: this.handleResize }),
+        React.createElement(
+          'div',
+          { className: 'size-labels' },
+          React.createElement(
+            'div',
+            { className: 'size-label' },
+            '16'
+          ),
+          React.createElement(
+            'div',
+            { className: 'size-label' },
+            '32'
+          ),
+          React.createElement(
+            'div',
+            { className: 'size-label' },
+            '48'
+          ),
+          React.createElement(
+            'div',
+            { className: 'size-label' },
+            '64'
+          )
+        )
       )
     );
   },
