@@ -182,13 +182,19 @@ let DrawSurface = React.createClass({
     let { fillX, fillY, fillWidth, fillHeight } = this.getFillParams(x, y);
     let color = this.props.primaryColor;
     let button = ev.which || ev.button;
+    let eraseColor = false;
     if (button === 2) {
-      color = 'rgba(0, 0, 0, 0)';
+      eraseColor = true;
     }
 
     switch (this.props.activeTool) {
       case 'Pencil':
-        grid[x][y].color = color;
+        if (eraseColor) {
+          grid[x][y].color = null;
+        } else {
+          grid[x][y].color = color;
+        }
+
         break;
 
       case 'Bucket':

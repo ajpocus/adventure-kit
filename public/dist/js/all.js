@@ -81308,13 +81308,19 @@ var DrawSurface = React.createClass({
 
     var color = this.props.primaryColor;
     var button = ev.which || ev.button;
+    var eraseColor = false;
     if (button === 2) {
-      color = 'rgba(0, 0, 0, 0)';
+      eraseColor = true;
     }
 
     switch (this.props.activeTool) {
       case 'Pencil':
-        grid[x][y].color = color;
+        if (eraseColor) {
+          grid[x][y].color = null;
+        } else {
+          grid[x][y].color = color;
+        }
+
         break;
 
       case 'Bucket':
