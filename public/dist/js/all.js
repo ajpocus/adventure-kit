@@ -80583,51 +80583,6 @@ var DrawActions = (function () {
       this.dispatch(color);
     }
   }, {
-    key: 'setSecondaryColor',
-    value: function setSecondaryColor(color) {
-      this.dispatch(color);
-    }
-  }, {
-    key: 'createPalette',
-    value: function createPalette(paletteName) {
-      this.dispatch(paletteName);
-    }
-  }, {
-    key: 'editPalette',
-    value: function editPalette() {
-      this.dispatch();
-    }
-  }, {
-    key: 'setActiveColor',
-    value: function setActiveColor(color) {
-      this.dispatch(color);
-    }
-  }, {
-    key: 'removeColor',
-    value: function removeColor(color) {
-      this.dispatch(color);
-    }
-  }, {
-    key: 'addColor',
-    value: function addColor() {
-      this.dispatch();
-    }
-  }, {
-    key: 'updateColor',
-    value: function updateColor(color) {
-      this.dispatch(color);
-    }
-  }, {
-    key: 'updatePalette',
-    value: function updatePalette() {
-      this.dispatch();
-    }
-  }, {
-    key: 'closeEditPalette',
-    value: function closeEditPalette() {
-      this.dispatch();
-    }
-  }, {
     key: 'createGrid',
     value: function createGrid() {
       this.dispatch();
@@ -80653,13 +80608,18 @@ var DrawActions = (function () {
       this.dispatch(zoom);
     }
   }, {
-    key: 'updateTitle',
-    value: function updateTitle(title) {
-      this.dispatch(title);
-    }
-  }, {
     key: 'resizeSurface',
     value: function resizeSurface(data) {
+      this.dispatch(data);
+    }
+  }, {
+    key: 'saveSprite',
+    value: function saveSprite(data) {
+      this.dispatch(data);
+    }
+  }, {
+    key: 'setActiveSprite',
+    value: function setActiveSprite(data) {
       this.dispatch(data);
     }
   }]);
@@ -80922,6 +80882,10 @@ var _draw_surface = require('./draw_surface');
 
 var _draw_surface2 = _interopRequireDefault(_draw_surface);
 
+var _sprite_manager = require('./sprite_manager');
+
+var _sprite_manager2 = _interopRequireDefault(_sprite_manager);
+
 var React = require('react');
 
 var DrawCtrl = React.createClass({
@@ -80960,7 +80924,6 @@ var DrawCtrl = React.createClass({
           primaryColor: this.state.primaryColor })
       ),
       React.createElement(_draw_surface2['default'], { primaryColor: this.state.primaryColor,
-        secondaryColor: this.state.secondaryColor,
         activeTool: this.state.activeTool,
         width: this.state.width,
         height: this.state.height,
@@ -80972,7 +80935,9 @@ var DrawCtrl = React.createClass({
         tileWidth: this.state.tileWidth,
         tileHeight: this.state.tileHeight,
         isMouseDown: this.state.isMouseDown,
-        grid: this.state.grid })
+        grid: this.state.grid }),
+      React.createElement(_sprite_manager2['default'], { sprites: this.state.sprites,
+        activeSprite: this.state.activeSprite })
     );
   }
 });
@@ -80980,7 +80945,7 @@ var DrawCtrl = React.createClass({
 exports['default'] = DrawCtrl;
 module.exports = exports['default'];
 
-},{"../stores/draw_store":529,"./draw_surface":508,"./draw_tool_list":509,"./palette_manager":519,"react":484}],507:[function(require,module,exports){
+},{"../stores/draw_store":530,"./draw_surface":508,"./draw_tool_list":509,"./palette_manager":519,"./sprite_manager":521,"react":484}],507:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81067,7 +81032,7 @@ var ManageToolList = React.createClass({
 exports['default'] = ManageToolList;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"./tool_list":521,"react":484}],508:[function(require,module,exports){
+},{"../actions/draw_actions":501,"./tool_list":522,"react":484}],508:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81080,9 +81045,9 @@ var _actionsDraw_actions = require('../actions/draw_actions');
 
 var _actionsDraw_actions2 = _interopRequireDefault(_actionsDraw_actions);
 
-var _draw_manager = require('./draw_manager');
+var _draw_properties = require('./draw_properties');
 
-var _draw_manager2 = _interopRequireDefault(_draw_manager);
+var _draw_properties2 = _interopRequireDefault(_draw_properties);
 
 var _modelsPixel = require('../models/pixel');
 
@@ -81182,9 +81147,7 @@ var DrawSurface = React.createClass({
       React.createElement(
         'div',
         { className: 'manage-surface' },
-        React.createElement(_draw_manager2['default'], { onResizeClick: this.onResizeClick,
-          onExportClick: this.onExportClick,
-          onSaveClick: this.onSaveClick })
+        React.createElement(_draw_properties2['default'], null)
       )
     );
   },
@@ -81218,6 +81181,13 @@ var DrawSurface = React.createClass({
 
     renderer.render(stage);
     requestAnimationFrame(this.animate);
+    this.setState({ renderer: renderer }, function () {
+      _actionsDraw_actions2['default'].saveSprite({
+        grid: grid,
+        dataUrl: renderer.view.toDataURL(),
+        size: this.props.width
+      });
+    });
   },
 
   highlightPixel: function highlightPixel(ev) {
@@ -81399,11 +81369,6 @@ var DrawSurface = React.createClass({
     _actionsDraw_actions2['default'].updateZoom(zoom);
   },
 
-  onTitleChange: function onTitleChange(ev) {
-    var title = ev.target.value;
-    _actionsDraw_actions2['default'].updateTitle(title);
-  },
-
   drawBackground: function drawBackground() {
     var bgGfx = this.state.bgGfx;
     var bgTileSize = this.props.bgTileSize;
@@ -81463,7 +81428,7 @@ var DrawSurface = React.createClass({
 exports['default'] = DrawSurface;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":527,"../models/pixel":528,"./draw_manager":507,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],509:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":528,"../models/pixel":529,"./draw_properties":507,"jquery":161,"pixi.js":266,"pngjs":290,"react":484,"tinycolor2":500}],509:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81518,7 +81483,7 @@ var DrawToolList = React.createClass({
 exports['default'] = DrawToolList;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"./tool_list":521,"react":484}],510:[function(require,module,exports){
+},{"../actions/draw_actions":501,"./tool_list":522,"react":484}],510:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82262,7 +82227,7 @@ var Keyboard = React.createClass({
 exports['default'] = Keyboard;
 module.exports = exports['default'];
 
-},{"../actions/music_actions":502,"../mixins/key_map_mixin":526,"jquery":161,"react":484,"teoria":485}],516:[function(require,module,exports){
+},{"../actions/music_actions":502,"../mixins/key_map_mixin":527,"jquery":161,"react":484,"teoria":485}],516:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82418,7 +82383,7 @@ var MusicCtrl = React.createClass({
 exports['default'] = MusicCtrl;
 module.exports = exports['default'];
 
-},{"../stores/music_store":530,"./instrument_list":514,"./keyboard":515,"./track_manager":523,"./volume_control":525,"react":484}],519:[function(require,module,exports){
+},{"../stores/music_store":531,"./instrument_list":514,"./keyboard":515,"./track_manager":524,"./volume_control":526,"react":484}],519:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82481,7 +82446,7 @@ var PaletteManager = React.createClass({
 exports['default'] = PaletteManager;
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../mixins/transparency":527,"./modal":517,"jquery":161,"react":484,"tinycolor2":500}],520:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../mixins/transparency":528,"./modal":517,"jquery":161,"react":484,"tinycolor2":500}],520:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82501,6 +82466,48 @@ exports["default"] = Play;
 module.exports = exports["default"];
 
 },{"react":484}],521:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var React = require("react");
+
+var SpriteManager = React.createClass({
+  displayName: "SpriteManager",
+
+  render: function render() {
+    var sprites = this.props.sprites;
+    var activeSprite = this.props.activeSprite;
+    var spriteViews = [];
+
+    for (var i = 0; i < sprites.length; i++) {
+      var sprite = sprites[i];
+      var spriteStyle = {
+        width: sprite.size,
+        height: sprite.size
+      };
+
+      spriteViews.push(React.createElement(
+        "li",
+        { className: "sprite" },
+        React.createElement("img", { src: sprite.dataUrl,
+          style: spriteStyle })
+      ));
+    }
+
+    return React.createElement(
+      "ul",
+      { className: "sprite-manager" },
+      spriteViews
+    );
+  }
+});
+
+exports["default"] = SpriteManager;
+module.exports = exports["default"];
+
+},{"react":484}],522:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -82561,7 +82568,7 @@ var ToolList = React.createClass({
 exports["default"] = ToolList;
 module.exports = exports["default"];
 
-},{"react":484}],522:[function(require,module,exports){
+},{"react":484}],523:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82889,7 +82896,7 @@ module.exports = exports['default'];
 
 // TODO: do something with selected option
 
-},{"../actions/music_actions":502,"./context_menu":505,"./track_tool_list":524,"react":484,"tinycolor2":500}],523:[function(require,module,exports){
+},{"../actions/music_actions":502,"./context_menu":505,"./track_tool_list":525,"react":484,"tinycolor2":500}],524:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82943,7 +82950,7 @@ var TrackManager = React.createClass({
 exports['default'] = TrackManager;
 module.exports = exports['default'];
 
-},{"./track":522,"react":484}],524:[function(require,module,exports){
+},{"./track":523,"react":484}],525:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -82994,7 +83001,7 @@ var TrackToolList = React.createClass({
 exports['default'] = TrackToolList;
 module.exports = exports['default'];
 
-},{"./tool_list":521,"react":484}],525:[function(require,module,exports){
+},{"./tool_list":522,"react":484}],526:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83047,7 +83054,7 @@ var VolumeControl = React.createClass({
 exports["default"] = VolumeControl;
 module.exports = exports["default"];
 
-},{"react":484}],526:[function(require,module,exports){
+},{"react":484}],527:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83154,7 +83161,7 @@ var KeyMapMixin = {
 exports['default'] = KeyMapMixin;
 module.exports = exports['default'];
 
-},{}],527:[function(require,module,exports){
+},{}],528:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83167,7 +83174,7 @@ var Transparency = {
 exports['default'] = Transparency;
 module.exports = exports['default'];
 
-},{}],528:[function(require,module,exports){
+},{}],529:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -83188,7 +83195,7 @@ var Pixel = function Pixel(x, y) {
 exports["default"] = Pixel;
 module.exports = exports["default"];
 
-},{}],529:[function(require,module,exports){
+},{}],530:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -83234,26 +83241,20 @@ var DrawStore = (function () {
     this.tileWidth = this.actualWidth / this.width;
     this.tileHeight = this.actualHeight / this.height;
     this.isMouseDown = false;
+    this.sprites = [];
+    this.activeSprite = 0;
 
     this.bindListeners({
       setActiveTool: _actionsDraw_actions2['default'].SET_ACTIVE_TOOL,
       setPrimaryColor: _actionsDraw_actions2['default'].SET_PRIMARY_COLOR,
-      setSecondaryColor: _actionsDraw_actions2['default'].SET_SECONDARY_COLOR,
-      createPalette: _actionsDraw_actions2['default'].CREATE_PALETTE,
-      editPalette: _actionsDraw_actions2['default'].EDIT_PALETTE,
-      setActiveColor: _actionsDraw_actions2['default'].SET_ACTIVE_COLOR,
-      removeColor: _actionsDraw_actions2['default'].REMOVE_COLOR,
-      addColor: _actionsDraw_actions2['default'].ADD_COLOR,
-      updateColor: _actionsDraw_actions2['default'].UPDATE_COLOR,
-      updatePalette: _actionsDraw_actions2['default'].UPDATE_PALETTE,
-      closeEditPalette: _actionsDraw_actions2['default'].CLOSE_EDIT_PALETTE,
       createGrid: _actionsDraw_actions2['default'].CREATE_GRID,
       updateGrid: _actionsDraw_actions2['default'].UPDATE_GRID,
       resizeGrid: _actionsDraw_actions2['default'].RESIZE_GRID,
       setIsMouseDown: _actionsDraw_actions2['default'].SET_IS_MOUSE_DOWN,
       updateZoom: _actionsDraw_actions2['default'].UPDATE_ZOOM,
-      updateTitle: _actionsDraw_actions2['default'].UPDATE_TITLE,
-      resizeSurface: _actionsDraw_actions2['default'].RESIZE_SURFACE
+      resizeSurface: _actionsDraw_actions2['default'].RESIZE_SURFACE,
+      saveSprite: _actionsDraw_actions2['default'].SAVE_SPRITE,
+      setActiveSprite: _actionsDraw_actions2['default'].SET_ACTIVE_SPRITE
     });
   }
 
@@ -83266,59 +83267,6 @@ var DrawStore = (function () {
     key: 'setPrimaryColor',
     value: function setPrimaryColor(color) {
       this.primaryColor = color;
-    }
-  }, {
-    key: 'setSecondaryColor',
-    value: function setSecondaryColor(color) {
-      this.secondaryColor = color;
-    }
-  }, {
-    key: 'createPalette',
-    value: function createPalette(paletteName) {
-      this.palettes[paletteName] = {};
-    }
-  }, {
-    key: 'editPalette',
-    value: function editPalette() {
-      this.isEditingPalette = true;
-    }
-  }, {
-    key: 'setActiveColor',
-    value: function setActiveColor(color) {
-      this.activeColor = color;
-    }
-  }, {
-    key: 'removeColor',
-    value: function removeColor(color) {
-      var palette = this.paletteCopy;
-      var idx = palette.indexOf(color);
-      palette.splice(idx, 1);
-      this.paletteCopy = palette;
-    }
-  }, {
-    key: 'addColor',
-    value: function addColor() {
-      this.paletteCopy.push('#ffffff');
-    }
-  }, {
-    key: 'updateColor',
-    value: function updateColor(color) {
-      var activeColor = this.activeColor;
-      var palette = this.paletteCopy;
-      var idx = palette.indexOf(this.state.activePaletteColor);
-      palette[idx] = color;
-      this.paletteCopy = palette;
-      this.activeColor = color;
-    }
-  }, {
-    key: 'updatePalette',
-    value: function updatePalette() {
-      this.palettes[this.activePalette] = this.paletteCopy;
-    }
-  }, {
-    key: 'closeEditPalette',
-    value: function closeEditPalette() {
-      this.isEditingPalette = false;
     }
   }, {
     key: 'createGrid',
@@ -83374,11 +83322,6 @@ var DrawStore = (function () {
       this.tileHeight = this.actualHeight / this.height;
     }
   }, {
-    key: 'updateTitle',
-    value: function updateTitle(title) {
-      this.title = title;
-    }
-  }, {
     key: 'resizeSurface',
     value: function resizeSurface(data) {
       var width = data.width;
@@ -83391,6 +83334,17 @@ var DrawStore = (function () {
       this.tileWidth = this.actualWidth / this.width;
       this.tileHeight = this.actualHeight / this.height;
     }
+  }, {
+    key: 'saveSprite',
+    value: function saveSprite(data) {
+      this.sprites[this.activeSprite] = data;
+    }
+  }, {
+    key: 'setActiveSprite',
+    value: function setActiveSprite(data) {
+      this.activeSprite = data;
+      this.grid = this.sprites[this.activeSprite].grid;
+    }
   }]);
 
   return DrawStore;
@@ -83399,7 +83353,7 @@ var DrawStore = (function () {
 exports['default'] = _alt2['default'].createStore(DrawStore, 'DrawStore');
 module.exports = exports['default'];
 
-},{"../actions/draw_actions":501,"../alt":503,"../models/pixel":528,"pixi.js":266}],530:[function(require,module,exports){
+},{"../actions/draw_actions":501,"../alt":503,"../models/pixel":529,"pixi.js":266}],531:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

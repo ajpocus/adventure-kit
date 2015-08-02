@@ -5,7 +5,7 @@ let tinycolor = require('tinycolor2');
 let PIXI = require('pixi.js');
 
 import DrawActions from '../actions/draw_actions';
-import DrawManager from './draw_manager';
+import DrawProperties from './draw_properties';
 import Pixel from '../models/pixel';
 import Transparency from '../mixins/transparency';
 
@@ -87,9 +87,7 @@ let DrawSurface = React.createClass({
         </div>
 
         <div className="manage-surface">
-          <DrawManager onResizeClick={this.onResizeClick}
-                       onExportClick={this.onExportClick}
-                       onSaveClick={this.onSaveClick}/>
+          <DrawProperties/>
         </div>
       </div>
     );
@@ -118,6 +116,13 @@ let DrawSurface = React.createClass({
 
     renderer.render(stage);
     requestAnimationFrame(this.animate);
+    this.setState({ renderer }, function () {
+      DrawActions.saveSprite({
+        grid: grid,
+        dataUrl: renderer.view.toDataURL(),
+        size: this.props.width
+      });
+    });
   },
 
   highlightPixel: function (ev) {
@@ -272,11 +277,6 @@ let DrawSurface = React.createClass({
     }
 
     DrawActions.updateZoom(zoom);
-  },
-
-  onTitleChange: function (ev) {
-    let title = ev.target.value;
-    DrawActions.updateTitle(title);
   },
 
   drawBackground: function () {

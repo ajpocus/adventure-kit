@@ -32,26 +32,20 @@ class DrawStore {
     this.tileWidth = this.actualWidth / this.width;
     this.tileHeight = this.actualHeight / this.height;
     this.isMouseDown = false;
+    this.sprites = [];
+    this.activeSprite = 0;
 
     this.bindListeners({
       setActiveTool: DrawActions.SET_ACTIVE_TOOL,
       setPrimaryColor: DrawActions.SET_PRIMARY_COLOR,
-      setSecondaryColor: DrawActions.SET_SECONDARY_COLOR,
-      createPalette: DrawActions.CREATE_PALETTE,
-      editPalette: DrawActions.EDIT_PALETTE,
-      setActiveColor: DrawActions.SET_ACTIVE_COLOR,
-      removeColor: DrawActions.REMOVE_COLOR,
-      addColor: DrawActions.ADD_COLOR,
-      updateColor: DrawActions.UPDATE_COLOR,
-      updatePalette: DrawActions.UPDATE_PALETTE,
-      closeEditPalette: DrawActions.CLOSE_EDIT_PALETTE,
       createGrid: DrawActions.CREATE_GRID,
       updateGrid: DrawActions.UPDATE_GRID,
       resizeGrid: DrawActions.RESIZE_GRID,
       setIsMouseDown: DrawActions.SET_IS_MOUSE_DOWN,
       updateZoom: DrawActions.UPDATE_ZOOM,
-      updateTitle: DrawActions.UPDATE_TITLE,
-      resizeSurface: DrawActions.RESIZE_SURFACE
+      resizeSurface: DrawActions.RESIZE_SURFACE,
+      saveSprite: DrawActions.SAVE_SPRITE,
+      setActiveSprite: DrawActions.SET_ACTIVE_SPRITE
     });
   }
 
@@ -61,50 +55,6 @@ class DrawStore {
 
   setPrimaryColor(color) {
     this.primaryColor = color;
-  }
-
-  setSecondaryColor(color) {
-    this.secondaryColor = color;
-  }
-
-  createPalette(paletteName) {
-    this.palettes[paletteName] = {};
-  }
-
-  editPalette() {
-    this.isEditingPalette = true;
-  }
-
-  setActiveColor(color) {
-    this.activeColor = color;
-  }
-
-  removeColor(color) {
-    let palette = this.paletteCopy;
-    let idx = palette.indexOf(color);
-    palette.splice(idx, 1);
-    this.paletteCopy = palette;
-  }
-
-  addColor() {
-    this.paletteCopy.push('#ffffff');
-  }
-
-  updateColor(color) {
-    let activeColor = this.activeColor;
-    let palette = this.paletteCopy;
-    let idx = palette.indexOf(this.state.activePaletteColor);
-    palette[idx] = color;
-    this.paletteCopy = palette;
-    this.activeColor = color;
-  }
-
-  updatePalette() {
-    this.palettes[this.activePalette] = this.paletteCopy;
-  }
-
-  closeEditPalette() {
-    this.isEditingPalette = false;
   }
 
   createGrid() {
@@ -155,10 +105,6 @@ class DrawStore {
     this.tileHeight = this.actualHeight / this.height;
   }
 
-  updateTitle(title) {
-    this.title = title;
-  }
-
   resizeSurface(data) {
     let { width, height } = data;
     this.width = width;
@@ -167,6 +113,15 @@ class DrawStore {
     this.actualHeight = this.totalHeight * this.zoom;
     this.tileWidth = this.actualWidth / this.width;
     this.tileHeight = this.actualHeight / this.height;
+  }
+
+  saveSprite(data) {
+    this.sprites[this.activeSprite] = data;
+  }
+
+  setActiveSprite(data) {
+    this.activeSprite = data;
+    this.grid = this.sprites[this.activeSprite].grid;
   }
 }
 

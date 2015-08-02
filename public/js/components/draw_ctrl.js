@@ -4,6 +4,7 @@ import DrawStore from '../stores/draw_store';
 import DrawToolList from './draw_tool_list';
 import PaletteManager from './palette_manager';
 import DrawSurface from './draw_surface';
+import SpriteManager from './sprite_manager';
 
 let DrawCtrl = React.createClass({
   getInitialState: function () {
@@ -37,7 +38,6 @@ let DrawCtrl = React.createClass({
         </div>
 
         <DrawSurface primaryColor={this.state.primaryColor}
-                     secondaryColor={this.state.secondaryColor}
                      activeTool={this.state.activeTool}
                      width={this.state.width}
                      height={this.state.height}
@@ -50,6 +50,9 @@ let DrawCtrl = React.createClass({
                      tileHeight={this.state.tileHeight}
                      isMouseDown={this.state.isMouseDown}
                      grid={this.state.grid}/>
+
+        <SpriteManager sprites={this.state.sprites}
+                       activeSprite={this.state.activeSprite}/>
       </div>
     );
   }

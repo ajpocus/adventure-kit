@@ -9,42 +9,6 @@ class DrawActions {
     this.dispatch(color);
   }
 
-  setSecondaryColor(color) {
-    this.dispatch(color);
-  }
-
-  createPalette(paletteName) {
-    this.dispatch(paletteName);
-  }
-
-  editPalette() {
-    this.dispatch();
-  }
-
-  setActiveColor(color) {
-    this.dispatch(color);
-  }
-
-  removeColor(color) {
-    this.dispatch(color);
-  }
-
-  addColor() {
-    this.dispatch();
-  }
-
-  updateColor(color) {
-    this.dispatch(color);
-  }
-
-  updatePalette() {
-    this.dispatch();
-  }
-
-  closeEditPalette() {
-    this.dispatch();
-  }
-
   createGrid() {
     this.dispatch();
   }
@@ -65,11 +29,15 @@ class DrawActions {
     this.dispatch(zoom);
   }
 
-  updateTitle(title) {
-    this.dispatch(title);
+  resizeSurface(data) {
+    this.dispatch(data);
   }
 
-  resizeSurface(data) {
+  saveSprite(data) {
+    this.dispatch(data);
+  }
+
+  setActiveSprite(data) {
     this.dispatch(data);
   }
 }

@@ -8,8 +8,8 @@ body,
 /* Background from subtlepatterns.com */
 
 body {
-  background: url("/img/pixel_weave.png");
-  color: #323232;
+  background: #eee;
+  color: #111;
 }
 
 body a:visited {
@@ -68,7 +68,6 @@ body a:visited {
 }
 
 #footer .links .attribution {
-  color: rgba(255, 255, 255, 0.5);
   font-size: 14px;
 }
 
