@@ -120,7 +120,7 @@ let DrawSurface = React.createClass({
       DrawActions.saveSprite({
         grid: grid,
         dataUrl: renderer.view.toDataURL(),
-        size: this.props.width
+        size: this.props.width * 2
       });
     });
   },
