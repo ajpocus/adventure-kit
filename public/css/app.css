@@ -1,4 +1,12 @@
-@import url('http://fonts.googleapis.com/css?family=VT323|Open+Sans:300italic,400italic,700italic,700,300,400');
+@font-face {
+  font-family: '8bit';
+  src: url('/fonts/8bitwonder.ttf');
+}
+
+@font-face {
+  font-family: 'PressStart';
+  src: url('/fonts/PressStart2P.ttf');
+}
 
 html, body, #root {
   width: 100%;
@@ -16,8 +24,8 @@ body a:visited {
 }
 
 #root {
-  font-family: 'VT323', monospace;
-  font-size: 24px;
+  font-family: 'PressStart', monospace;
+  font-size: 12px;
   width: 100%;
   height: 100%;
 }
@@ -29,8 +37,7 @@ body a:visited {
 }
 
 #header h1.title {
-  font-family: 'VT323', monospace;
-  font-size: 42px;
+  font-size: 32px;
   margin: 12px;
 }
 

@@ -81018,6 +81018,7 @@ var ManageToolList = React.createClass({
         React.createElement('img', { src: '/img/iconic/resize-both.png',
           className: 'pixel icon' }),
         React.createElement('input', { ref: 'size',
+          className: 'size',
           type: 'range',
           min: '16',
           max: '64',

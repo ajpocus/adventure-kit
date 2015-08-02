@@ -17,6 +17,7 @@ let ManageToolList = React.createClass({
           <img src="/img/iconic/resize-both.png"
                className="pixel icon"/>
           <input ref="size"
+                 className="size"
                  type="range"
                  min="16"
                  max="64"

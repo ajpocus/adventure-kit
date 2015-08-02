@@ -37,9 +37,9 @@
 }
 
 #draw .palette .color.active {
-  width: 16px;
-  height: 16px;
-  border: 2px solid goldenrod;
+  width: 14px;
+  height: 14px;
+  border: 3px solid goldenrod;
 }
 
 #render {
@@ -86,10 +86,14 @@
 }
 
 .size-labels {
-  margin-left: 21px;
+  margin-left: 29px;
   display: flex;
 }
 
 .size-label {
-  margin-right: 19px;
+  margin-right: 16px;
+}
+
+input.size {
+  margin-left: 10px;
 }
