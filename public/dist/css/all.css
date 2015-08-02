@@ -1,13 +1,3 @@
-@font-face {
-  font-family: '8bit';
-  src: url("/fonts/8bitwonder.ttf");
-}
-
-@font-face {
-  font-family: 'PressStart';
-  src: url("/fonts/PressStart2P.ttf");
-}
-
 html,
 body,
 #root {
@@ -27,7 +17,6 @@ body a:visited {
 }
 
 #root {
-  font-family: 'PressStart', monospace;
   font-size: 12px;
   width: 100%;
   height: 100%;
