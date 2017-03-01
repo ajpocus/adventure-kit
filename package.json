@@ -2,6 +2,9 @@
   "name": "adventure-kit",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": "0.12.18"
+  },
   "scripts": {
     "start": "node ./bin/www",
     "test": "mocha -w --compilers js:babel/register test/**/*test.js"
