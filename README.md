@@ -24,6 +24,8 @@ The top-level, "smart" components follow the `*_ctrl.js` naming pattern. You'll 
 
 The design, the UI/UX of the app, leaves a lot to be desired. I'll eventually revamp the entire look and feel of the site, make it look decent, when I have time.
 
+There is a conspicuous lack of tests, as this started life as a simple prototype, to see if I could do it. When I pick this project up again, I'll be sure to test my React components individually, and add acceptance tests to make sure things work from a user's point of view.
+
 There are a lot of things I'd do differently, as I look over the code. For starters, I'd make better use of ES6 features like arrow functions to preserve the value of `this`, and to embed logic right in the JSX template, rather than composing it piecemeal.
 
 I also have to come up with a data structure to store the musical data, now that I think about where I left off. I have to implement drag-and-drop on the tracks, too, so people can copy-paste their favorite riffs into a permanent track.
