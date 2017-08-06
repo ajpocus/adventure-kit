@@ -1,4 +1,4 @@
-require('babel/polyfill');
+require('babel-polyfill');
 
 let $ = require('jquery');
 let React = require('react');
