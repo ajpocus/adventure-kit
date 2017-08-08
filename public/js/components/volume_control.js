@@ -1,17 +1,14 @@
 let React = require('react');
+import PropTypes from 'prop-types';
 
-let VolumeControl = React.createClass({
-  propTypes: {
-    volume: React.PropTypes.number.isRequired
-  },
-
-  getInitialState: function () {
+class VolumeControl extends React.Component {
+  getInitialState() {
     return {
       volume: this.props.volume
     };
-  },
+  }
 
-  render: function () {
+  render() {
     return (
       <div className="volume control">
         <img className="volume icon"
@@ -27,13 +24,17 @@ let VolumeControl = React.createClass({
         <span className="display">{Math.round(this.state.volume * 100)}</span>
       </div>
     );
-  },
+  }
 
-  handleChange: function (ev) {
+  handleChange(ev) {
     let volume = ev.target.value;
     this.setState({ volume: volume });
     this.props.onVolumeChange(volume);
   }
-});
+};
+
+VolumeControl.propTypes = {
+  volume: PropTypes.number.isRequired  
+}
 
 export default VolumeControl;

@@ -1,17 +1,12 @@
-let React = require('react');
+import React from 'react';
+import PropTypes from 'prop-types';
 
-let ContextMenu = React.createClass({
-  propTypes: {
-    options: React.PropTypes.array.isRequired,
-    onOptionSelected: React.PropTypes.func.isRequired,
-    ev: React.PropTypes.object.isRequired
-  },
-
-  componentDidMount: function () {
+class ContextMenu extends React.Component {
+  componentDidMount() {
     document.body.addEventListener('click', this.close);
-  },
+  }
 
-  render: function () {
+  render() {
     let ev = this.props.ev;
     let menuStyle = {
       top: ev.pageY + 1,
@@ -40,13 +35,19 @@ let ContextMenu = React.createClass({
         </ul>
       </div>
     );
-  },
+  }
 
-  close: function () {
+  close() {
     let container = document.getElementById('context-menu-container');
     React.unmountComponentAtNode(container);
     document.body.removeEventListener('click', this.close);
   }
-});
+};
+
+ContextMenu.propTypes = {
+  options: PropTypes.array.isRequired,
+  onOptionSelected: PropTypes.func.isRequired,
+  ev: PropTypes.object.isRequired
+}
 
 export default ContextMenu;

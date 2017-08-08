@@ -1,51 +1,48 @@
-require('babel-polyfill');
+import 'babel-polyfill';
 
-let $ = require('jquery');
-let React = require('react');
-let Router = require('react-router');
+import $ from 'jquery';
+import React from 'react';
 
-let DefaultRoute = Router.DefaultRoute;
-let Route = Router.Route;
-let RouteHandler = Router.RouteHandler;
+import {
+  BrowserRouter as Router,
+  Route
+} from 'react-router-dom';
+
+import ReactDOM from 'react-dom'
 
 import Header from './components/header';
 import Footer from './components/footer';
 import DrawCtrl from './components/draw_ctrl';
-import Map from './components/map';
+import MapCtrl from './components/map';
 import MusicCtrl from './components/music_ctrl';
 import Play from './components/play';
 
 $(function () {
-  let App = React.createClass({
-    render: function () {
+  class App extends React.Component {
+    render() {
       return (
         <div id="root">
-          <Header/>
+          <Router>
+            <div>  
+              <Header />
 
-          <div id="content">
-            <RouteHandler/>
-          </div>
+              <div id="content">
+                <Route path="/draw" component={DrawCtrl} />
+                <Route path="/map" component={MapCtrl} />
+                <Route path="/music" component={MusicCtrl} />
+                <Route path="/play" component={Play} />
+              </div>
 
-          <div id="modal-container"></div>
-          <div id="context-menu-container"></div>
+              <div id="modal-container"></div>
+              <div id="context-menu-container"></div>
 
-          <Footer/>
+              <Footer/>
+            </div>
+          </Router>  
         </div>
       );
-    }
-  });
+    }    
+  };
 
-  let routes = (
-    <Route name="app" path="/" handler={App}>
-      <Route name="draw" handler={DrawCtrl}/>
-      <Route name="map" handler={Map}/>
-      <Route name="music" handler={MusicCtrl}/>
-      <Route name="play" handler={Play}/>
-      <DefaultRoute handler={DrawCtrl}/>
-    </Route>
-  );
-
-  Router.run(routes, function (Handler) {
-    React.render(<Handler/>, document.body);
-  });
+  ReactDOM.render(<App />, document.querySelector('#root'));
 });

@@ -1,13 +1,8 @@
 let React = require('react');
+import PropTypes from 'prop-types';
 
-let ToolList = React.createClass({
-  propTypes: {
-    tools: React.PropTypes.array.isRequired,
-    activeTool: React.PropTypes.string,
-    onSetActiveTool: React.PropTypes.func.isRequired
-  },
-
-  render: function () {
+class ToolList extends React.Component {
+  render() {
     let toolList = [];
     for (let i = 0; i < this.props.tools.length; i++) {
       let tool = this.props.tools[i];
@@ -35,11 +30,16 @@ let ToolList = React.createClass({
         </ul>
       </div>
     );
-  },
+  }
 
-  setActiveTool: function (tool) {
+  setActiveTool(tool) {
     this.props.onSetActiveTool(tool);
-  },
-});
+  }
+};
 
+ToolList.propTypes = {
+  tools: PropTypes.array.isRequired,
+  activeTool: PropTypes.string,
+  onSetActiveTool: PropTypes.func.isRequired
+}
 export default ToolList;

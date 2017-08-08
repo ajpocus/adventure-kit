@@ -1,16 +1,16 @@
-let React = require('react');
+import React from 'react';
 
 import DrawActions from '../actions/draw_actions';
 import ToolList from './tool_list';
 
-let ManageToolList = React.createClass({
-  getInitialState: function () {
+class ManageToolList extends React.Component {
+  getInitialState() {
     return {
       size: 16
     };
-  },
+  }
 
-  render: function () {
+  render() {
     return (
       <div className="manage-draw">
         <div className="resize">
@@ -33,9 +33,9 @@ let ManageToolList = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  handleResize: function (ev) {
+  handleResize(ev) {
     var sizeInput = this.refs.size.getDOMNode();
     let size = sizeInput.value;
     DrawActions.resizeSurface({
@@ -44,6 +44,6 @@ let ManageToolList = React.createClass({
     });
     this.setState({ size });
   }
-});
+};
 
 export default ManageToolList;

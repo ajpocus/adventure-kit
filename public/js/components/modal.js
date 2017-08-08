@@ -1,11 +1,11 @@
 let React = require('react');
 
-let Modal = React.createClass({
-  getDefaultProps: function () {
+class Modal extends React.Component {
+  getDefaultProps() {
     isOpen: false
-  },
+  }
 
-  render: function () {
+  render() {
     let modalStyle = {};
     if (!this.props.isOpen) {
       modalStyle.display = 'none';
@@ -17,6 +17,6 @@ let Modal = React.createClass({
       </div>
     );
   }
-});
+};
 
 export default Modal;

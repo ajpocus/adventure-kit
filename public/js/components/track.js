@@ -5,8 +5,8 @@ import MusicActions from '../actions/music_actions';
 import TrackToolList from './track_tool_list';
 import ContextMenu from './context_menu';
 
-let Track = React.createClass({
-  getDefaultProps: function () {
+class Track extends React.Component {
+  getDefaultProps() {
     let bpm = 120;
     let numMeasures = 4;
     let beatsPerMeasure = 4;
@@ -34,9 +34,9 @@ let Track = React.createClass({
       beatsPerWidth,
       msPerWidth
     };
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     let width = this.props.canvasWidth;
     let height = this.props.canvasHeight;
     let renderer = PIXI.autoDetectRenderer(width, height, {
@@ -56,13 +56,13 @@ let Track = React.createClass({
       renderer.render(stage);
       requestAnimationFrame(this.draw);
     });
-  },
+  }
 
-  componentDidUpdate: function () {
+  componentDidUpdate() {
     requestAnimationFrame(this.draw);
-  },
+  }
 
-  render: function () {
+  render() {
     let trackState = this.props.trackState;
     let trackTools;
     if (this.props.isControllable) {
@@ -84,9 +84,9 @@ let Track = React.createClass({
         {trackTools}
       </li>
     );
-  },
+  }
 
-  draw: function () {
+  draw() {
     let renderer = this.state.renderer;
     let stage = this.state.stage;
     let data = this.props.data;
@@ -119,9 +119,9 @@ let Track = React.createClass({
     stage.addChild(gfx);
     renderer.render(stage);
     requestAnimationFrame(this.draw);
-  },
+  }
 
-  getTrackBounds: function () {
+  getTrackBounds() {
     let data = this.props.data;
     let trackState = this.props.trackState;
 
@@ -142,9 +142,9 @@ let Track = React.createClass({
     }
 
     return [startBound, endBound];
-  },
+  }
 
-  getNoteBounds: function (note, startBound, endBound) {
+  getNoteBounds(note, startBound, endBound) {
     if (!startBound && !endBound) {
       endBound = Number(new Date());
       startBound = endBound - this.props.msPerWidth;
@@ -166,9 +166,9 @@ let Track = React.createClass({
     let y = this.props.canvasHeight - (factor * height + height);
 
     return { x, y, width, height };
-  },
+  }
 
-  drawMeasureMarkers: function (gfx) {
+  drawMeasureMarkers(gfx) {
     gfx.beginFill(0x000000, 0.2);
 
     let halfX = this.props.canvasWidth / 2;
@@ -182,9 +182,9 @@ let Track = React.createClass({
 
     let threeX = this.props.canvasWidth * 3 / 4;
     gfx.drawRect(threeX, y, width, height);
-  },
+  }
 
-  handleSetActiveTool: function (name) {
+  handleSetActiveTool(name) {
     let trackNumber = this.props.trackNumber;
 
     switch (name) {
@@ -199,9 +199,9 @@ let Track = React.createClass({
       default:
         return;
     }
-  },
+  }
 
-  handleClick: function (ev) {
+  handleClick(ev) {
     if (this.mouseOverNote(ev)) {
       this.selectNote(ev);
     }
@@ -209,17 +209,17 @@ let Track = React.createClass({
     if (this.props.isControllable) {
       MusicActions.pauseTrack(this.props.trackNumber);
     }
-  },
+  }  
 
-  handleMouseDown: function (ev) {
+  handleMouseDown(ev) {
     MusicActions.setIsMouseDown(true);
-  },
+  }
 
-  handleMouseUp: function (ev) {
+  handleMouseUp(ev) {
     MusicActions.setIsMouseDown(false);
-  },
+  }
 
-  handleMouseMove: function (ev) {
+  handleMouseMove(ev) {
     if (this.state.isMouseDown) {
       if (this.state.noteSelected) {
         this.moveNote(ev);
@@ -227,25 +227,25 @@ let Track = React.createClass({
         this.moveTrackSelection(ev);
       }
     }
-  },
+  }
 
-  handleContextMenu: function (ev) {
+  handleContextMenu(ev) {
     ev.preventDefault();
     React.render(<ContextMenu options={this.props.contextOptions}
                               onOptionSelected={this.onOptionSelected}
                               ev={ev}/>,
                  document.getElementById('context-menu-container'));
-  },
+  }
 
-  moveNote: function (ev) {
+  moveNote(ev) {
 
-  },
+  }
 
-  moveTrackSelection: function (ev) {
+  moveTrackSelection(ev) {
 
-  },
+  }
 
-  mouseOverNote: function (ev) {
+  mouseOverNote(ev) {
     let pos = this.getCanvasPosition(ev);
     let activeNote = null;
     let data = this.props.data;
@@ -271,19 +271,19 @@ let Track = React.createClass({
     });
 
     return Boolean(activeNote);
-  },
+  }
 
-  getCanvasPosition: function (ev) {
+  getCanvasPosition(ev) {
     let rect = this.state.renderer.view.getBoundingClientRect();
     return {
       x: ev.clientX - rect.left,
       y: ev.clientY - rect.top
     };
-  },
+  }
 
-  onOptionSelected: function (name) {
+  onOptionSelected(name) {
     // TODO: do something with selected option
   }
-});
+};
 
 export default Track;

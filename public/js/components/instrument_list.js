@@ -4,8 +4,8 @@ import MusicActions from '../actions/music_actions';
 import Modal from './modal';
 import EditInstrument from './edit_instrument';
 
-let InstrumentList = React.createClass({
-  render: function () {
+class InstrumentList extends React.Component {
+  render() {
     let instruments = this.props.instruments;
     let instrumentViews = [];
 
@@ -43,15 +43,15 @@ let InstrumentList = React.createClass({
         </Modal>
       </div>
     );
-  },
+  }
 
-  handleClick: function (idx) {
+  handleClick(idx) {
     MusicActions.setActiveInstrument(idx);
-  },
+  }
 
-  newInstrument: function () {
+  newInstrument() {
     MusicActions.newInstrument();
   }
-});
+};
 
 export default InstrumentList;

@@ -6,24 +6,24 @@ import InstrumentList from './instrument_list';
 import Keyboard from './keyboard';
 import VolumeControl from './volume_control';
 
-let MusicCtrl = React.createClass({
-  getInitialState: function () {
+class MusicCtrl extends React.Component {
+  getInitialState() {
     return MusicStore.getState();
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     MusicStore.listen(this.onChange);
-  },
+  }
 
-  componentWillUnmount: function () {
+  componentWillUnmount() {
     MusicStore.unlisten(this.onChange);
-  },
+  }
 
-  onChange: function (state) {
+  onChange(state) {
     this.setState(state);
-  },
+  }
 
-  render: function () {
+  render() {
     let instrument = this.state.instruments[this.state.activeInstrument];
     return (
       <div id="music">
@@ -57,6 +57,6 @@ let MusicCtrl = React.createClass({
       </div>
     );
   }
-});
+};
 
 export default MusicCtrl;

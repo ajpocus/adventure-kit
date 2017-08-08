@@ -1,13 +1,10 @@
 let React = require('react');
+import PropTypes from 'prop-types';
 
 import ToolList from './tool_list';
 
-let TrackToolList = React.createClass({
-  propTypes: {
-    onSetActiveTool: React.PropTypes.func.isRequired
-  },
-
-  getDefaultProps: function () {
+class TrackToolList extends React.Component {
+  getDefaultProps() {
     return {
       tools: [
         {
@@ -24,9 +21,9 @@ let TrackToolList = React.createClass({
         }
       ]
     };
-  },
+  }
 
-  render: function () {
+  render() {
     return (
       <div className="track-tools">
         <ToolList tools={this.props.tools}
@@ -35,6 +32,10 @@ let TrackToolList = React.createClass({
       </div>
     );
   }
-});
+};
+
+TrackToolList.propTypes = {
+  onSetActiveTool: PropTypes.func.isRequired
+}
 
 export default TrackToolList;

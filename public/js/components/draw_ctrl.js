@@ -1,4 +1,4 @@
-let React = require('react');
+import React from 'react';
 
 import DrawStore from '../stores/draw_store';
 import DrawToolList from './draw_tool_list';
@@ -6,24 +6,24 @@ import PaletteManager from './palette_manager';
 import DrawSurface from './draw_surface';
 import SpriteManager from './sprite_manager';
 
-let DrawCtrl = React.createClass({
-  getInitialState: function () {
+class DrawCtrl extends React.Component {
+  getInitialState() {
     return DrawStore.getState();
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     DrawStore.listen(this.onChange);
-  },
+  }
 
-  componentWillUnmount: function () {
+  componentWillUnmount() {
     DrawStore.unlisten(this.onChange);
-  },
+  }
 
-  onChange: function (state) {
+  onChange(state) {
     this.setState(state);
-  },
+  }
 
-  render: function () {
+  render() {
     let actualWidth = this.state.totalWidth * this.state.zoom;
     let actualHeight = this.state.totalHeight * this.state.zoom;
     let tileWidth = actualWidth / this.state.width;
@@ -56,6 +56,6 @@ let DrawCtrl = React.createClass({
       </div>
     );
   }
-});
+};
 
 export default DrawCtrl;

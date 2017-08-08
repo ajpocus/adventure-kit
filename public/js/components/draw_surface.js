@@ -9,17 +9,8 @@ import DrawProperties from './draw_properties';
 import Pixel from '../models/pixel';
 import Transparency from '../mixins/transparency';
 
-let DrawSurface = React.createClass({
-  getDefaultProps: function () {
-    return {
-      bgTileSize: 8,
-      minZoom: 0.125,
-      maxZoom: 4,
-      zoomDelta: 0.125
-    };
-  },
-
-  componentDidMount: function () {
+class DrawSurface extends React.Component {
+  componentDidMount() {
     let width = this.props.actualWidth;
     let height = this.props.actualHeight;
     let renderer = PIXI.autoDetectRenderer(width, height);
@@ -45,9 +36,9 @@ let DrawSurface = React.createClass({
       this.drawBackground();
       requestAnimationFrame(this.animate);
     });
-  },
+  }
 
-  componentDidUpdate: function (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.actualWidth !== prevProps.actualWidth ||
         this.props.actualHeight !== prevProps.actualHeight ||
         this.props.width !== prevProps.width ||
@@ -55,9 +46,9 @@ let DrawSurface = React.createClass({
       this.drawBackground();
       this.resizeGrid();
     }
-  },
+  }
 
-  render: function () {
+  render() {
     let surfaceTop = (this.props.totalHeight - this.props.actualHeight) / 2;
     let surfaceLeft = (this.props.totalWidth - this.props.actualWidth) / 2;
     let surfaceStyle = {
@@ -91,9 +82,9 @@ let DrawSurface = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  animate: function () {
+  animate() {
     let drawGfx = this.state.drawGfx;
     let renderer = this.state.renderer;
     let stage = this.state.stage;
@@ -123,9 +114,9 @@ let DrawSurface = React.createClass({
         size: this.props.width * 2
       });
     });
-  },
+  }
 
-  highlightPixel: function (ev) {
+  highlightPixel(ev) {
     let overlayGfx = this.state.overlayGfx;
     let { x, y } = this.getTileCoordinates(ev);
     let grid = this.props.grid;
@@ -147,9 +138,9 @@ let DrawSurface = React.createClass({
     if (this.props.isMouseDown) {
       this.draw(ev);
     }
-  },
+  }
 
-  clearHighlight: function (currentPixel) {
+  clearHighlight(currentPixel) {
     let overlayGfx = this.state.overlayGfx;
     let grid = this.props.grid;
     overlayGfx.clear();
@@ -176,9 +167,9 @@ let DrawSurface = React.createClass({
 
     DrawActions.updateGrid(grid);
     this.setState({ overlayGfx });
-  },
+  }
 
-  draw: function (ev) {
+  draw(ev) {
     ev.preventDefault();
     let {x, y} = this.getTileCoordinates(ev);
     let grid = this.props.grid;
@@ -250,13 +241,13 @@ let DrawSurface = React.createClass({
     DrawActions.updateGrid(grid);
     DrawActions.setIsMouseDown(true);
     this.setState({ drawGfx });
-  },
+  }
 
-  setMouseUp: function (ev) {
+  setMouseUp(ev) {
     DrawActions.setIsMouseDown(false);
-  },
+  }
 
-  onZoom: function (ev) {
+  onZoom(ev) {
     ev.preventDefault();
     let zoom = this.props.zoom;
     let actualWidth = this.props.actualWidth;
@@ -277,9 +268,9 @@ let DrawSurface = React.createClass({
     }
 
     DrawActions.updateZoom(zoom);
-  },
+  }
 
-  drawBackground: function () {
+  drawBackground() {
     let bgGfx = this.state.bgGfx;
     let bgTileSize = this.props.bgTileSize;
     let numTilesH = this.props.actualWidth / bgTileSize;
@@ -297,13 +288,13 @@ let DrawSurface = React.createClass({
     }
 
     this.setState({ bgGfx });
-  },
+  }
 
-  resizeGrid: function () {
+  resizeGrid() {
     DrawActions.resizeGrid();
-  },
+  }
 
-  getTileCoordinates: function (ev) {
+  getTileCoordinates(ev) {
     let elRect = ev.target.getBoundingClientRect();
     let absX = ev.clientX;
     let absY = ev.clientY;
@@ -314,9 +305,9 @@ let DrawSurface = React.createClass({
     let tileY = Math.floor(y / this.props.tileHeight);
 
     return { x: tileX, y: tileY };
-  },
+  }
 
-  getFillParams: function (x, y) {
+  getFillParams(x, y) {
     let fillWidth = this.props.tileWidth;
     let fillHeight = this.props.tileHeight;
     let fillX = x * fillWidth;
@@ -328,11 +319,18 @@ let DrawSurface = React.createClass({
       fillWidth,
       fillHeight
     };
-  },
+  }
 
-  colorToInt: function (color) {
+  colorToInt(color) {
     return parseInt(color.slice(1), 16);
   }
-});
+};
+
+DrawSurface.defaultProps = {
+  bgTileSize: 8,
+  minZoom: 0.125,
+  maxZoom: 4,
+  zoomDelta: 0.125
+}
 
 export default DrawSurface;

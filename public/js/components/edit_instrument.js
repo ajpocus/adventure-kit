@@ -3,8 +3,8 @@ let React = require('react');
 import MusicActions from '../actions/music_actions';
 import InstrumentComponent from './instrument_component';
 
-let EditInstrument = React.createClass({
-  render: function () {
+class EditInstrument extends React.Component {
+  render() {
     let instrument = this.props.instrument;
     let components = instrument.components;
     let componentViews = [];
@@ -66,15 +66,15 @@ let EditInstrument = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  handleNameChange: function (ev) {
+  handleNameChange(ev) {
     let instrument = this.props.instrument;
     instrument.name = ev.target.value;
     MusicActions.updateInstrument(instrument);
-  },
+  }
 
-  addUndertone: function () {
+  addUndertone() {
     let instrument = this.props.instrument;
     let components = instrument.components;
     let firstComponent = components[0];
@@ -90,9 +90,9 @@ let EditInstrument = React.createClass({
 
     instrument.components = components;
     MusicActions.updateInstrument(instrument);
-  },
+  }
 
-  addOvertone: function () {
+  addOvertone() {
     let instrument = this.props.instrument;
     let components = instrument.components;
     let lastComponent = components[components.length - 1];
@@ -108,21 +108,21 @@ let EditInstrument = React.createClass({
 
     instrument.components = components;
     MusicActions.updateInstrument(instrument);
-  },
+  }
 
-  handleClose: function () {
+  handleClose() {
     MusicActions.closeEditInstrument();
-  },
+  }
 
-  handleCancel: function () {
+  handleCancel() {
     // remove the created instrument
     this.handleClose();
-  },
+  }
 
-  handleSave: function () {
+  handleSave() {
     // save the instrument
     this.handleClose();
   }
-});
+};
 
 export default EditInstrument;

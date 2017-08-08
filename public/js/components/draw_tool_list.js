@@ -3,27 +3,8 @@ let React = require('react');
 import DrawActions from '../actions/draw_actions';
 import ToolList from './tool_list';
 
-let DrawToolList = React.createClass({
-  getDefaultProps: function () {
-    return {
-      tools: [
-        {
-          name: 'Pencil',
-          imgUrl: '/img/iconic/pencil.png'
-        },
-        {
-          name: 'Bucket',
-          imgUrl: '/img/iconic/droplet.png'
-        },
-        {
-          name: 'Eyedropper',
-          imgUrl: '/img/iconic/eyedropper.png'
-        }
-      ]
-    }
-  },
-
-  render: function () {
+class DrawToolList extends React.Component {
+  render() {
     return (
       <div className="draw-tools">
         <ToolList tools={this.props.tools}
@@ -31,11 +12,11 @@ let DrawToolList = React.createClass({
                   onSetActiveTool={this.onSetActiveTool}/>
       </div>
     );
-  },
+  }
 
-  onSetActiveTool: function (tool) {
+  onSetActiveTool(tool) {
     DrawActions.setActiveTool(tool);
   }
-});
+};
 
 export default DrawToolList;

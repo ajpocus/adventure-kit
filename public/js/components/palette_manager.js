@@ -6,8 +6,8 @@ import DrawActions from '../actions/draw_actions';
 import Transparency from '../mixins/transparency';
 import Modal from './modal';
 
-let PaletteManager = React.createClass({
-  render: function () {
+class PaletteManager extends React.Component {
+  render() {
     let paletteColors = [];
     for (let i = 0; i < this.props.palette.length; i++) {
       let color = this.props.palette[i];
@@ -32,11 +32,11 @@ let PaletteManager = React.createClass({
         </ul>
       </div>
     );
-  },
+  }
 
-  setPrimaryColor: function (color) {
+  setPrimaryColor(color) {
     DrawActions.setPrimaryColor(color);
   }
-});
+};
 
 export default PaletteManager;

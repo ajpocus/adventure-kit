@@ -1,9 +1,9 @@
-let React = require('react');
+import React from 'react';
 
 import DrawActions from '../actions/draw_actions';
 
-let ColorPicker = React.createClass({
-  render: function () {
+class ColorPicker extends React.Component {
+  render() {
     return (
       <div className="color-picker">
         <input type="color"
@@ -18,27 +18,27 @@ let ColorPicker = React.createClass({
                onChange={this.handleSecondaryColorChange}/>
       </div>
     );
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     this.refs.primaryColor.getDOMNode().value = this.props.primaryColor;
     this.refs.secondaryColor.getDOMNode().value = this.props.secondaryColor;
-  },
+  }
 
-  componentDidUpdate: function () {
+  componentDidUpdate() {
     this.refs.primaryColor.getDOMNode().value = this.props.primaryColor;
     this.refs.secondaryColor.getDOMNode().value = this.props.secondaryColor;
-  },
+  }
 
-  handlePrimaryColorChange: function (ev) {
+  handlePrimaryColorChange(ev) {
     let color = ev.target.value;
     DrawActions.setPrimaryColor(color);
-  },
+  }
 
-  handleSecondaryColorChange: function (ev) {
+  handleSecondaryColorChange(ev) {
     let color = ev.target.value;
     DrawActions.setSecondaryColor(color);
   }
-});
+};
 
 export default ColorPicker;
