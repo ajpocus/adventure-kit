@@ -2,8 +2,10 @@ let React = require('react');
 import PropTypes from 'prop-types';
 
 class VolumeControl extends React.Component {
-  getInitialState() {
-    return {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
       volume: this.props.volume
     };
   }

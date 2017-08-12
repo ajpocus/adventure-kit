@@ -103,8 +103,10 @@ class Keyboard extends React.Component {
     return keyCodeMap[key]
   }
 
-  getInitialState() {
-    return {
+  constructor(props) {
+    super(props);
+
+    this.state = {
       ctx: new window.AudioContext(),
       oscillators: {},
       notesPlaying: {},

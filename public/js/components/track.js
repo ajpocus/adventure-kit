@@ -68,7 +68,8 @@ class Track extends React.Component {
     if (this.props.isControllable) {
       trackTools = (
         <div className="track-controls">
-          <TrackToolList activeTool={trackState.activeTool}
+          <TrackToolList tools={this.props.tools}
+                         activeTool={trackState.activeTool}
                          onSetActiveTool={this.handleSetActiveTool}/>
         </div>
       );

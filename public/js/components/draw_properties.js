@@ -4,8 +4,10 @@ import DrawActions from '../actions/draw_actions';
 import ToolList from './tool_list';
 
 class ManageToolList extends React.Component {
-  getInitialState() {
-    return {
+  constructor(props) {
+    super(props)
+
+    this.state = {
       size: 16
     };
   }

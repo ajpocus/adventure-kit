@@ -15801,34 +15801,51 @@ var REACT_STATICS = {
 };
 
 var KNOWN_STATICS = {
-    name: true,
-    length: true,
-    prototype: true,
-    caller: true,
-    arguments: true,
-    arity: true
+  name: true,
+  length: true,
+  prototype: true,
+  caller: true,
+  callee: true,
+  arguments: true,
+  arity: true
 };
 
-var isGetOwnPropertySymbolsAvailable = typeof Object.getOwnPropertySymbols === 'function';
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+var getPrototypeOf = Object.getPrototypeOf;
+var objectPrototype = getPrototypeOf && getPrototypeOf(Object);
+var getOwnPropertyNames = Object.getOwnPropertyNames;
 
-module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, customStatics) {
+module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
     if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
-        var keys = Object.getOwnPropertyNames(sourceComponent);
 
-        /* istanbul ignore else */
-        if (isGetOwnPropertySymbolsAvailable) {
-            keys = keys.concat(Object.getOwnPropertySymbols(sourceComponent));
+        if (objectPrototype) {
+            var inheritedComponent = getPrototypeOf(sourceComponent);
+            if (inheritedComponent && inheritedComponent !== objectPrototype) {
+                hoistNonReactStatics(targetComponent, inheritedComponent, blacklist);
+            }
+        }
+
+        var keys = getOwnPropertyNames(sourceComponent);
+
+        if (getOwnPropertySymbols) {
+            keys = keys.concat(getOwnPropertySymbols(sourceComponent));
         }
 
         for (var i = 0; i < keys.length; ++i) {
-            if (!REACT_STATICS[keys[i]] && !KNOWN_STATICS[keys[i]] && (!customStatics || !customStatics[keys[i]])) {
-                try {
-                    targetComponent[keys[i]] = sourceComponent[keys[i]];
-                } catch (error) {
-
+            var key = keys[i];
+            if (!REACT_STATICS[key] && !KNOWN_STATICS[key] && (!blacklist || !blacklist[key])) {
+                // Only hoist enumerables and non-enumerable functions
+                if(propIsEnumerable.call(sourceComponent, key) || typeof sourceComponent[key] === 'function') {
+                    try { // Avoid failures from read-only properties
+                        targetComponent[key] = sourceComponent[key];
+                    } catch (e) {}
                 }
             }
         }
+
+        return targetComponent;
     }
 
     return targetComponent;
@@ -101286,18 +101303,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DrawCtrl = function (_React$Component) {
   _inherits(DrawCtrl, _React$Component);
 
-  function DrawCtrl() {
+  function DrawCtrl(props) {
     _classCallCheck(this, DrawCtrl);
 
-    return _possibleConstructorReturn(this, (DrawCtrl.__proto__ || Object.getPrototypeOf(DrawCtrl)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (DrawCtrl.__proto__ || Object.getPrototypeOf(DrawCtrl)).call(this, props));
+
+    _this.state = _draw_store2.default.getState();
+    return _this;
   }
 
   _createClass(DrawCtrl, [{
-    key: 'getInitialState',
-    value: function getInitialState() {
-      return _draw_store2.default.getState();
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       _draw_store2.default.listen(this.onChange);
@@ -101326,7 +101341,8 @@ var DrawCtrl = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'toolbar' },
-          _react2.default.createElement(_draw_tool_list2.default, { activeTool: this.state.activeTool }),
+          _react2.default.createElement(_draw_tool_list2.default, { tools: this.state.tools,
+            activeTool: this.state.activeTool }),
           _react2.default.createElement(_palette_manager2.default, { palette: this.state.palette,
             primaryColor: this.state.primaryColor })
         ),
@@ -101388,20 +101404,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ManageToolList = function (_React$Component) {
   _inherits(ManageToolList, _React$Component);
 
-  function ManageToolList() {
+  function ManageToolList(props) {
     _classCallCheck(this, ManageToolList);
 
-    return _possibleConstructorReturn(this, (ManageToolList.__proto__ || Object.getPrototypeOf(ManageToolList)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (ManageToolList.__proto__ || Object.getPrototypeOf(ManageToolList)).call(this, props));
+
+    _this.state = {
+      size: 16
+    };
+    return _this;
   }
 
   _createClass(ManageToolList, [{
-    key: 'getInitialState',
-    value: function getInitialState() {
-      return {
-        size: 16
-      };
-    }
-  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
@@ -102209,7 +102223,7 @@ var Header = function (_React$Component) {
   function Header(props) {
     _classCallCheck(this, Header);
 
-    var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this));
+    var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
 
     _this.state = {
       activeTab: props.tabs[0].name
@@ -102582,12 +102596,6 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var Keyboard = function (_React$Component) {
   _inherits(Keyboard, _React$Component);
 
-  function Keyboard() {
-    _classCallCheck(this, Keyboard);
-
-    return _possibleConstructorReturn(this, (Keyboard.__proto__ || Object.getPrototypeOf(Keyboard)).apply(this, arguments));
-  }
-
   _createClass(Keyboard, [{
     key: 'keyMap',
     value: function (_keyMap) {
@@ -102695,17 +102703,23 @@ var Keyboard = function (_React$Component) {
 
       return keyCodeMap[key];
     }
-  }, {
-    key: 'getInitialState',
-    value: function getInitialState() {
-      return {
-        ctx: new window.AudioContext(),
-        oscillators: {},
-        notesPlaying: {},
-        recordingIndices: {}
-      };
-    }
-  }, {
+  }]);
+
+  function Keyboard(props) {
+    _classCallCheck(this, Keyboard);
+
+    var _this = _possibleConstructorReturn(this, (Keyboard.__proto__ || Object.getPrototypeOf(Keyboard)).call(this, props));
+
+    _this.state = {
+      ctx: new window.AudioContext(),
+      oscillators: {},
+      notesPlaying: {},
+      recordingIndices: {}
+    };
+    return _this;
+  }
+
+  _createClass(Keyboard, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
       $(document).on('keydown', this.handleKeyDown);
@@ -103029,18 +103043,16 @@ var React = require('react');
 var MusicCtrl = function (_React$Component) {
   _inherits(MusicCtrl, _React$Component);
 
-  function MusicCtrl() {
+  function MusicCtrl(props) {
     _classCallCheck(this, MusicCtrl);
 
-    return _possibleConstructorReturn(this, (MusicCtrl.__proto__ || Object.getPrototypeOf(MusicCtrl)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (MusicCtrl.__proto__ || Object.getPrototypeOf(MusicCtrl)).call(this, props));
+
+    _this.state = _music_store2.default.getState();
+    return _this;
   }
 
   _createClass(MusicCtrl, [{
-    key: 'getInitialState',
-    value: function getInitialState() {
-      return _music_store2.default.getState();
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       _music_store2.default.listen(this.onChange);
@@ -103278,29 +103290,7 @@ var ToolList = function (_React$Component) {
   _createClass(ToolList, [{
     key: 'render',
     value: function render() {
-      var toolList = [];
-      for (var i = 0; i < this.props.tools.length; i++) {
-        var tool = this.props.tools[i];
-        var className = "btn";
-        if (tool.name === this.props.activeTool || tool.active) {
-          className += " active";
-        }
-
-        toolList.push(React.createElement(
-          'li',
-          { className: 'tool', key: tool.name, title: tool.name },
-          React.createElement(
-            'button',
-            { className: className,
-              onClick: this.setActiveTool.bind(this, tool.name) },
-            React.createElement(
-              'div',
-              { className: 'img-container' },
-              React.createElement('img', { className: 'pixel icon', src: tool.imgUrl })
-            )
-          )
-        ));
-      }
+      var _this2 = this;
 
       return React.createElement(
         'div',
@@ -103308,7 +103298,29 @@ var ToolList = function (_React$Component) {
         React.createElement(
           'ul',
           { className: 'tool-list' },
-          toolList
+          function () {
+            _this2.props.tools.map(function (tool) {
+              var className = "btn";
+              if (tool.name === _this2.props.activeTool || tool.active) {
+                className += " active";
+              }
+
+              return React.createElement(
+                'li',
+                { className: 'tool', key: tool.name, title: tool.name },
+                React.createElement(
+                  'button',
+                  { className: className,
+                    onClick: _this2.setActiveTool.bind(_this2, tool.name) },
+                  React.createElement(
+                    'div',
+                    { className: 'img-container' },
+                    React.createElement('img', { className: 'pixel icon', src: tool.imgUrl })
+                  )
+                )
+              );
+            });
+          }()
         )
       );
     }
@@ -103324,11 +103336,6 @@ var ToolList = function (_React$Component) {
 
 ;
 
-ToolList.propTypes = {
-  tools: _propTypes2.default.array.isRequired,
-  activeTool: _propTypes2.default.string,
-  onSetActiveTool: _propTypes2.default.func.isRequired
-};
 exports.default = ToolList;
 
 },{"prop-types":573,"react":755}],823:[function(require,module,exports){
@@ -103438,7 +103445,8 @@ var Track = function (_React$Component) {
         trackTools = React.createElement(
           'div',
           { className: 'track-controls' },
-          React.createElement(_track_tool_list2.default, { activeTool: trackState.activeTool,
+          React.createElement(_track_tool_list2.default, { tools: this.props.tools,
+            activeTool: trackState.activeTool,
             onSetActiveTool: this.handleSetActiveTool })
         );
       }
@@ -103770,29 +103778,27 @@ var React = require('react');
 var TrackToolList = function (_React$Component) {
   _inherits(TrackToolList, _React$Component);
 
-  function TrackToolList() {
+  function TrackToolList(props) {
     _classCallCheck(this, TrackToolList);
 
-    return _possibleConstructorReturn(this, (TrackToolList.__proto__ || Object.getPrototypeOf(TrackToolList)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (TrackToolList.__proto__ || Object.getPrototypeOf(TrackToolList)).call(this, props));
+
+    _this.props = {
+      tools: [{
+        name: 'Play',
+        imgUrl: '/img/icons/glyphicons-174-play.png'
+      }, {
+        name: 'Pause',
+        imgUrl: '/img/icons/glyphicons-175-pause.png'
+      }, {
+        name: 'Stop',
+        imgUrl: '/img/icons/glyphicons-176-stop.png'
+      }]
+    };
+    return _this;
   }
 
   _createClass(TrackToolList, [{
-    key: 'getDefaultProps',
-    value: function getDefaultProps() {
-      return {
-        tools: [{
-          name: 'Play',
-          imgUrl: '/img/icons/glyphicons-174-play.png'
-        }, {
-          name: 'Pause',
-          imgUrl: '/img/icons/glyphicons-175-pause.png'
-        }, {
-          name: 'Stop',
-          imgUrl: '/img/icons/glyphicons-176-stop.png'
-        }]
-      };
-    }
-  }, {
     key: 'render',
     value: function render() {
       return React.createElement(
@@ -103842,20 +103848,18 @@ var React = require('react');
 var VolumeControl = function (_React$Component) {
   _inherits(VolumeControl, _React$Component);
 
-  function VolumeControl() {
+  function VolumeControl(props) {
     _classCallCheck(this, VolumeControl);
 
-    return _possibleConstructorReturn(this, (VolumeControl.__proto__ || Object.getPrototypeOf(VolumeControl)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (VolumeControl.__proto__ || Object.getPrototypeOf(VolumeControl)).call(this, props));
+
+    _this.state = {
+      volume: _this.props.volume
+    };
+    return _this;
   }
 
   _createClass(VolumeControl, [{
-    key: 'getInitialState',
-    value: function getInitialState() {
-      return {
-        volume: this.props.volume
-      };
-    }
-  }, {
     key: 'render',
     value: function render() {
       return React.createElement(

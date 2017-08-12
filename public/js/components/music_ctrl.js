@@ -7,8 +7,10 @@ import Keyboard from './keyboard';
 import VolumeControl from './volume_control';
 
 class MusicCtrl extends React.Component {
-  getInitialState() {
-    return MusicStore.getState();
+  constructor(props) {
+    super(props);
+
+    this.state = MusicStore.getState();
   }
 
   componentDidMount() {

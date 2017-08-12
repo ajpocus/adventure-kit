@@ -7,8 +7,10 @@ import DrawSurface from './draw_surface';
 import SpriteManager from './sprite_manager';
 
 class DrawCtrl extends React.Component {
-  getInitialState() {
-    return DrawStore.getState();
+  constructor(props) {
+    super(props);
+
+    this.state = DrawStore.getState();    
   }
 
   componentDidMount() {
@@ -32,7 +34,8 @@ class DrawCtrl extends React.Component {
     return (
       <div id="draw">
         <div className="toolbar">
-          <DrawToolList activeTool={this.state.activeTool}/>
+          <DrawToolList tools={this.state.tools}
+                        activeTool={this.state.activeTool}/>
           <PaletteManager palette={this.state.palette}
                           primaryColor={this.state.primaryColor}/>
         </div>

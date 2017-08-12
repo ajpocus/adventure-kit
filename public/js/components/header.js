@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 
 class Header extends React.Component {
   constructor(props) {
-    super();
+    super(props);
+    
     this.state = {
       activeTab: props.tabs[0].name
     };

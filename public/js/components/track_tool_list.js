@@ -4,8 +4,10 @@ import PropTypes from 'prop-types';
 import ToolList from './tool_list';
 
 class TrackToolList extends React.Component {
-  getDefaultProps() {
-    return {
+  constructor(props) {
+    super(props);
+    
+    this.props = {
       tools: [
         {
           name: 'Play',
