@@ -1,45 +1,80 @@
-import alt from '../alt';
+import {
+  SET_ACTIVE_TOOL,
+  SET_PRIMARY_COLOR,
+  CREATE_GRID,
+  UPDATE_GRID,
+  RESIZE_GRID,
+  SET_IS_MOUSE_DOWN,
+  UPDATE_ZOOM,
+  RESIZE_SURFACE,
+  SAVE_SPRITE,
+  SET_ACTIVE_SPRITE
+} from './actionTypes';
 
-class DrawActions {
-  setActiveTool(tool) {
-    this.dispatch(tool);
-  }
+export function setActiveTool(tool) {
+  return {
+    type: SET_ACTIVE_TOOL,
+    tool
+  };
+}
 
-  setPrimaryColor(color) {
-    this.dispatch(color);
-  }
+export function setPrimaryColor(color) {
+  return {
+    type: SET_PRIMARY_COLOR,
+    color
+  };
+}
 
-  createGrid() {
-    this.dispatch();
-  }
+export function createGrid() {
+  return {
+    type: CREATE_GRID
+  };
+}
 
-  updateGrid(grid) {
-    this.dispatch(grid);
-  }
+export function updateGrid(grid) {
+  return {
+    type: UPDATE_GRID,
+    grid
+  };
+}
 
-  resizeGrid() {
-    this.dispatch();
-  }
-
-  setIsMouseDown(val) {
-    this.dispatch(val);
-  }
-
-  updateZoom(zoom) {
-    this.dispatch(zoom);
-  }
-
-  resizeSurface(data) {
-    this.dispatch(data);
-  }
-
-  saveSprite(data) {
-    this.dispatch(data);
-  }
-
-  setActiveSprite(data) {
-    this.dispatch(data);
+export function resizeGrid() {
+  return {
+    type: RESIZE_GRID
   }
 }
 
-export default alt.createActions(DrawActions);
+export function setIsMouseDown(isMouseDown) {
+  return {
+    type: SET_IS_MOUSE_DOWN,
+    isMouseDown
+  }
+}
+
+export function updateZoom(zoom) {
+  return {
+    type: UPDATE_ZOOM,
+    zoom
+  };
+}
+
+export function resizeSurface(data) {
+  return {
+    type: RESIZE_SURFACE,
+    data
+  };
+}
+
+export function saveSprite(data) {
+  return {
+    type: SAVE_SPRITE,
+    data
+  };
+}
+
+export function setActiveSprite(data) {
+  return {
+    type: SET_ACTIVE_SPRITE,
+    data
+  };
+}

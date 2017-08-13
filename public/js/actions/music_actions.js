@@ -1,41 +1,72 @@
-import alt from '../alt';
+import {
+  SET_ACTIVE_INSTRUMENT,
+  NEW_INSTRUMENT,
+  UPDATE_INSTRUMENT,
+  CLOSE_EDIT_INSTRUMENT,
+  PLAY_TRACK,
+  PAUSE_TRACK,
+  SET_IS_MOUSE_DOWN,
+  SET_VOLUME,
+  UPDATE_RECORDING
+} from './actionTypes';
 
-class MusicActions {
-  setActiveInstrument(idx) {
-    this.dispatch(idx);
-  }
+export function setActiveInstrument(index) {
+  return {
+    type: SET_ACTIVE_INSTRUMENT,
+    index
+  };
+};
 
-  newInstrument() {
-    this.dispatch();
-  }
+export function newInstrument() {
+  return {
+    type: NEW_INSTRUMENT
+  };
+};
 
-  updateInstrument(instrument) {
-    this.dispatch(instrument);
-  }
+export function updateInstrument(instrument) {
+  return {
+    type: UPDATE_INSTRUMENT,
+    instrument
+  };
+};
 
-  closeEditInstrument() {
-    this.dispatch();
-  }
+export function closeEditInstrument() {
+  return {
+    type: CLOSE_EDIT_INSTRUMENT
+  };
+};
 
-  playTrack(trackNumber) {
-    this.dispatch(trackNumber);
-  }
+export function playTrack(trackNumber) {
+  return {
+    type: PLAY_TRACK,
+    trackNumber
+  };
+};
 
-  pauseTrack(trackNumber) {
-    this.dispatch(trackNumber);
-  }
+export function pauseTrack(trackNumber) {
+  return {
+    type: PAUSE_TRACK,
+    trackNumber
+  };
+};
 
-  setIsMouseDown(bool) {
-    this.dispatch(bool);
-  }
+export function setIsMouseDown(isMouseDown) {
+  return {
+    type: SET_IS_MOUSE_DOWN,
+    isMouseDown
+  };
+};
 
-  setVolume(volume) {
-    this.dispatch(volume);
-  }
+export function setVolume(volume) {
+  return {
+    type: SET_VOLUME,
+    volume
+  };
+};
 
-  updateRecording(recording) {
-    this.dispatch(recording);
-  }
-}
-
-export default alt.createActions(MusicActions);
+export function updateRecording(recording) {
+  return {
+    type: UPDATE_RECORDING,
+    recording
+  };
+};
