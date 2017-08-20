@@ -44,7 +44,7 @@ class DrawSurface extends React.Component {
         this.props.width !== prevProps.width ||
         this.props.height !== prevProps.height) {
       this.drawBackground();
-      this.resizeGrid();
+      this.props.resizeGrid();
     }
   }
 
@@ -85,11 +85,8 @@ class DrawSurface extends React.Component {
   }
 
   animate() {
-    let drawGfx = this.state.drawGfx;
-    let renderer = this.state.renderer;
-    let stage = this.state.stage;
-    let zoom = this.props.zoom;
-    let grid = this.props.grid;
+    const { drawGfx, renderer, stage } = this.state;
+    const { zoom, grid } = this.props;
 
     renderer.resize(this.props.actualWidth, this.props.actualHeight);
     drawGfx.clear();
@@ -288,10 +285,6 @@ class DrawSurface extends React.Component {
     }
 
     this.setState({ bgGfx });
-  }
-
-  resizeGrid() {
-    DrawActions.resizeGrid();
   }
 
   getTileCoordinates(ev) {

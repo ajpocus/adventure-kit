@@ -23,6 +23,7 @@ const TILE_HEIGHT = ACTUAL_HEIGHT / HEIGHT;
 
 const defaultDrawState = {
 	activeTool: 'Pencil',
+  tools: ['Pencil', 'Dropper', 'Bucket'],
   primaryColor: '#000000',
   secondaryColor: '#ffffff',
   palette: [

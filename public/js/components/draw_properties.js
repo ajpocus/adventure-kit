@@ -5,7 +5,7 @@ import ToolList from './tool_list';
 
 class ManageToolList extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       size: 16
@@ -40,7 +40,9 @@ class ManageToolList extends React.Component {
   handleResize(ev) {
     var sizeInput = this.refs.size.getDOMNode();
     let size = sizeInput.value;
-    DrawActions.resizeSurface({
+    
+    this.props.dispatch({
+      type: 'RESIZE_GRID',
       width: size,
       height: size
     });

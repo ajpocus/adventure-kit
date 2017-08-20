@@ -1,6 +1,5 @@
 let React = require('react');
 
-import MusicStore from '../stores/music_store';
 import TrackManager from './track_manager';
 import InstrumentList from './instrument_list';
 import Keyboard from './keyboard';
