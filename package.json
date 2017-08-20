@@ -41,7 +41,9 @@
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
+    "babel-core": "^6.26.0",
     "babel-jest": "^20.0.3",
+    "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
@@ -49,6 +51,8 @@
     "browserify": "^14.4.0",
     "canvas": "^1.6.6",
     "chai": "^4.1.1",
+    "css-loader": "^0.28.5",
+    "extract-text-webpack-plugin": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-concat-css": "^2.3.0",
     "gulp-mocha": "^4.3.1",
@@ -58,11 +62,15 @@
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
     "jsdom": "11.1.0",
+    "node-sass": "^4.5.3",
     "nodemon": "^1.11.0",
     "react-tools": "^0.13.3",
+    "sass-loader": "^6.0.6",
     "sinon": "^3.0.0",
+    "style-loader": "^0.18.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.9.0"
+    "watchify": "^3.9.0",
+    "webpack": "^3.5.5"
   }
 }
